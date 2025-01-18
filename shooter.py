@@ -134,13 +134,13 @@ class Shooter(Subsystem):
 
         return talon
 
-    def __configure_shooter_ramp(self) -> TalonSRX:
-        talon: TalonSRX = TalonSRX(constants.SHOOTER_ELEVATOR)
-        talon.configFactoryDefault()
-        # Measure what to do here, make any other configuration adjustments
-        talon.setInverted(False)
+    # def __configure_shooter_ramp(self) -> TalonSRX:
+    #     talon: TalonSRX = TalonSRX(constants.SHOOTER_ELEVATOR)
+    #     talon.configFactoryDefault()
+    #     # Measure what to do here, make any other configuration adjustments
+    #     talon.setInverted(False)
 
-        return talon
+    #     return talon
 
     def __configure_ramp_encoder(self) -> DutyCycleEncoder:
         encoder: DutyCycleEncoder = DutyCycleEncoder(constants.SHOOTER_ANGLE_ENCODER)
