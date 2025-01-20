@@ -31,8 +31,8 @@ import constants
 
 class ELEVATOR(Subsystem):
     ELEVATOR_TOP_LIMIT = 5000
-    ELEVATOR_UP_SPEED = 1
-    ELEVATOR_DOWN_SPEED = -1
+    ELEVATOR_UP_SPEED = 0.2
+    ELEVATOR_DOWN_SPEED = -0.2
 
     def __init__(self) -> None:
         super().__init__()
@@ -60,8 +60,8 @@ class ELEVATOR(Subsystem):
         config.slot0.k_d = 0
 
         # Set the left side motors to be counter clockwise positive
-        # config.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
-        config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
+        config.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
+        # config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
         config.motor_output.neutral_mode = NeutralModeValue.BRAKE
 
