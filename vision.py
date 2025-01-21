@@ -11,7 +11,7 @@ from robotpy_apriltag import AprilTagFieldLayout
 from wpilib import RobotBase, DriverStation, SmartDashboard
 from typing import List, Dict, Optional
 
-from shooter import ShooterPosition
+
 
 import os
 
@@ -85,25 +85,6 @@ class VisionSystem(Subsystem):
     #     if self._tag_camera is not None:
     #         return self._tag_camera.get_pose_estimates()
 
-    def set_target_tag(self, position: ShooterPosition) -> None:
-
-        if (
-            position == ShooterPosition.SUBWOOFER_1
-            or position == ShooterPosition.SUBWOOFER_2
-            or position == ShooterPosition.SUBWOOFER_3
-        ):
-            # Set according to blue or red
-            if DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
-                self.__tag_id = BLUE_SPEAKER_TAG
-            elif DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-                self.__tag_id = RED_SPEAKER_TAG
-
-        if position == ShooterPosition.AMP:
-            # Set according to blue or red
-            if DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
-                self.__tag_id = BLUE_AMP_TAG
-            elif DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-                self.__tag_id = RED_SPEAKER_TAG
 
         self._tag_camera.set_desired_target_id(self.__tag_id)
 
@@ -122,13 +103,6 @@ class VisionSystem(Subsystem):
             return self._note_camera.get_note_yaw() != 1000
         else:
             return False
-
-    def set_amp_tag_target_cmd(self) -> Command:
-        return cmd.runOnce(self.set_target_tag(ShooterPosition.AMP))
-
-    def set_speaker_tag_target_cmd(self) -> Command:
-        return cmd.runOnce(self.set_target_tag(ShooterPosition.SUBWOOFER_2))
-
 
 class AprilTagPhotonCamera:
     def __init__(self, name: str, center_offset: Transform3d) -> None:

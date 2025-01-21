@@ -1,7 +1,7 @@
 from commands2 import Command, InstantCommand
 from wpilib import Timer
 from intake import Intake
-from shooter import Shooter
+# from shooter import Shooter
 
 
 class ShootCommand(Command):
@@ -13,16 +13,7 @@ class ShootCommand(Command):
 
     RUN_DURATION = 1.1
 
-    def __init__(self, intake: Intake, shooter: Shooter):
-        super().__init__()
-
-        self._intake = intake
-        self._shooter = shooter
-
-        self._timer = Timer()
-
-        self.addRequirements(self._intake, self._shooter)
-
+    # 
     def initialize(self):
         self._timer.reset()
         self._timer.start()
@@ -45,21 +36,6 @@ class ShootCommand(Command):
         self._intake.set_shooting_flag(False)
 
 
-class StopIndexAndShooter(InstantCommand):
-    def __init__(self, shooter: Shooter, intake: Intake):
-        super().__init__()
-
-        self._shooter = shooter
-        self._intake = intake
-
-        self.addRequirements(self._shooter, self._intake)
-
-    def end(self, interrupted: bool):
-        self._shooter.stop_motors()
-        self._intake.stop_indexer()
-        self._intake.set_shooting_flag(False)
-
-
 class DoubleShootCommand(Command):
     """
     Command to shoot a note that is currently held in the indexer
@@ -69,15 +45,7 @@ class DoubleShootCommand(Command):
 
     RUN_DURATION = 2.5
 
-    def __init__(self, intake: Intake, shooter: Shooter):
-        super().__init__()
-
-        self._intake = intake
-        self._shooter = shooter
-
-        self._timer = Timer()
-
-        self.addRequirements(self._intake, self._shooter)
+   
 
     def initialize(self):
         self._timer.reset()
