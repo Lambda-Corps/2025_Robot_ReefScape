@@ -21,7 +21,7 @@ from pathplannerlib.auto import (
 )
 from phoenix6 import SignalLogger
 from drivetrain import DriveTrain, TeleopDriveWithVision, TurnToAnglePID
-from intake import Intake, IntakeCommand, DefaultIntakeCommand, EjectNote
+# from intake import Intake, IntakeCommand, DefaultIntakeCommand, EjectNote
 from shooter import Shooter, SetShooter, ShooterPosition
 from robot_commands import ShootCommand, StopIndexAndShooter, DoubleShootCommand
 from leds import LEDSubsystem, FlashLEDCommand
