@@ -25,7 +25,7 @@ from drivetrain import DriveTrain, TeleopDriveWithVision, TurnToAnglePID
 # from shooter import Shooter, SetShooter, ShooterPosition
 # from robot_commands import ShootCommand, StopIndexAndShooter, DoubleShootCommand
 from leds import LEDSubsystem, FlashLEDCommand
-from elevator2 import ELEVATOR, MoveELEVATOR
+from elevator import ELEVATOR, MoveELEVATOR
 from vision import VisionSystem
 import constants
 from typing import Tuple, List

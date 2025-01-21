@@ -14,6 +14,7 @@ from phoenix6.configs import (
     TalonFXConfigurator,
 )
 
+
 from phoenix6 import hardware, controls
 from phoenix6.hardware.talon_fx import TalonFX
 from phoenix6.controls.follower import Follower
