@@ -80,30 +80,6 @@ class ELEVATOR(Subsystem):
 
         return talon
 
-#===========================================================
-
-
-        # self._ELEVATOR: TalonSRX = TalonSRX(constants.ELEVATOR)
-        # self._ELEVATOR.configFactoryDefault()
-        # # self.ELEVATOR.configReverseLimitSwitchSource(
-        # #     LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0
-        # # )
-        # # self.ELEVATOR.configForwardSoftLimitThreshold(self.ELEVATOR_TOP_LIMIT)
-        # # self.ELEVATOR.configForwardSoftLimitEnable(True)
-        # self._ELEVATOR.setSensorPhase(True)
-        # self._ELEVATOR.setSelectedSensorPosition(0)
-
-        
-        # # self._right_ELEVATOR.configReverseLimitSwitchSource(
-        # #     LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen, 0
-        # # )
-        # # self._right_ELEVATOR.configForwardSoftLimitThreshold(self.ELEVATOR_TOP_LIMIT)
-        # # self._right_ELEVATOR.configForwardSoftLimitEnable(True)
-
-        # self._left_faults: Faults = Faults()     <<<<  Not used in Talon FX
-    
-    
-
     def move_ELEVATOR_up(self) -> None:
         # self._ELEVATOR.set(TalonSRXControlMode.PercentOutput, self.ELEVATOR_UP_SPEED)  # SRX control code
         self._ELEVATOR.set_control(controls.DutyCycleOut(self.ELEVATOR_UP_SPEED))  # FX Control Code
@@ -186,10 +162,12 @@ class MoveELEVATOR(Command):
         SmartDashboard.putNumber("Elevator_Position", self.talon.get_position().value)
         SmartDashboard.putBoolean("Elevator_At_Lower_Limit", self.talon)
 
-    def Elevator_at_bottom(self) -> bool:
-        return self.talon.reverse_limit_switch_closed()
+
+##### WORK IN PROGRESS
+    # def Elevator_at_bottom(self) -> bool:
+    #     return self.talon.reverse_limit_switch_closed()
             
-    get_reverse_limit = Self.talon.get_reverse_limit()
+    # get_reverse_limit = self.talon.get_reverse_limit()
 
     def reset_Elevator(self) -> None:
         while not self.talon.get_reverse_limit():

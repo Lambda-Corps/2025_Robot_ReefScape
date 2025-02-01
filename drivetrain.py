@@ -56,7 +56,7 @@ FEEDFORWARD = 0.1
 class DriveTrain(Subsystem):
     __DRIVER_DEADBAND = 0.1
     __FORWARD_SLEW = 3  # 1/3 of a second to full speed
-    __CLAMP_SPEED = 0.5
+    __CLAMP_SPEED = 0.3
     __TURN_PID_SPEED = 0.3
 
     def __init__(self, test_mode=False) -> None:

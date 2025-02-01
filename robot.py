@@ -23,11 +23,13 @@ from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
 ####>> from drivetrain import DriveTrain, TeleopDriveWithVision, TurnToAnglePID
 ####>> from intake import Intake, IntakeCommand, DefaultIntakeCommand, EjectNote
-from shooter import Shooter, SetShooter, ShooterPosition
-from robot_commands import ShootCommand, StopIndexAndShooter, DoubleShootCommand
+####>> from shooter import Shooter, SetShooter, ShooterPosition
+####>> from robot_commands import ShootCommand, StopIndexAndShooter, DoubleShootCommand
 from leds import LEDSubsystem, FlashLEDCommand
 ####>>> from climber import Climber, MoveClimber
 ####>>> from vision import VisionSystem
+from elevator import ELEVATOR, MoveELEVATOR
+
 import constants
 from typing import Tuple, List
 
@@ -65,13 +67,16 @@ class MyRobot(TimedCommandRobot):
      ####>>    self._intake: Intake = Intake()
      ####>>    wpilib.SmartDashboard.putData("Intake", self._intake)
 
-        self._shooter: Shooter = Shooter()
-        wpilib.SmartDashboard.putData("Shooter", self._shooter)
+     ####>>    self._shooter: Shooter = Shooter()
+     ####>>    wpilib.SmartDashboard.putData("Shooter", self._shooter)
 
         self._leds: LEDSubsystem = LEDSubsystem()
 
         ####>>> self._climber: Climber = Climber()
         ####>>> wpilib.SmartDashboard.putData("Climber", self._climber)
+
+        self._ELEVATOR: ELEVATOR = ELEVATOR()
+        wpilib.SmartDashboard.putData("Elevator", self._ELEVATOR)
 
         # self._vision: VisionSystem = VisionSystem(False, True)
         # self._vision: VisionSystem = VisionSystem(True, True)
@@ -138,6 +143,15 @@ class MyRobot(TimedCommandRobot):
         # # Eject Note
         # self._partner_controller.b().whileTrue(EjectNote(self._intake))
 
+                # Right Trigger Climber Up
+        self._partner_controller.rightTrigger().whileTrue(
+            MoveELEVATOR(self._ELEVATOR, 0.4).withName("ElevatorUp")
+        )
+        # Left Trigger Climber Down
+        self._partner_controller.leftTrigger().whileTrue(
+            MoveELEVATOR(self._ELEVATOR, -0.4).withName("ElevatorDown")
+        )
+
         # Right Trigger Climber Up
         ####>>> self._partner_controller.rightTrigger().whileTrue(
         #     MoveClimber(self._climber, 0.4).withName("ClimberUp")
@@ -156,15 +170,16 @@ class MyRobot(TimedCommandRobot):
         # )
 
         # POV for shooting positions
-        self._partner_controller.povLeft().onTrue(
-            SetShooter(self._shooter, ShooterPosition.SUBWOOFER_2)
-        )
-        self._partner_controller.povDown().onTrue(
-            SetShooter(self._shooter, ShooterPosition.MIN)
-        )
-        self._partner_controller.povRight().onTrue(
-            SetShooter(self._shooter, ShooterPosition.AMP)
-        )
+
+        ####>>     self._partner_controller.povLeft().onTrue(
+        #     SetShooter(self._shooter, ShooterPosition.SUBWOOFER_2)
+        # )
+        # self._partner_controller.povDown().onTrue(
+        #     SetShooter(self._shooter, ShooterPosition.MIN)
+        # )
+        # self._partner_controller.povRight().onTrue(
+        #     SetShooter(self._shooter, ShooterPosition.AMP)
+        # )
 
         wpilib.SmartDashboard.putData("Turn90", TurnToAnglePID(self._drivetrain, 90, 3))
         wpilib.SmartDashboard.putData(
@@ -203,14 +218,14 @@ class MyRobot(TimedCommandRobot):
                 ).withName("DefaultDrive")
             )
 
-        self._shooter.setDefaultCommand(
-            RunCommand(
-                lambda: self._shooter.drive_shooter_ramp(
-                    -self._partner_controller.getLeftY()
-                ),
-                self._shooter,
-            ).withName("ShooterDefault")
-        )
+        ####>> self._shooter.setDefaultCommand(
+        #     RunCommand(
+        #         lambda: self._shooter.drive_shooter_ramp(
+        #             -self._partner_controller.getLeftY()
+        #         ),
+        #         self._shooter,
+        #     ).withName("ShooterDefault")
+        # )
 
         ####>>  self._intake.setDefaultCommand(DefaultIntakeCommand(self._intake))
 

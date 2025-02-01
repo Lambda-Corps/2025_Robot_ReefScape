@@ -1,7 +1,7 @@
 from commands2 import Command, InstantCommand
 from wpilib import Timer
 from intake import Intake
-from shooter import Shooter
+####>> from shooter import Shooter
 
 
 class ShootCommand(Command):
