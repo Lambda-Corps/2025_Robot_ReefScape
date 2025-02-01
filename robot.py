@@ -17,7 +17,7 @@ from pathplannerlib.auto import (
     NamedCommands,
     PathPlannerAuto,
     AutoBuilder,
-    ReplanningConfig,
+    ### ReplanningConfig,
 )
 from phoenix6 import SignalLogger
 from drivetrain import DriveTrain, TeleopDriveWithVision, TurnToAnglePID
@@ -282,18 +282,18 @@ class MyRobot(TimedCommandRobot):
             q_elems = [0.09, 0.19, 3.7]
             r_elems = [-10, 10]
 
-        AutoBuilder.configureLTV(
-            self._drivetrain.get_robot_pose,
-            self._drivetrain.reset_odometry,
-            self._drivetrain.get_wheel_speeds,  # Current ChassisSpeeds supplier
-            self._drivetrain.driveSpeeds,  # Method that will drive the robot given ChassisSpeeds
-            q_elems,
-            r_elems,
-            0.02,
-            ReplanningConfig(),  # Default path replanning config. See the API for the options here
-            self._drivetrain.should_flip_path,  # Flip if we're on the red side
-            self._drivetrain,  # Reference to this subsystem to set requirements
-        )
+        # AutoBuilder.configureLTV(
+        #     self._drivetrain.get_robot_pose,
+        #     self._drivetrain.reset_odometry,
+        #     self._drivetrain.get_wheel_speeds,  # Current ChassisSpeeds supplier
+        #     self._drivetrain.driveSpeeds,  # Method that will drive the robot given ChassisSpeeds
+        #     q_elems,
+        #     r_elems,
+        #     0.02,
+        #     ReplanningConfig(),  # Default path replanning config. See the API for the options here
+        #     self._drivetrain.should_flip_path,  # Flip if we're on the red side
+        #     self._drivetrain,  # Reference to this subsystem to set requirements
+        # )
 
         # To configure the Autonomous routines use PathPlanner to define the auto routines
         # Then, take all of the path planner created routines and add them to the auto

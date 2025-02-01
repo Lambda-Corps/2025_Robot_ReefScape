@@ -42,8 +42,9 @@ from phoenix6.controls import (
 from phoenix6.unmanaged import feed_enable
 import navx
 from pathplannerlib.path import PathPlannerPath
-from pathplannerlib.commands import FollowPathRamsete
-from pathplannerlib.config import ReplanningConfig, PIDConstants
+# from pathplannerlib.commands import FollowPathRamsete
+# from pathplannerlib.config import ReplanningConfig, PIDConstants
+from pathplannerlib.config import  PIDConstants
 
 from typing import Callable
 import constants
@@ -773,19 +774,3 @@ class TurnToAnglePID(PIDCommand):
     def isFinished(self) -> bool:
         # End when the controller is at the reference.
         return self.getController().atSetpoint()
-    
-class rangefindernavx(Command):
-    def __init__(self, dt: DriveTrain, controller: CommandXboxController):
-        self._dt = dt
-        self._controller = controller
-        self.addRequirements(self._dt)
-
-    def execute(self):
-        forward = -self._controller.getLeftY()
-        yaw = self._controller.getRightX()
-        self._dt.drive_teleop(forward, yaw)
-
-    def isFinished(self) -> bool:
-        return False
-    
-
