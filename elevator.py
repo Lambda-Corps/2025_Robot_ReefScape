@@ -1,3 +1,4 @@
+from typing import Self
 from commands2 import Subsystem, Command, cmd
 from phoenix5 import (
     TalonSRX,
@@ -141,7 +142,7 @@ class ELEVATOR(Subsystem):
 
 
 class MoveELEVATOR(Command):
-    def __init__(self, sub: ELEVATOR, speed: float, timeout=0):
+    def __init__(self, sub: ELEVATOR, speed: float, timeout = 0):
         super().__init__()
 
         self._speed = speed
@@ -172,3 +173,25 @@ class MoveELEVATOR(Command):
 
     def end(self, interrupted: bool):
         self._ELEVATOR.stop_ELEVATOR_motors()
+    
+    
+    def reset_encoder(self) -> None:
+        self.talon.set_position(0)
+
+
+    def periodic(self) -> None:
+            SmartDashboard.putNumber("Elevator_Position", self.talon.get_position().value)
+        
+    def periodic(self) -> None:
+        SmartDashboard.putNumber("Elevator_Position", self.talon.get_position().value)
+        SmartDashboard.putBoolean("Elevator_At_Lower_Limit", self.talon)
+
+    def Elevator_at_bottom(self) -> bool:
+        return self.talon.reverse_limit_switch_closed()
+            
+    get_reverse_limit = Self.talon.get_reverse_limit()
+
+    def reset_Elevator(self) -> None:
+        while not self.talon.get_reverse_limit():
+            self.talon.set(0.2)
+        self.talon.set_position(0)

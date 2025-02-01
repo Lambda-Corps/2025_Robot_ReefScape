@@ -1,192 +1,257 @@
-from commands2 import Subsystem, Command, cmd
-from phoenix5 import TalonSRX, TalonSRXControlMode
-from wpilib import SmartDashboard, AnalogInput, RobotBase
-from wpilib.simulation import AnalogInputSim
-
+# from enum import Enum
+from commands2 import Subsystem, Command, RunCommand
+from wpilib import SmartDashboard, RobotBase, RobotController, DutyCycleEncoder
+# from wpilib.simulation import FlywheelSim
+# from wpimath.system.plant import DCMotor
+# from phoenix6.configs import (
+#     TalonFXConfiguration,
+#     TalonFXConfigurator,
+# )
+# from phoenix6.hardware.talonfx import TalonFX  # Fixed import statement
+# from phoenix6.controls.follower import Follower
+# from phoenix6.signals.spn_enums import InvertedValue, NeutralModeValue
+# from phoenix6.controls import DutyCycleOut, VelocityVoltage
+# from phoenix6.unmanaged import feed_enable
+from phoenix5 import TalonSRX, TalonSRXConfiguration, ControlMode
 import constants
+
+# SPEAKER_RPS = 55
+# FLYWHEEL_SPEEED = 1
+# # SHOOTER_MIN = 0.163
+# # SHOOTER_MAX = 0.231
+# # SPEAKER_FROM_RING2 = 0.163
+# # AMP_FROM_AMP = 0.197
+# # SPEAKER_FROM_SUB = 0.194
+# # POINT3_AUTO = 0.181
+# RPS = 0
+# PERCENT_OUT = 1
+# LOCATION = 2
+
+
 
 
 class Intake(Subsystem):
     """
-    Intake subsystem, uses two different roller sets to pick notes up off the floor
-    and then shoot them when needed
+    Test class for shooter prototype
     """
 
-    DETECTION_VOLTS_LOWER_BOUND = 1.5
-    DETECTION_VOLTS_UPPER_BOUND = 4.0
-    BACKUP_NOTE_SPEED = -0.5
-    INDEX_NOTE_SPEED = 0.8
-    INTAKE_NOTE_SPEED = 0.8
-
-    def __init__(self, test_mode=False):
+    def __init__(self, test_mode = False):
         super().__init__()
+        self.Intake_Motor = TalonSRX(constants.INTAKE_MOTOR)
+        self.Intake_Motor.configFactoryDefault()
+        # self._Claw_left: TalonFX = self.__configure_left_side()
+        # self.__configure_Motor()
+        # self._shooter_ramp: TalonSRX = self.__configure_shooter_ramp()
+        # self._shooter_ramp_angle: DutyCycleEncoder = self.__configure_ramp_encoder()
 
-        self._intakeroller = TalonSRX(constants.INTAKE_ROLLER)
-        self._intakeroller.configFactoryDefault()
-        self._indexroller = TalonSRX(constants.INDEX_ROLLER)
-        self._indexroller.configFactoryDefault()
-        self._indexroller.setInverted(True)
+        # self.__test_mode = test_mode
+        # if self.__test_mode:
+        #     # SmartDashboard.putNumber("ShooterRPS", SPEAKER_RPS)
+        #     SmartDashboard.putNumber("ClawPercent", FLYWHEEL_SPEEED)
 
-        # TODO -- Need to set current limits here
-        self.__test_mode = test_mode
-        if self.__test_mode:
-            SmartDashboard.putNumber("IntakeSpeed", 0.6)
-            SmartDashboard.putNumber("IndexSpeed", 0.5)
+        # # For now use DutyCycle, but should configure for MotionMagicVelocity
+        # later on.
+        # self._motor_output = DutyCycleOut(0, enable_foc=False)
+        # self._motor_output = VelocityVoltage(0, enable_foc=False, slot=0)
 
-        self._detector_0: AnalogInput = AnalogInput(constants.INTAKE_BEAM_BREAK_0)
-        self._detector_1: AnalogInput = AnalogInput(constants.INTAKE_BEAM_BREAK_1)
+        # self._motor_rps = SPEAKER_RPS
 
-        if RobotBase.isSimulation():
-            SmartDashboard.putNumber("SimVolts", 0)
-            self._simAnalogInput: AnalogInputSim = AnalogInputSim(1)
-
-        # Flag to denote whether or not we are shooting
-        self.__is_shooting = False
-
-    def drive_index_backward(self):
-        index_speed = self.BACKUP_NOTE_SPEED
-        intake_speed = self.BACKUP_NOTE_SPEED
-        if self.__test_mode:
-            index_speed = -SmartDashboard.getNumber("IndexSpeed", 0) / 2
-            intake_speed = -SmartDashboard.getNumber("IntakeSpeed", 0) / 2
-
-        self._indexroller.set(TalonSRXControlMode.PercentOutput, index_speed)
-        self._intakeroller.set(TalonSRXControlMode.PercentOutput, intake_speed)
-
-    def drive_index(self, shooting=False, doubleshooting=False):
-        index_speed = self.INDEX_NOTE_SPEED
-        intake_speed = self.INTAKE_NOTE_SPEED
-        if self.__test_mode:
-            index_speed = SmartDashboard.getNumber("IndexSpeed", 0)
-            intake_speed = SmartDashboard.getNumber("IntakeSpeed", 0)
-        if shooting:
-            index_speed = 1.0
-            intake_speed = self.INTAKE_NOTE_SPEED if doubleshooting else 0
-
-        self._indexroller.set(TalonSRXControlMode.PercentOutput, index_speed)
-        self._intakeroller.set(TalonSRXControlMode.PercentOutput, intake_speed)
-
-    def stop_indexer(self) -> None:
-        self._indexroller.set(TalonSRXControlMode.PercentOutput, 0)
-        self._intakeroller.set(TalonSRXControlMode.PercentOutput, 0)
-
-    def has_note(self) -> bool:
-        # volts_0 = self._detector_0.getAverageVoltage()
-        volts_1 = self._detector_1.getAverageVoltage()
-
-        # return (
-        #     (
-        #         volts_0 > self.DETECTION_VOLTS_LOWER_BOUND
-        #         and volts_1 < self.DETECTION_VOLTS_UPPER_BOUND
+        # if RobotBase.isSimulation():
+        #     self._Claw_sim: FlywheelSim = FlywheelSim(
+        #         DCMotor.falcon500(1), constants.Claw_GEARING, constants.Claw_MOI
         #     )
-        #     or (volts_1 > self.DETECTION_VOLTS_LOWER_BOUND)
-        #     and (volts_1 < self.DETECTION_VOLTS_UPPER_BOUND)
+
+        #     self._sim_counter = 0
+
+        # self._angle = 0
+
+        # # We should be starting at the subwoofer
+        # self._curr_location = IntakePosition.SUBWOOFER_2
+
+    # def __configure_left_side(
+    #     self,
+    # ) -> TalonFX:
+    #     talon = TalonFX(constants.FLYWHEEL_LEFT)
+
+    #     # Perform any other configuration
+    #     config: TalonFXConfiguration = TalonFXConfiguration()
+    #     config.slot0.k_s = 0.15  # Measured .15 volts to overcome static friction
+    #     config.slot0.k_v = 0.11  # Measured .19 for 1ps
+    #     config.slot0.k_a = 0.01  # complete guess, not measured
+    #     config.slot0.k_p = (
+    #         0.18  # an error of 1 RPS should add almost .19 more to correct
+    #     )
+    #     config.slot0.k_i = 0
+    #     config.slot0.k_d = 0
+
+    #     config.motor_output.neutral_mode = NeutralModeValue.COAST
+
+    #     # Set neutral mode to coast
+    #     talon.configurator.apply(config)
+
+    #     # Setup the second set of flywheels with the SRX motors
+    #     self._lowerleft = TalonSRX(constants.INDEX_LEFT)
+    #     self._lowerleft.configFactoryDefault()
+
+    #     return talon
+
+    # def __configure_Motor(
+    #     self,
+    # ) -> None:
+        # Motors are CCW positive, so the shooter needs the right side
+        # to spin CW in order to shoot note.  The left side is already in the
+        # correct orientation, so for our right side configuration just needs to
+        # follow, but oppose the leader and it will give us the spin we want.
+        # talon = TalonFX(constants.FLYWHEEL_RIGHT)
+        # config: TalonFXConfiguration = TalonFXConfiguration()
+        # config.motor_output.neutral_mode = NeutralModeValue.COAST
+        # talon.configurator.apply(config)
+
+        # talon.set_control(
+        #     Follower(constants.FLYWHEEL_LEFT, oppose_master_direction=True)
         # )
-        return (volts_1 > self.DETECTION_VOLTS_LOWER_BOUND) and (
-            volts_1 < self.DETECTION_VOLTS_UPPER_BOUND
-        )
 
-    def index_note(self, speed: float) -> Command:
-        return cmd.run(lambda: self.drive_index()).withTimeout(1).withName("IndexNote")
+        # Setup the Intake motor
+        # self.Intake_Motor = TalonSRX(constants.INTAKE_MOTOR)
+        # self.Intake_Motor.configFactoryDefault()
+        # self.lowerright.setInverted(True)
 
-    def simulationPeriodic(self) -> None:
-        self._simAnalogInput.setVoltage(SmartDashboard.getNumber("SimVolts", 0))
+
+    # def __configure_shooter_ramp(self) -> TalonSRX:
+    #     talon: TalonSRX = TalonSRX(constants.SHOOTER_ELEVATOR)
+    #     talon.configFactoryDefault()
+    #     # Measure what to do here, make any other configuration adjustments
+    #     talon.setInverted(False)
+
+    #     return talon
+
+    # def __configure_ramp_encoder(self) -> DutyCycleEncoder:
+    #     encoder: DutyCycleEncoder = DutyCycleEncoder(constants.SHOOTER_ANGLE_ENCODER)
+
+    #     return encoder
+
+    def drive_motor(self, speed: float):
+
+        # if self.__test_mode:
+        #     self._motor_output.velocity = SmartDashboard.getNumber(
+        #         "ClawRPS", SPEAKER_RPS
+        #     )
+        #     speed_775 = SmartDashboard.getNumber("ClawPercent", FLYWHEEL_SPEEED)
+        # else:
+        #     speed_775: float = self._curr_location.value[PERCENT_OUT]
+        #     self._motor_output.velocity = self._curr_location.value[RPS]
+        self.Intake_Motor.set(ControlMode.PercentOutput, speed)
+
+    def stop_motor(self) -> None:
+        # self._motor_output.velocity = 0
+        # self._Claw_left.set_control(self._motor_output)
+        # self._lowerleft.set(ControlMode.PercentOutput, 0)
+        self.Intake_Motor.set(ControlMode.PercentOutput, 0)
 
     def periodic(self) -> None:
-        # SmartDashboard.putNumber("RangeVoltage_0", self._detector_0.getAverageVoltage())
-        SmartDashboard.putNumber("RangeVoltage_1", self._detector_1.getAverageVoltage())
+        SmartDashboard.putNumber("Intake_Speed", self.Intake_Motor.getMotorOutputPercent)
 
-        # We need to keep the note from touching the shooter wheels on intake
-        # if we are detecting the note, drive the wheels backward
-        if self.__is_shooting is False:
-            if self.has_note():
-                self._indexroller.set(
-                    TalonSRXControlMode.PercentOutput, self.BACKUP_NOTE_SPEED
-                )
-            else:
-                self._indexroller.set(TalonSRXControlMode.PercentOutput, 0)
+                
+            
 
-    def set_shooting_flag(self, is_shooting: bool) -> None:
-        self.__is_shooting = is_shooting
+        # if self._shooter_ramp_angle.isConnected():
+        #     SmartDashboard.putNumber(
+        #         "Encoder Pos", self._shooter_ramp_angle.getAbsolutePosition()
+        #     )
+
+    # def Clawat_speed(self) -> bool:
+    #     # For some reason the simulator speed is broken, so if we're in the simulator
+    #     # Just return after some approximation of 1 second
+    #     if RobotBase.isSimulation():
+    #         self._sim_counter += 1
+    #         if self._sim_counter % 50:
+    #             return True
+    #     else:
+    #         # In the real robot, return the actual velocity
+    #         return (
+    #              self._Claw_left.get_velocity().value_as_double >= self._motor_rps - 1
+    #         )
+
+    # def set_shooter_speed(self, speed: float) -> None:
+
+    #     self._motor_rps = SmartDashboard.getNumber("ShooterRPS", 0)
+
+    # def drive_shooter_ramp(self, speed: float) -> None:
+    #     self._shooter_ramp.set(ControlMode.PercentOutput, speed)
+
+    # def set_shooter_location(self, location: ShooterPosition) -> None:
+    #     self._curr_location = location
+
+    # def move_ramp_to_location(self) -> None:
+    #     speed = 0
+    #     curr_location = self._shooter_ramp_angle.getAbsolutePosition()
+    #     if curr_location < (self._curr_location.value[LOCATION] - 0.001):
+    #         # Ramp needs to move up
+    #         speed = 1
+    #     elif curr_location > (self._curr_location.value[LOCATION] - 0.001):
+    #         # Ramp needs to move down
+    #         speed = -1
+    #     else:
+    #         speed = 0
+    #     self._shooter_ramp.set(ControlMode.PercentOutput, speed)
+
+    # def shooter_at_angle(self) -> bool:
+    #     curr_diff = (
+    #         self._shooter_ramp_angle.getAbsolutePosition()
+    #         - self._curr_location.value[LOCATION]
+    #     )
+    #     SmartDashboard.putNumber("ShooterDiff", curr_diff)
+    #     return abs(curr_diff) < 0.0015
+
+    # def stop_shooter_ramp(self) -> None:
+    #     self._shooter_ramp.set(ControlMode.PercentOutput, 0)
+
+    # def simulationPeriodic(self) -> None:
+    #     feed_enable(constants.ROBOT_PERIOD_MS * 2)
+
+    #     # Start the motor simulation work flow by passing robot battery voltage to sim motors
+    #     self._Claw_left.sim_state.set_supply_voltage(
+    #         RobotController.getBatteryVoltage()
+    #     )
+    #     self._Claw_right.sim_state.set_supply_voltage(
+    #         RobotController.getBatteryVoltage()
+    #     )
+
+    #     # Apply the motor inputs to the simulation
+    #     self._Claw_sim.setInput([self._Claw_left.sim_state.motor_voltage])
+
+    #     # advance the simulation model a timing loop
+    #     self._Claw_sim.update(constants.ROBOT_PERIOD_MS)
+
+    #     # Update the motor values with the new calculated values from the physics engine
+    #     self._Claw_left.sim_state.set_rotor_velocity(
+    #         self.__radianspersec_to_rotationspersec(
+    #             self._Claw_sim.getAngularVelocity()
+    #         )
+    #     )
+
+    # def __radianspersec_to_rotationspersec(self, rad_per_sec: float) -> float:
+    #     # One radian per second equates to 0.0159154943, use that
+    #     return rad_per_sec * 0.159154943
 
 
-class IntakeCommand(Command):
-    """
-    Command to run motors of the shooter with a button press
-    """
+class SetIntake(Command):
+    def __init__(self, Intake: Intake):
+        self._Intake = Intake
 
-    def __init__(self, intake: Intake):
-        super().__init__()
-        self._speed = 0
-        self._sub = intake
-
-        self.addRequirements(self._sub)
+        self.addRequirements(self._Intake)
 
     def initialize(self):
-        # self._speed = SmartDashboard.getNumber("IntakeSpeed", 0.3)
-        pass
+        # self._Intake.set_Intake_location(self._location)
+        pass 
 
     def execute(self):
-        self._sub.drive_index()
-
-    def isFinished(self) -> bool:
-        return self._sub.has_note()
-
-    def end(self, interrupted: bool):
-        self._sub.stop_indexer()
+        self.drive_motor(self, 0.5)
+       
 
 
-class DefaultIntakeCommand(Command):
-    """
-    Default command for the intake.  The only purpose of this command is to keep the motors
-    at 0, unless we have a note too high in the shooter bed that needs to be moved down.
-
-    Using this default command instead of periodic, so that this logic doesn't happen when
-    the shoot note commands are running.
-    """
-
-    def __init__(self, sub: Intake):
-        super().__init__()
-
-        self._intake = sub
-
-        self.addRequirements(self._intake)
-
-    def execute(self):
-        SmartDashboard.putNumber(
-            "RangeVoltage_0", self._intake._detector_0.getAverageVoltage()
-        )
-        SmartDashboard.putNumber(
-            "RangeVoltage_1", self._intake._detector_1.getAverageVoltage()
-        )
-
-        # We need to keep the note from touching the shooter wheels on intake
-        # if we are detecting the note, drive the wheels backward
-        if self._intake.has_note():
-            self._intake._indexroller.set(
-                TalonSRXControlMode.PercentOutput, self._intake.BACKUP_NOTE_SPEED
-            )
-        else:
-            self._intake._indexroller.set(TalonSRXControlMode.PercentOutput, 0)
-
-    def runsWhenDisabled(self) -> bool:
-        return True
-
-
-class EjectNote(Command):
-    def __init__(self, intake: Intake):
-        super().__init__()
-
-        self._intake = intake
-
-        self.addRequirements(self._intake)
-
-    def execute(self):
-        self._intake.drive_index_backward()
-
-    # IsFinished returns False, should run while held only
     def isFinished(self) -> bool:
         return False
-
+    
     def end(self, interrupted: bool):
-        self._intake.stop_indexer()
+        self._Intake.stop_motor()
