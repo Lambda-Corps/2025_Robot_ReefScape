@@ -41,10 +41,10 @@ from phoenix6.controls import (
 )
 from phoenix6.unmanaged import feed_enable
 import navx
-from pathplannerlib.path import PathPlannerPath
-# from pathplannerlib.commands import FollowPathRamsete
-# from pathplannerlib.config import ReplanningConfig, PIDConstants
-from pathplannerlib.config import  PIDConstants
+# from pathplannerlib.path import PathPlannerPath
+# # from pathplannerlib.commands import FollowPathRamsete
+# # from pathplannerlib.config import ReplanningConfig, PIDConstants
+# from pathplannerlib.config import  PIDConstants
 
 from typing import Callable
 import constants
@@ -71,7 +71,7 @@ class DriveTrain(Subsystem):
         self.__create_turn_pid_objects()
 
         # Create the FF and PID for paths
-        self.__create_path_pid_objects()
+        # self.__create_path_pid_objects()
 
         # Apply all the configurations to the left and right side Talons
         self.__configure_left_side_drive()
@@ -168,27 +168,27 @@ class DriveTrain(Subsystem):
         self._turn_pid_controller.setTolerance(1)
         SmartDashboard.putData("Turn PID", self._turn_pid_controller)
 
-    def __create_path_pid_objects(self) -> None:
-        if RobotBase.isSimulation():
-            self._path_left_pid_controller: PIDController = PIDController(0.002, 0, 0)
-            self._path_right_pid_controller: PIDController = PIDController(0.002, 0, 0)
-            self._path_feedforward: SimpleMotorFeedforwardMeters = (
-                SimpleMotorFeedforwardMeters(
-                    constants.DT_KS_VOLTS_SIM, constants.DT_KV_VOLTSECONDS_METER_SIM, 0
-                )
-            )
-        else:
-            self._path_left_pid_controller: PIDController = PIDController(
-                0.01, 0, 0.001
-            )
-            self._path_right_pid_controller: PIDController = PIDController(
-                0.01, 0, 0.001
-            )
-            self._path_feedforward: SimpleMotorFeedforwardMeters = (
-                SimpleMotorFeedforwardMeters(
-                    constants.DT_KS_VOLTS, constants.DT_KV_VOLTSECONDS_METER, 0
-                )
-            )
+    # def __create_path_pid_objects(self) -> None:
+    #     if RobotBase.isSimulation():
+    #         self._path_left_pid_controller: PIDController = PIDController(0.002, 0, 0)
+    #         self._path_right_pid_controller: PIDController = PIDController(0.002, 0, 0)
+    #         self._path_feedforward: SimpleMotorFeedforwardMeters = (
+    #             SimpleMotorFeedforwardMeters(
+    #                 constants.DT_KS_VOLTS_SIM, constants.DT_KV_VOLTSECONDS_METER_SIM, 0
+    #             )
+    #         )
+    #     else:
+    #         self._path_left_pid_controller: PIDController = PIDController(
+    #             0.01, 0, 0.001
+    #         )
+    #         self._path_right_pid_controller: PIDController = PIDController(
+    #             0.01, 0, 0.001
+    #         )
+    #         self._path_feedforward: SimpleMotorFeedforwardMeters = (
+    #             SimpleMotorFeedforwardMeters(
+    #                 constants.DT_KS_VOLTS, constants.DT_KV_VOLTSECONDS_METER, 0
+    #             )
+    #         )
 
     def __configure_left_side_drive(self) -> None:
         self._left_leader = TalonFX(constants.DT_LEFT_LEADER)

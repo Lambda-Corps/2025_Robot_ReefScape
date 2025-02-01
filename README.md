@@ -1,4 +1,4 @@
-# 2025 Reef Scape
+# 2024_Crescendo
 Welcome to the LambdaCorps code for the FRC 2024 season. The start of the repository should be a robot that can simulate properly, drive forward with positive movements, and properly turn left and right.
 
 To run the simulator without any code changes:
@@ -75,4 +75,4 @@ $ for i in `pip list | grep robotpy | cut -d ' ' -f1` ; do pip uninstall -y $i ;
 Then, reinstall robotpy:
 ```
 $ pip install robotpy
- ```# 2025_Robot_ReefScape
+ ```
