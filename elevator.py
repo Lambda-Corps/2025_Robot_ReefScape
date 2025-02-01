@@ -83,10 +83,12 @@ class ELEVATOR(Subsystem):
     def move_ELEVATOR_up(self) -> None:
         # self._ELEVATOR.set(TalonSRXControlMode.PercentOutput, self.ELEVATOR_UP_SPEED)  # SRX control code
         self._ELEVATOR.set_control(controls.DutyCycleOut(self.ELEVATOR_UP_SPEED))  # FX Control Code
+        # print (self._ELEVATOR.get_position().value)
 
     def move_ELEVATOR_down(self) -> None:
         # self._ELEVATOR.set(TalonSRXControlMode.PercentOutput, self.ELEVATOR_DOWN_SPEED  # SRX control code
         self._ELEVATOR.set_control(controls.DutyCycleOut(self.ELEVATOR_DOWN_SPEED))  # FX Control Code
+        # print (self._ELEVATOR.get_position().value)
 
 
     def ELEVATOR_at_top(self) -> bool:
@@ -141,6 +143,7 @@ class MoveELEVATOR(Command):
         else:
             self._ELEVATOR.stop_ELEVATOR_motors()
 
+
     def isFinished(self) -> bool:
         if self._timeout == 0:
             return False
@@ -155,9 +158,6 @@ class MoveELEVATOR(Command):
         self.talon.set_position(0)
 
 
-    def periodic(self) -> None:
-            SmartDashboard.putNumber("Elevator_Position", self.talon.get_position().value)
-        
     def periodic(self) -> None:
         SmartDashboard.putNumber("Elevator_Position", self.talon.get_position().value)
         SmartDashboard.putBoolean("Elevator_At_Lower_Limit", self.talon)

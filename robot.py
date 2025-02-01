@@ -23,6 +23,7 @@ from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
 ####>> from drivetrain import DriveTrain, TeleopDriveWithVision, TurnToAnglePID
 ####>> from intake import Intake, IntakeCommand, DefaultIntakeCommand, EjectNote
+from intake import Intake, SetIntake
 ####>> from shooter import Shooter, SetShooter, ShooterPosition
 ####>> from robot_commands import ShootCommand, StopIndexAndShooter, DoubleShootCommand
 from leds import LEDSubsystem, FlashLEDCommand
@@ -64,8 +65,8 @@ class MyRobot(TimedCommandRobot):
         self._drivetrain: DriveTrain = DriveTrain()
         wpilib.SmartDashboard.putData("Drivetrain", self._drivetrain)
 
-     ####>>    self._intake: Intake = Intake()
-     ####>>    wpilib.SmartDashboard.putData("Intake", self._intake)
+        self._intake: Intake = Intake()
+        wpilib.SmartDashboard.putData("Intake", self._intake)
 
      ####>>    self._shooter: Shooter = Shooter()
      ####>>    wpilib.SmartDashboard.putData("Shooter", self._shooter)
@@ -227,7 +228,7 @@ class MyRobot(TimedCommandRobot):
         #     ).withName("ShooterDefault")
         # )
 
-        ####>>  self._intake.setDefaultCommand(DefaultIntakeCommand(self._intake))
+        self._intake.setDefaultCommand(SetIntake(self._intake))
 
     # def __configure_autonomous_commands(self) -> None:
     #     # Register the named commands used by the PathPlanner auto builder
