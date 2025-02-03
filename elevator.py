@@ -19,8 +19,7 @@ from phoenix6.configs import (
 from phoenix6 import hardware, controls
 from phoenix6.hardware.talon_fx import TalonFX
 from phoenix6.controls.follower import Follower
-from phoenix6.signals.spn_enums import InvertedValue, NeutralModeValue
-from phoenix6.controls import DutyCycleOut, VelocityVoltage
+from phoenix6.signals.spn_enums import InvertedValue, NeutralModeValue, ForwardLimitValue, ReverseLimitValue
 from phoenix6.unmanaged import feed_enable
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.signals.spn_enums import (InvertedValue, NeutralModeValue, FeedbackSensorSourceValue)
@@ -81,28 +80,24 @@ class ELEVATOR(Subsystem):
         return talon
 
     def move_ELEVATOR_up(self) -> None:
-        # self._ELEVATOR.set(TalonSRXControlMode.PercentOutput, self.ELEVATOR_UP_SPEED)  # SRX control code
-        self._ELEVATOR.set_control(controls.DutyCycleOut(self.ELEVATOR_UP_SPEED))  # FX Control Code
-        # print (self._ELEVATOR.get_position().value)
+        output = controls.DutyCycleOut(self.ELEVATOR_UP_SPEED)
+        self._ELEVATOR.set_control(output).with_limit_forward_motion(self.ELEVATOR_at_top())
 
     def move_ELEVATOR_down(self) -> None:
-        # self._ELEVATOR.set(TalonSRXControlMode.PercentOutput, self.ELEVATOR_DOWN_SPEED  # SRX control code
-        self._ELEVATOR.set_control(controls.DutyCycleOut(self.ELEVATOR_DOWN_SPEED))  # FX Control Code
-        # print (self._ELEVATOR.get_position().value)
-
+        output = controls.DutyCycleOut(self.ELEVATOR_DOWN_SPEED)
+        self._ELEVATOR.set_control(output).with_reverse_limit_motion(self.ELEVATOR_at_bottom())
 
     def ELEVATOR_at_top(self) -> bool:
-        # return (self._left_faults.ForwardLimitSwitch)    # SRX control code
-        atforwardLimit: bool = (self._ELEVATOR.get_forward_limit()==1)   # FX code
-        return atforwardLimit          # FX Control Code
-
+        return self._ELEVATOR.get_forward_limit() == ForwardLimitValue.CLOSED_TO_GROUND
 
         # Notes on:  StatusSignal[ForwardLimitValue]
         # https://api.ctr-electronics.com/phoenix6/release/python/autoapi/phoenix6/hardware/core/core_talon_fx/index.html
 
         # https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/api-usage/actuator-limits.html
         # https://api.ctr-electronics.com/phoenix6/release/java/com/ctre/phoenix6/hardware/core/CoreTalonFX.html
-    
+
+    def ELEVATOR_at_bottom(self) -> bool:
+        return self._ELEVATOR.get_reverse_limit() == ReverseLimitValue.CLOSED_TO_GROUND
 
     def stop_ELEVATOR_motors(self) -> None:
         # self._ELEVATOR.set(TalonSRXControlMode.PercentOutput, 0)   # SRX control code
@@ -112,12 +107,11 @@ class ELEVATOR(Subsystem):
         # self._ELEVATOR.getFaults(self._left_faults)          # SRX Control code
        
         # SmartDashboard.putBoolean("EL Forward Limit", self._left_faults.ForwardLimitSwitch)  # SRX
-        SmartDashboard.putBoolean("Elev Forward Limit", self._ELEVATOR.get_forward_limit()==1)                                 
+        SmartDashboard.putBoolean("Elev Forward Limit", self.ELEVATOR_at_top())                                 
                                           
         # SmartDashboard.putBoolean("Elev Reverse Limit", self._ELEVATOR.isRevLimitSwitchClosed())
-        SmartDashboard.putBoolean("Elev Reverse Limit", (self._ELEVATOR.get_reverse_limit()==1) )
+        SmartDashboard.putBoolean("Elev Reverse Limit", self.ELEVATOR_at_bottom())
         
-
 
 class MoveELEVATOR(Command):
     def __init__(self, sub: ELEVATOR, speed: float, timeout = 0):
