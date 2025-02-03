@@ -80,12 +80,12 @@ class ELEVATOR(Subsystem):
         return talon
 
     def move_ELEVATOR_up(self) -> None:
-        output = controls.DutyCycleOut(self.ELEVATOR_UP_SPEED)
-        self._ELEVATOR.set_control(output).with_limit_forward_motion(self.ELEVATOR_at_top())
+        output = controls.DutyCycleOut(0.0)
+        self._ELEVATOR.set_control(output.with_output(self.ELEVATOR_UP_SPEED).with_limit_forward_motion(self.ELEVATOR_at_top()))
 
     def move_ELEVATOR_down(self) -> None:
-        output = controls.DutyCycleOut(self.ELEVATOR_DOWN_SPEED)
-        self._ELEVATOR.set_control(output).with_reverse_limit_motion(self.ELEVATOR_at_bottom())
+        output = controls.DutyCycleOut(0.0)
+        self._ELEVATOR.set_control(output.with_output(self.ELEVATOR_DOWN_SPEED).with_limit_reverse_motion(self.ELEVATOR_at_bottom()))
 
     def ELEVATOR_at_top(self) -> bool:
         return self._ELEVATOR.get_forward_limit() == ForwardLimitValue.CLOSED_TO_GROUND
