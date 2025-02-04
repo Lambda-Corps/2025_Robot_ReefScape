@@ -16,10 +16,7 @@ from wpimath.geometry import Pose2d
 from pathplannerlib.auto import (
     NamedCommands,
     PathPlannerAuto,
-    AutoBuilder,
 )
-from pathplannerlib.controller import PPLTVController
-from pathplannerlib.config import RobotConfig
 from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
 ####>> from drivetrain import DriveTrain, TeleopDriveWithVision, TurnToAnglePID
@@ -235,50 +232,8 @@ class MyRobot(TimedCommandRobot):
         # Register the named commands used by the PathPlanner auto builder
         # These commands have to match exactly in the PathPlanner application
         # as we name them here in the registration
-        # NamedCommands.registerCommand(
-        #     "AutoShoot", PrintCommand("This is shooting in auto!")
-        # )
-
-        # increasing Qelems numbers, tries to drive more conservatively as the effect
-        # In the math, what we're doing is weighting the error less heavily, meaning,
-        # as the error gets larger don't react as much.  This makes the robot drive
-        # conservatively along the path.
-        # Decreasing Relems should make the motors drive less aggressively (fewer volts)
-        # In the math, this is the same as increasing Q values.  Basically, think of it
-        # like a car, if you limit how far you can press the gas pedal, a driver
-        # has a better chance of keeping the car under control
-        # Down below, in comments, there are a few candidate values that have been used
-        # under testing.  Tweak, and test, to find the right ones.
-        # [0.0625, 0.125, 2.5],  # <-- Q Elements
-        # [0.075, 0.15, 3.1],
-        # [0.09, 0.19, 3.7],
-        # [0.125, 2.5, 5.0],
-        # [0.19, 3.75, 7.5],
-        # [2.5, 5.0, 10.0],
-        # current [-5, 5],  # <-- R elements
-        # [-8, 8],
-        # [-10, 10],
-        # [-11, 11],
-        # [-12, 12],
-        ltv_q_elems = [0.09, 0.19, 3.7]
-        ltv_r_elems = [-9, 9]
-        if RobotBase.isSimulation():
-            ltv_q_elems = [0.09, 0.19, 3.7]
-            ltv_r_elems = [-10, 10]
-
-        #self._ltv_controller = PPLTVController(dt=0.02, q_elems=ltv_q_elems, r_elems=ltv_r_elems )
-        self._ltv_controller = PPLTVController(0.02)
-        config = RobotConfig.fromGUISettings()
-
-        AutoBuilder.configure(
-            self._drivetrain.get_robot_pose,
-            self._drivetrain.reset_odometry,
-            self._drivetrain.get_wheel_speeds,  # Current ChassisSpeeds supplier
-            self._drivetrain.driveSpeeds,  # Method that will drive the robot given ChassisSpeeds
-            self._ltv_controller,
-            config,
-            self._drivetrain.should_flip_path,  # Flip if we're on the red side
-            self._drivetrain,  # Reference to this subsystem to set requirements
+        NamedCommands.registerCommand(
+            "RunIntake", PrintCommand("This is placeholder for a command that runs the intake")
         )
 
         # To configure the Autonomous routines use PathPlanner to define the auto routines
@@ -288,7 +243,7 @@ class MyRobot(TimedCommandRobot):
         self._auto_chooser.setDefaultOption(
             "Print Auto String",PrintCommand("This is the auto shooter command string")
         )
-        # self._auto_chooser.addOption("ExampleAuto", PathPlannerAuto("ExampleAuto"))
+        self._auto_chooser.addOption("ExampleAuto", PathPlannerAuto("ExampleAuto"))
 
         wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
 
