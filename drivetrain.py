@@ -50,7 +50,8 @@ import constants
 
 VISION_KP = 0.012
 FEEDFORWARD = 0.1
-FOLLOWER_MOTORS_PRESENT = False
+# FOLLOWER_MOTORS_PRESENT = False
+FOLLOWER_MOTORS_PRESENT = True
 
 
 class DriveTrain(Subsystem):

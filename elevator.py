@@ -40,7 +40,6 @@ class ELEVATOR(Subsystem):
         super().__init__()
 
 #===========================================================
-# DF 1-17-2026:   Changed from a Talon SRX to Talon FX initialization sequence
         self._ELEVATOR: TalonFX = self.__configure_elevatorMotor()
 
     def __configure_elevatorMotor(self,) -> TalonFX:
@@ -81,18 +80,13 @@ class ELEVATOR(Subsystem):
         return talon
 
     def move_ELEVATOR_up(self) -> None:
-        # self._ELEVATOR.set(TalonSRXControlMode.PercentOutput, self.ELEVATOR_UP_SPEED)  # SRX control code
         self._ELEVATOR.set_control(controls.DutyCycleOut(self.ELEVATOR_UP_SPEED))  # FX Control Code
-        # print (self._ELEVATOR.get_position().value)
 
     def move_ELEVATOR_down(self) -> None:
-        # self._ELEVATOR.set(TalonSRXControlMode.PercentOutput, self.ELEVATOR_DOWN_SPEED  # SRX control code
         self._ELEVATOR.set_control(controls.DutyCycleOut(self.ELEVATOR_DOWN_SPEED))  # FX Control Code
-        # print (self._ELEVATOR.get_position().value)
 
 
     def ELEVATOR_at_top(self) -> bool:
-        # return (self._left_faults.ForwardLimitSwitch)    # SRX control code
         atforwardLimit: bool = (self._ELEVATOR.get_forward_limit()==1)   # FX code
         return atforwardLimit          # FX Control Code
 
@@ -105,17 +99,19 @@ class ELEVATOR(Subsystem):
     
 
     def stop_ELEVATOR_motors(self) -> None:
-        # self._ELEVATOR.set(TalonSRXControlMode.PercentOutput, 0)   # SRX control code
         self._ELEVATOR.set_control(controls.DutyCycleOut(0))       # FX Control Code
         
     def periodic(self) -> None:
-        # self._ELEVATOR.getFaults(self._left_faults)          # SRX Control code
-       
-        # SmartDashboard.putBoolean("EL Forward Limit", self._left_faults.ForwardLimitSwitch)  # SRX
         SmartDashboard.putBoolean("Elev Forward Limit", self._ELEVATOR.get_forward_limit()==1)                                 
-                                          
-        # SmartDashboard.putBoolean("Elev Reverse Limit", self._ELEVATOR.isRevLimitSwitchClosed())
-        SmartDashboard.putBoolean("Elev Reverse Limit", (self._ELEVATOR.get_reverse_limit()==1) )
+        SmartDashboard.putBoolean("Elev Reverse Limit", self._ELEVATOR.get_reverse_limit()==1) 
+        # This code does not work.
+
+        ## See the example code at:  https://v6.docs.ctr-electronics.com/en/2024/docs/api-reference/api-usage/actuator-limits.html
+           #  Copied here:
+            # from phoenix6 import signals
+            # forward_limit = self.motor.get_forward_limit()
+            # if forward_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND:
+            #     # do action when forward limit is closed
         
 
 
@@ -162,12 +158,6 @@ class MoveELEVATOR(Command):
         SmartDashboard.putNumber("Elevator_Position", self.talon.get_position().value)
         SmartDashboard.putBoolean("Elevator_At_Lower_Limit", self.talon)
 
-
-##### WORK IN PROGRESS
-    # def Elevator_at_bottom(self) -> bool:
-    #     return self.talon.reverse_limit_switch_closed()
-            
-    # get_reverse_limit = self.talon.get_reverse_limit()
 
     def reset_Elevator(self) -> None:
         while not self.talon.get_reverse_limit():
