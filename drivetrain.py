@@ -41,9 +41,9 @@ from phoenix6.controls import (
 )
 from phoenix6.unmanaged import feed_enable
 import navx
-from pathplannerlib.auto import AutoBuilder
-from pathplannerlib.controller import PPLTVController
-from pathplannerlib.config import RobotConfig
+# from pathplannerlib.auto import AutoBuilder
+# from pathplannerlib.controller import PPLTVController
+# from pathplannerlib.config import RobotConfig
 
 from typing import Callable
 import constants

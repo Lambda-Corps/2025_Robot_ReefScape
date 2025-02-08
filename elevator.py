@@ -8,7 +8,7 @@ from phoenix5 import (
     Faults,
     LimitSwitchNormal,
 )
-
+import wpilib
 #===========================================================
 from phoenix6.configs import (
     TalonFXConfiguration,
@@ -25,7 +25,7 @@ from phoenix6.unmanaged import feed_enable
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.signals.spn_enums import (InvertedValue, NeutralModeValue, FeedbackSensorSourceValue)
 from phoenix6 import StatusCode
-
+from robot import CommandXboxController
 #===========================================================
 
 from wpilib import SmartDashboard, AnalogInput, RobotBase, Timer
@@ -126,7 +126,7 @@ class MoveELEVATOR(Command):
         self._timer = Timer()
         self._timer.start()
 
-        self.addRequirements(self._ELEVATOR)
+        self.addRequirements(self._ELEVATOR)     
 
     def initialize(self):
         self._timer.restart()
@@ -163,3 +163,51 @@ class MoveELEVATOR(Command):
         while not self.talon.get_reverse_limit():
             self.talon.set(0.2)
         self.talon.set_position(0)
+
+class ElevatorController:
+    LEVELS = {
+        "A": 20,  # Example encoder values for different levels
+        "B": 40,
+        "X": 60,
+        "Y": 80
+    }
+
+    def __init__(self, elevator: ELEVATOR):
+        self.elevator = elevator
+        self._partner_controller = CommandXboxController(
+            constants.CONTROLLER_PARTNER_PORT
+        )
+
+
+    def move_to_level(self, target_position: int):
+        current_position = self.elevator._ELEVATOR.get_position().value
+        if current_position < target_position:
+            self.elevator.move_ELEVATOR_up()
+        elif current_position > target_position:
+            self.elevator.move_ELEVATOR_down()
+        else:
+            self.elevator.stop_ELEVATOR_motors()
+    
+    def check_buttons(self):
+        if self._partner_controller.getAButton():
+            self.move_to_level(self.LEVELS["A"])
+        elif self._partner_controller.getBButton():
+            self.move_to_level(self.LEVELS["B"])
+        elif self._partner_controller.getXButton():
+            self.move_to_level(self.LEVELS["X"])
+        elif self._partner_controller.getYButton():
+            self.move_to_level(self.LEVELS["Y"])
+        else:
+            self.elevator.stop_ELEVATOR_motors()
+
+class Robot(wpilib.TimedRobot):
+    def robotInit(self):
+        self.elevator = ELEVATOR()
+        self.elevator_controller = ElevatorController(self.elevator)
+
+    def teleopPeriodic(self):
+        self.elevator_controller.check_buttons()
+        # CommandScheduler.getInstance().run()
+
+if __name__ == "__main__":
+    wpilib.run(Robot)
