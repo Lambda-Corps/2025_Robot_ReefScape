@@ -1,13 +1,14 @@
 from typing import Self
+from phoenix6 import controls
 from commands2 import Subsystem, Command, cmd
-from phoenix5 import (
-    TalonSRX,
-    TalonSRXControlMode,
-    TalonSRXConfiguration,
-    LimitSwitchSource,
-    Faults,
-    LimitSwitchNormal,
-)
+# from phoenix5 import (
+#     TalonSRX,
+#     TalonSRXControlMode,
+#     TalonSRXConfiguration,
+#     LimitSwitchSource,
+#     Faults,
+#     LimitSwitchNormal,
+# )
 import wpilib
 #===========================================================
 from phoenix6.configs import (
@@ -88,31 +89,38 @@ class ELEVATOR(Subsystem):
 
     def ELEVATOR_at_top(self) -> bool:
         atforwardLimit: bool = (self._ELEVATOR.get_forward_limit()==1)   # FX code
-        return atforwardLimit          # FX Control Code
-
-
-        # Notes on:  StatusSignal[ForwardLimitValue]
-        # https://api.ctr-electronics.com/phoenix6/release/python/autoapi/phoenix6/hardware/core/core_talon_fx/index.html
-
-        # https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/api-usage/actuator-limits.html
-        # https://api.ctr-electronics.com/phoenix6/release/java/com/ctre/phoenix6/hardware/core/CoreTalonFX.html
-    
+        return atforwardLimit          # FX Control Code    
 
     def stop_ELEVATOR_motors(self) -> None:
         self._ELEVATOR.set_control(controls.DutyCycleOut(0))       # FX Control Code
-        
+
+#==================================================================================
+##   SOURCE:  https://v6.docs.ctr-electronics.com/en/2024/docs/api-reference/api-usage/actuator-limits.html
+
+##   SAMPLE CODE FOR DETECTING LIMIT SWITCHES ON FALCON 500 (Talon FX)
+# from phoenix6 import signals
+
+# ##### >> May need to reverse top/bottom depending on wiring of the robot
+#
+#    def elevator_at_top(self) -> bool:
+#    # def elevator_at_bottom(self) -> bool:
+#        reverse_limit = self._elevator_motor.get_reverse_limit()
+#        return (reverse_limit.value is signals.ReverseLimitValue.CLOSED_TO_GROUND)
+
+
+#    def elevator_at_bottom(self) -> bool:
+#    # def elevator_at_top(self) -> bool:
+#        forward_limit = self._elevator_motor.get_forward_limit()
+#        return (forward_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND)
+
+
+#==================================================================================
+
+
     def periodic(self) -> None:
         SmartDashboard.putBoolean("Elev Forward Limit", self._ELEVATOR.get_forward_limit()==1)                                 
         SmartDashboard.putBoolean("Elev Reverse Limit", self._ELEVATOR.get_reverse_limit()==1) 
-        # This code does not work.
-
-        ## See the example code at:  https://v6.docs.ctr-electronics.com/en/2024/docs/api-reference/api-usage/actuator-limits.html
-           #  Copied here:
-            # from phoenix6 import signals
-            # forward_limit = self.motor.get_forward_limit()
-            # if forward_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND:
-            #     # do action when forward limit is closed
-        
+        # This code does not work.        
 
 
 class MoveELEVATOR(Command):
