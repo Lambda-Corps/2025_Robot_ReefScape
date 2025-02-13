@@ -17,7 +17,7 @@ from phoenix6.configs import (
 )
 
 
-from phoenix6 import hardware, controls
+from phoenix6 import hardware, controls, signals
 from phoenix6.hardware.talon_fx import TalonFX
 from phoenix6.controls.follower import Follower
 from phoenix6.signals.spn_enums import InvertedValue, NeutralModeValue
@@ -85,17 +85,27 @@ class ELEVATOR(Subsystem):
 
     def move_ELEVATOR_down(self) -> None:
         self._ELEVATOR.set_control(controls.DutyCycleOut(self.ELEVATOR_DOWN_SPEED))  # FX Control Code
-
+    
+    def move_ELEVATOR_down_with_speed(self,speed:float) -> None:
+        self._ELEVATOR.set_control(controls.DutyCycleOut(speed))  # FX Control Code
 
     def ELEVATOR_at_top(self) -> bool:
-        atforwardLimit: bool = (self._ELEVATOR.get_forward_limit()==1)   # FX code
-        return atforwardLimit          # FX Control Code    
-
+        reverse_limit = self._ELEVATOR.get_reverse_limit() 
+        return (reverse_limit.value is signals.ReverseLimitValue.CLOSED_TO_GROUND)
+    
+    def ELEVATOR_at_bottom(self) -> bool:
+        forward_limit = self._ELEVATOR.get_forward_limit()
+        return(forward_limit.value is signals.ReverseLimitValue.CLOSED_TO_GROUND)
+    
     def stop_ELEVATOR_motors(self) -> None:
         self._ELEVATOR.set_control(controls.DutyCycleOut(0))       # FX Control Code
     
-    def getPosition(self) -> float:
-        return self._ELEVATOR.get_position()
+    # def getPosition(self) -> float:
+    #     return self._ELEVATOR.get_position()
+    
+    def get_elevator_count(self) -> float:
+        self._ELEVATOR.get_rotor_position()
+        return -self._ELEVATOR.get_position().value
 
 #==================================================================================
 ##   SOURCE:  https://v6.docs.ctr-electronics.com/en/2024/docs/api-reference/api-usage/actuator-limits.html
@@ -117,21 +127,24 @@ class ELEVATOR(Subsystem):
 #        return (forward_limit.value is signals.ForwardLimitValue.CLOSED_TO_GROUND)
 
     def reset_encoder(self) -> None:
-        self.talon.set_position(0)
+        self._ELEVATOR.set_position(0)
 
 
     def periodic(self) -> None:
-        SmartDashboard.putNumber("Elevator_Position", self.talon.get_position().value)
-        SmartDashboard.putBoolean("Elevator_At_Lower_Limit", self.talon)
+        SmartDashboard.putNumber("Elevator_Position", self._ELEVATOR.get_position().value)
+        SmartDashboard.putBoolean("Elevator_At_Lower_Limit", self.ELEVATOR_at_bottom())
     
     # def elevator_position(self, position) -> None:
     #     self._curr_position = position
 
 
     def reset_Elevator(self) -> None:
-        while not self.talon.get_reverse_limit():
-            self.talon.set(0.2)
-        self.talon.set_position(0)
+        if not self.ELEVATOR_at_bottom():
+         self._ELEVATOR.get_position(0.2)
+        else:
+         self.ELEVATOR_at_bottom(0)
+
+
 #==================================================================================
 
 
@@ -175,29 +188,30 @@ class MoveELEVATOR(Command):
     def end(self, interrupted: bool):
         self._ELEVATOR.stop_ELEVATOR_motors()
     #==================================================================================
-    class ElevatorPosition(enumerate):
-        LEVELS = {
-            "A": 50,
-            "B": 100,
-            "X": 150,
-            "Y": 200
-        }
+class ElevatorPosition(enumerate):
+    LEVELS = {
+        "A": 50,
+        "B": 100,
+        "X": 150,
+        "Y": 200
+    }
     #==================================================================================
-    class MoveELEVATORToSetPoint(Command):
-      def __init__(self, sub: ELEVATOR, TargetPosition: float, ):
-        super().__init__()
+class MoveELEVATORToSetPoint(Command):
+    def __init__(self, sub: ELEVATOR, TargetPosition: float, ):
+     super().__init__()
 
-        self._ELEVATOR = sub
-        self._TargetPosition = TargetPosition
-        self._timer = Timer()
-        self._timer.start()
-        self.addRequirements(self._ELEVATOR)     
-        
+     self._ELEVATOR = sub
+     self._TargetPosition = TargetPosition
+     self._timer = Timer()
+     self._timer.start()
+     self.addRequirements(self._ELEVATOR)     
+
     def initialize(self):
         self._timer.restart()
-        self.currentposition = self._ELEVATOR.getPosition()
+        self.currentposition = self._ELEVATOR.get_elevator_count()
 
     def execute(self):
+        self.currentposition = self._ELEVATOR.get_elevator_count()
         if self._TargetPosition > self.currentposition:
             self._ELEVATOR.move_ELEVATOR_up()
         else:
@@ -206,7 +220,9 @@ class MoveELEVATOR(Command):
 
 
     def isFinished(self) -> bool:
-        if abs(self._TargetPosition - self.currentposition)< 5:
+        dif = abs(self._TargetPosition + self.currentposition)
+        # print (dif)
+        if dif < 1:
             return True
 
     def end(self, interrupted: bool):
@@ -223,4 +239,26 @@ class ElevatorController:
     }
 #==================================================================================
 
-   
+class MoveELEVATORToZero(Command):
+    def __init__(self, sub: ELEVATOR):
+        super().__init__()
+
+        self._ELEVATOR = sub
+
+        self.addRequirements(self._ELEVATOR)     
+
+    def initialize(self):
+        self._ELEVATOR.move_ELEVATOR_down_with_speed(0.2)
+
+    def execute(self):
+       SmartDashboard.putNumber("Elevator_Position", self._ELEVATOR.get_elevator_count())
+       pass
+
+
+    def isFinished(self) -> bool:
+        if self._ELEVATOR.ELEVATOR_at_bottom():
+            return True
+
+    def end(self, interrupted: bool):
+        self._ELEVATOR.stop_ELEVATOR_motors()
+        self._ELEVATOR.reset_encoder()

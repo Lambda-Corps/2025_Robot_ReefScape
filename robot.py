@@ -23,7 +23,7 @@ from intake import Intake, SetIntake
 from leds import LEDSubsystem, FlashLEDCommand
 from wrist import WristControl, SetWrist
 ####>>> from vision import VisionSystem
-from elevator import ELEVATOR, MoveELEVATOR, MoveELEVATORToSetPoint
+from elevator import ELEVATOR, MoveELEVATOR, MoveELEVATORToSetPoint, MoveELEVATORToZero
 
 import constants
 from typing import Tuple, List
@@ -135,10 +135,14 @@ class MyRobot(TimedCommandRobot):
         self._partner_controller.leftTrigger().whileTrue(
             MoveELEVATOR(self._ELEVATOR, -0.4).withName("ElevatorDown")
         )
-        self._partner_controller.a().whileTrue(
-             MoveELEVATORToSetPoint(self._ELEVATOR,(self.LEVELS["A"])
+        self._partner_controller.a().onTrue(
+             MoveELEVATORToSetPoint(self._ELEVATOR,-5)
+            # MoveELEVATORToSetPoint(self._ELEVATOR,(self.LEVELS["A"])
              )
-         )
+        self._partner_controller.start().onTrue(
+             MoveELEVATORToZero(self._ELEVATOR)
+             )
+         
        
         wpilib.SmartDashboard.putData("Turn90", TurnToAnglePID(self._drivetrain, 90, 3))
         wpilib.SmartDashboard.putData(
