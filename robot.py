@@ -22,12 +22,14 @@ from drivetrain import DriveTrain,  TurnToAnglePID
 from intake import Intake, SetIntake
 from wrist import WristControl, SetWrist, SetWrist_Manual
 from leds import LEDSubsystem, FlashLEDCommand
-from wrist import WristControl, SetWrist
+from wrist import WristControl, SetWrist, Set_Wrist_Angle
 ####>>> from vision import VisionSystem
 from elevator import ELEVATOR, MoveELEVATOR, MoveELEVATORToSetPoint, MoveELEVATORToZero
 
 import constants
 from typing import Tuple, List
+
+# import wrist
 
 
 class MyRobot(TimedCommandRobot):
@@ -145,7 +147,12 @@ class MyRobot(TimedCommandRobot):
         
         self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
 
-        
+        self._partner_controller.a().onTrue(Set_Wrist_Angle(self._wrist, 10))  # Example target angle
+        self._partner_controller.b().onTrue(Set_Wrist_Angle(self._wrist, 20))  # Example target angle
+        self._partner_controller.x().onTrue(Set_Wrist_Angle(self._wrist, 60))  # Example target angle
+        self._partner_controller.y().onTrue(Set_Wrist_Angle(self._wrist, 120))  # Example target angle
+
+
         wpilib.SmartDashboard.putData("Turn90", TurnToAnglePID(self._drivetrain, 90, 3))
         wpilib.SmartDashboard.putData(
             "Turn-90", TurnToAnglePID(self._drivetrain, -90, 3)
