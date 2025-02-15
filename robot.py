@@ -20,7 +20,7 @@ from pathplannerlib.auto import (
 from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
 from intake import Intake, SetIntake
-from wrist import WristControl, SetWrist
+from wrist import WristControl, SetWrist, SetWrist_Manual
 from leds import LEDSubsystem, FlashLEDCommand
 ####>>> from vision import VisionSystem
 from elevator import ELEVATOR, MoveELEVATOR
@@ -63,7 +63,7 @@ class MyRobot(TimedCommandRobot):
         wpilib.SmartDashboard.putData("Intake", self._intake)
 
         self._wrist: WristControl = WristControl()
-        wpilib.SmartDashboard.putData("Wrist", self._intake)
+        wpilib.SmartDashboard.putData("Wrist", self._wrist)
 
         self._leds: LEDSubsystem = LEDSubsystem()
 
@@ -141,6 +141,10 @@ class MyRobot(TimedCommandRobot):
             MoveELEVATOR(self._ELEVATOR, -0.4).withName("ElevatorDown")
         )
 
+        
+        self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
+
+        
         wpilib.SmartDashboard.putData("Turn90", TurnToAnglePID(self._drivetrain, 90, 3))
         wpilib.SmartDashboard.putData(
             "Turn-90", TurnToAnglePID(self._drivetrain, -90, 3)
@@ -182,7 +186,7 @@ class MyRobot(TimedCommandRobot):
 
 
         #self._wrist.setDefaultCommand(SetWrist(self._wrist, self._partner_controller.getLeftY()))
-        self._wrist.setDefaultCommand(SetWrist(self._wrist, 0))
+        self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, 0))
 
 
     def __configure_autonomous_commands(self) -> None:
