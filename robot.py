@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+#   WHEN YOU GET AN FATAL ERROR RUN: 
+#   py -3 -m robotpy installer niweb disable
+
 import math
 import wpilib
 from wpilib import RobotBase, DriverStation
