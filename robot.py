@@ -20,10 +20,11 @@ from pathplannerlib.auto import (
 from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
 from intake import Intake, SetIntake
+from wrist import WristControl, SetWrist, SetWrist_Manual
 from leds import LEDSubsystem, FlashLEDCommand
 from wrist import WristControl, SetWrist
 ####>>> from vision import VisionSystem
-from elevator import ELEVATOR, MoveELEVATOR, MoveELEVATORToSetPoint
+from elevator import ELEVATOR, MoveELEVATOR, MoveELEVATORToSetPoint, MoveELEVATORToZero
 
 import constants
 from typing import Tuple, List
@@ -63,7 +64,7 @@ class MyRobot(TimedCommandRobot):
         wpilib.SmartDashboard.putData("Intake", self._intake)
 
         self._wrist: WristControl = WristControl()
-        wpilib.SmartDashboard.putData("Wrist", self._intake)
+        wpilib.SmartDashboard.putData("Wrist", self._wrist)
 
         self._leds: LEDSubsystem = LEDSubsystem()
 
@@ -126,8 +127,13 @@ class MyRobot(TimedCommandRobot):
         # )
 
         ######################## Partner controller controls #########################
+          # Right Joystick Wrist Up/Down
+        # self._partner_controller.getLeftY().whileTrue(
+        #     MoveELEVATOR(self._ELEVATOR, 0.4).withName("ElevatorUp")
+        # )
 
-                # Right Trigger Climber Up
+
+                # Right Trigger Climber Upy
         self._partner_controller.rightTrigger().whileTrue(
             MoveELEVATOR(self._ELEVATOR, 0.4).withName("ElevatorUp")
         )
@@ -135,11 +141,11 @@ class MyRobot(TimedCommandRobot):
         self._partner_controller.leftTrigger().whileTrue(
             MoveELEVATOR(self._ELEVATOR, -0.4).withName("ElevatorDown")
         )
-        self._partner_controller.a().whileTrue(
-             MoveELEVATORToSetPoint(self._ELEVATOR,(self.LEVELS["A"])
-             )
-         )
-       
+
+        
+        self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
+
+        
         wpilib.SmartDashboard.putData("Turn90", TurnToAnglePID(self._drivetrain, 90, 3))
         wpilib.SmartDashboard.putData(
             "Turn-90", TurnToAnglePID(self._drivetrain, -90, 3)
@@ -179,8 +185,10 @@ class MyRobot(TimedCommandRobot):
 
         self._intake.setDefaultCommand(SetIntake(self._intake))
 
+
         #self._wrist.setDefaultCommand(SetWrist(self._wrist, self._partner_controller.getLeftY()))
-        self._wrist.setDefaultCommand(SetWrist(self._wrist, 0))
+        self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, 0))
+
 
     def __configure_autonomous_commands(self) -> None:
         # Register the named commands used by the PathPlanner auto builder
