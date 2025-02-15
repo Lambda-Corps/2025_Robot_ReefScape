@@ -133,7 +133,7 @@ class MyRobot(TimedCommandRobot):
         # )
 
 
-                # Right Trigger Climber Up
+                # Right Trigger Climber Upy
         self._partner_controller.rightTrigger().whileTrue(
             MoveELEVATOR(self._ELEVATOR, 0.4).withName("ElevatorUp")
         )
