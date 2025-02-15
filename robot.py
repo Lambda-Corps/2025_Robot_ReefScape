@@ -203,9 +203,9 @@ class MyRobot(TimedCommandRobot):
         # chooser so the drive team can select the starting auto.
         self._auto_chooser: wpilib.SendableChooser = wpilib.SendableChooser()
         self._auto_chooser.setDefaultOption(
-            "Print Auto String",PrintCommand("This is the auto shooter command string")
+            "Best Auto",PathPlannerAuto("Best Auto")
         )
-        self._auto_chooser.addOption("ExampleAuto", PathPlannerAuto("ExampleAuto"))
+        self._auto_chooser.addOption("Best Auto", PathPlannerAuto("Best Auto"))
 
         wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
 
