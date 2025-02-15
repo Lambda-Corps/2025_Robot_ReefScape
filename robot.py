@@ -132,8 +132,8 @@ class MyRobot(TimedCommandRobot):
         #     MoveELEVATOR(self._ELEVATOR, 0.4).withName("ElevatorUp")
         # )
 
-
-                # Right Trigger Climber Upy
+        #=======(elevator)===================================
+                # Right Trigger Climber Up
         self._partner_controller.rightTrigger().whileTrue(
             MoveELEVATOR(self._ELEVATOR, 0.4).withName("ElevatorUp")
         )
@@ -141,8 +141,19 @@ class MyRobot(TimedCommandRobot):
         self._partner_controller.leftTrigger().whileTrue(
             MoveELEVATOR(self._ELEVATOR, -0.4).withName("ElevatorDown")
         )
-
-        
+        self._partner_controller.a().onTrue(
+             MoveELEVATORToSetPoint(self._ELEVATOR,-5)
+        )
+        self._partner_controller.x().onTrue(
+             MoveELEVATORToSetPoint(self._ELEVATOR,-2)
+            # MoveELEVATORToSetPoint(self._ELEVATOR,(self.LEVELS["A"])
+             )
+        self._partner_controller.start().onTrue(
+             MoveELEVATORToZero(self._ELEVATOR)
+             )
+         
+        #=======(Wrist)===================================
+ 
         self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
 
         
