@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+#   WHEN YOU GET AN FATAL ERROR RUN: 
+#   py -3 -m robotpy installer niweb disable
+
 import math
 import wpilib
 from wpilib import RobotBase, DriverStation
@@ -13,26 +17,23 @@ from commands2 import (
 )
 from commands2.button import CommandXboxController, Trigger, JoystickButton
 from wpimath.geometry import Pose2d
-# from pathplannerlib.auto import (
-#     NamedCommands,
-#     PathPlannerAuto,
-#     AutoBuilder,
-#     # ReplanningConfig,
-# )
+from pathplannerlib.auto import (
+    NamedCommands,
+    PathPlannerAuto,
+)
 from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
-####>> from drivetrain import DriveTrain, TeleopDriveWithVision, TurnToAnglePID
-####>> from intake import Intake, IntakeCommand, DefaultIntakeCommand, EjectNote
 from intake import Intake, SetIntake
-####>> from shooter import Shooter, SetShooter, ShooterPosition
-####>> from robot_commands import ShootCommand, StopIndexAndShooter, DoubleShootCommand
+from wrist import WristControl, SetWrist, SetWrist_Manual
 from leds import LEDSubsystem, FlashLEDCommand
-####>>> from climber import Climber, MoveClimber
+from wrist import WristControl, SetWrist, Set_Wrist_Angle
 ####>>> from vision import VisionSystem
-from elevator import ELEVATOR, MoveELEVATOR
+from elevator import ELEVATOR, MoveELEVATOR, MoveELEVATORToSetPoint, MoveELEVATORToZero
 
 import constants
 from typing import Tuple, List
+
+# import wrist
 
 
 class MyRobot(TimedCommandRobot):
@@ -68,13 +69,10 @@ class MyRobot(TimedCommandRobot):
         self._intake: Intake = Intake()
         wpilib.SmartDashboard.putData("Intake", self._intake)
 
-     ####>>    self._shooter: Shooter = Shooter()
-     ####>>    wpilib.SmartDashboard.putData("Shooter", self._shooter)
+        self._wrist: WristControl = WristControl()
+        wpilib.SmartDashboard.putData("Wrist", self._wrist)
 
         self._leds: LEDSubsystem = LEDSubsystem()
-
-        ####>>> self._climber: Climber = Climber()
-        ####>>> wpilib.SmartDashboard.putData("Climber", self._climber)
 
         self._ELEVATOR: ELEVATOR = ELEVATOR()
         wpilib.SmartDashboard.putData("Elevator", self._ELEVATOR)
@@ -86,7 +84,7 @@ class MyRobot(TimedCommandRobot):
 
         self.__configure_button_bindings()
 
-        # self.__configure_autonomous_commands()
+        self.__configure_autonomous_commands()
 
         self.__configure_led_triggers()
 
@@ -135,15 +133,12 @@ class MyRobot(TimedCommandRobot):
         # )
 
         ######################## Partner controller controls #########################
-        ####>> 
-        # self._partner_controller.a().onTrue(ShootCommand(self._intake, self._shooter))
-        # self._partner_controller.x().onTrue(IntakeCommand(self._intake))
-        # self._partner_controller.y().onTrue(
-        #     StopIndexAndShooter(self._shooter, self._intake)
+          # Right Joystick Wrist Up/Down
+        # self._partner_controller.getLeftY().whileTrue(
+        #     MoveELEVATOR(self._ELEVATOR, 0.4).withName("ElevatorUp")
         # )
-        # # Eject Note
-        # self._partner_controller.b().whileTrue(EjectNote(self._intake))
 
+        #=======(elevator)===================================
                 # Right Trigger Climber Up
         self._partner_controller.rightTrigger().whileTrue(
             MoveELEVATOR(self._ELEVATOR, 0.4).withName("ElevatorUp")
@@ -152,35 +147,26 @@ class MyRobot(TimedCommandRobot):
         self._partner_controller.leftTrigger().whileTrue(
             MoveELEVATOR(self._ELEVATOR, -0.4).withName("ElevatorDown")
         )
+        self._partner_controller.a().onTrue(
+             MoveELEVATORToSetPoint(self._ELEVATOR,-5)
+        )
+        self._partner_controller.x().onTrue(
+             MoveELEVATORToSetPoint(self._ELEVATOR,-2)
+            # MoveELEVATORToSetPoint(self._ELEVATOR,(self.LEVELS["A"])
+             )
+        self._partner_controller.start().onTrue(
+             MoveELEVATORToZero(self._ELEVATOR)
+             )
+         
+        #=======(Wrist)===================================
+ 
+        self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
 
-        # Right Trigger Climber Up
-        ####>>> self._partner_controller.rightTrigger().whileTrue(
-        #     MoveClimber(self._climber, 0.4).withName("ClimberUp")
-        # )
-        # # Left Trigger Climber Down
-        # self._partner_controller.leftTrigger().whileTrue(
-        #     MoveClimber(self._climber, -0.4).withName("ClimberDown")
-        # )
-        # # Climber up for 10 seconds
-        # self._partner_controller.rightBumper().onTrue(
-        #     MoveClimber(self._climber, 1, 25).withName("ClimberUp25")
-        # )
-        # # Climber down for 10 seconds
-        # self._partner_controller.leftBumper().onTrue(
-        #     MoveClimber(self._climber, -1, 25).withName("ClimberDown25")
-        # )
+        self._partner_controller.a().onTrue(Set_Wrist_Angle(self._wrist, 10))  # Example target angle
+        self._partner_controller.b().onTrue(Set_Wrist_Angle(self._wrist, 20))  # Example target angle
+        self._partner_controller.x().onTrue(Set_Wrist_Angle(self._wrist, 60))  # Example target angle
+        self._partner_controller.y().onTrue(Set_Wrist_Angle(self._wrist, 120))  # Example target angle
 
-        # POV for shooting positions
-
-        ####>>     self._partner_controller.povLeft().onTrue(
-        #     SetShooter(self._shooter, ShooterPosition.SUBWOOFER_2)
-        # )
-        # self._partner_controller.povDown().onTrue(
-        #     SetShooter(self._shooter, ShooterPosition.MIN)
-        # )
-        # self._partner_controller.povRight().onTrue(
-        #     SetShooter(self._shooter, ShooterPosition.AMP)
-        # )
 
         wpilib.SmartDashboard.putData("Turn90", TurnToAnglePID(self._drivetrain, 90, 3))
         wpilib.SmartDashboard.putData(
@@ -219,147 +205,33 @@ class MyRobot(TimedCommandRobot):
                 ).withName("DefaultDrive")
             )
 
-        ####>> self._shooter.setDefaultCommand(
-        #     RunCommand(
-        #         lambda: self._shooter.drive_shooter_ramp(
-        #             -self._partner_controller.getLeftY()
-        #         ),
-        #         self._shooter,
-        #     ).withName("ShooterDefault")
-        # )
-
         self._intake.setDefaultCommand(SetIntake(self._intake))
 
-    # def __configure_autonomous_commands(self) -> None:
-    #     # Register the named commands used by the PathPlanner auto builder
-    #     # These commands have to match exactly in the PathPlanner application
-    #     # as we name them here in the registration
-    #     NamedCommands.registerCommand(
-    #         "AutoShoot", ShootCommand(self._intake, self._shooter)
-    #     )
-    #     NamedCommands.registerCommand(
-    #         "DoubleAutoShoot", DoubleShootCommand(self._intake, self._shooter)
-    #     )
-    #     NamedCommands.registerCommand(
-    #         "AutoIntake_tm2",
-    #         IntakeCommand(self._intake).withTimeout(2).withName("AutoIntake 2"),
-    #     )
 
-    #     NamedCommands.registerCommand(
-    #         "AutoIntake_tm3",
-    #         IntakeCommand(self._intake).withTimeout(3).withName("AutoIntake 3"),
-    #     )
-    #     NamedCommands.registerCommand(
-    #         "AutoIntake_tm5",
-    #         IntakeCommand(self._intake).withTimeout(5).withName("AutoIntake 5"),
-    #     )
-    #     NamedCommands.registerCommand(
-    #         "SetShooterRampToSpeaker",
-    #         SetShooter(self._shooter, ShooterPosition.SUBWOOFER_2).withTimeout(5),
-    #     )
-    #     NamedCommands.registerCommand(
-    #         "SetShooterRampToMin",
-    #         SetShooter(self._shooter, ShooterPosition.MIN).withTimeout(8),
-    #     )
-    #     NamedCommands.registerCommand(
-    #         "SetShooterRampToPoint",
-    #         SetShooter(self._shooter, ShooterPosition.RING3AUTO).withTimeout(8),
-    #     )
+        #self._wrist.setDefaultCommand(SetWrist(self._wrist, self._partner_controller.getLeftY()))
+        self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, 0))
 
-    #     NamedCommands.registerCommand(
-    #         "TurnToSourceSide", TurnToAnglePID(self._drivetrain, -90, 2)
-    #     )
 
-    #     # increasing Qelems numbers, tries to drive more conservatively as the effect
-    #     # In the math, what we're doing is weighting the error less heavily, meaning,
-    #     # as the error gets larger don't react as much.  This makes the robot drive
-    #     # conservatively along the path.
-    #     # Decreasing Relems should make the motors drive less aggressively (fewer volts)
-    #     # In the math, this is the same as increasing Q values.  Basically, think of it
-    #     # like a car, if you limit how far you can press the gas pedal, a driver
-    #     # has a better chance of keeping the car under control
-    #     # Down below, in comments, there are a few candidate values that have been used
-    #     # under testing.  Tweak, and test, to find the right ones.
-    #     # [0.0625, 0.125, 2.5],  # <-- Q Elements
-    #     # [0.075, 0.15, 3.1],
-    #     # [0.09, 0.19, 3.7],
-    #     # [0.125, 2.5, 5.0],
-    #     # [0.19, 3.75, 7.5],
-    #     # [2.5, 5.0, 10.0],
-    #     # current [-5, 5],  # <-- R elements
-    #     # [-8, 8],
-    #     # [-10, 10],
-    #     # [-11, 11],
-    #     # [-12, 12],
-    #     q_elems = [0.09, 0.19, 3.7]
-    #     r_elems = [-9, 9]
-    #     if RobotBase.isSimulation():
-    #         q_elems = [0.09, 0.19, 3.7]
-    #         r_elems = [-10, 10]
+    def __configure_autonomous_commands(self) -> None:
+        # Register the named commands used by the PathPlanner auto builder
+        # These commands have to match exactly in the PathPlanner application
+        # as we name them here in the registration
+        NamedCommands.registerCommand(
+            "RunIntake", PrintCommand("This is placeholder for a command that runs the intake")
+        )
 
-    #     # AutoBuilder.configureLTV(
-    #     #     self._drivetrain.get_robot_pose,
-    #     #     self._drivetrain.reset_odometry,
-    #     #     self._drivetrain.get_wheel_speeds,  # Current ChassisSpeeds supplier
-    #     #     self._drivetrain.driveSpeeds,  # Method that will drive the robot given ChassisSpeeds
-    #     #     q_elems,
-    #     #     r_elems,
-    #     #     0.02,
-    #     #     ReplanningConfig(),  # Default path replanning config. See the API for the options here
-    #     #     self._drivetrain.should_flip_path,  # Flip if we're on the red side
-    #     #     self._drivetrain,  # Reference to this subsystem to set requirements
-    #     # )
+        # To configure the Autonomous routines use PathPlanner to define the auto routines
+        # Then, take all of the path planner created routines and add them to the auto
+        # chooser so the drive team can select the starting auto.
+        self._auto_chooser: wpilib.SendableChooser = wpilib.SendableChooser()
+        self._auto_chooser.setDefaultOption(
+            "Print Auto String",PrintCommand("This is the auto shooter command string")
+        )
+        self._auto_chooser.addOption("ExampleAuto", PathPlannerAuto("ExampleAuto"))
 
-    #     # To configure the Autonomous routines use PathPlanner to define the auto routines
-    #     # Then, take all of the path planner created routines and add them to the auto
-    #     # chooser so the drive team can select the starting auto.
-    #     self._auto_chooser: wpilib.SendableChooser = wpilib.SendableChooser()
-    #     self._auto_chooser.setDefaultOption(
-    #         "Sub 2 - Two Ring", PathPlannerAuto("OneRingSub2")
-    #     )
-    #     self._auto_chooser.addOption(
-    #         "Sub 2 - Three Ring", PathPlannerAuto("TwoRingSub2")
-    #     )
-    #     self._auto_chooser.addOption(
-    #         "Sub 2 - Four Ring", PathPlannerAuto("FourRingSub2")
-    #     )
-    #     self._auto_chooser.addOption(
-    #         "Sub 3 - Ring 7", PathPlannerAuto("Sub3ThreeRing7")
-    #     )
-    #     self._auto_chooser.addOption(
-    #         "Sub 2 - ThreeLong", PathPlannerAuto("Sub2ThreeRingLong")
-    #     )
-    #     self._auto_chooser.addOption(
-    #         "Sub 2 - Three Stage", PathPlannerAuto("ThreeRingSub2Stage")
-    #     )
-    #     self._auto_chooser.addOption(
-    #         "Sub 1 - ThreeLong", PathPlannerAuto("Sub1ThreeRingLong")
-    #     )
-    #     self._auto_chooser.addOption(
-    #         "Sub 1 - Wait10Drive", PathPlannerAuto("Sub1ShootWait10Drive")
-    #     )
-    #     self._auto_chooser.addOption(
-    #         "Sub 1 - Wait10 FAST", PathPlannerAuto("Sub1ShootWait10DriveFAST")
-    #     )
-    #     self._auto_chooser.addOption("Sub3Disruptor", PathPlannerAuto("Sub3Disruptor"))
-    #     self._auto_chooser.addOption(
-    #         "ShootOnly", ShootCommand(self._intake, self._shooter)
-    #     )
-
-    #     self._auto_chooser.addOption(
-    #         "Sub 2 - Four FAST", PathPlannerAuto("FourRingSub2Fast")
-    #     )
-
-    #     wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
+        wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
 
     def __configure_led_triggers(self) -> None:
-        # note_trigger: Trigger = Trigger(self._intake.has_note).onTrue(
-        #     FlashLEDCommand(self._leds, 1.5)
-        # )
-
-        # tag_trigger: Trigger = Trigger(self._vision.has_desired_tag_in_sight).onTrue(
-        #     FlashLEDCommand(self._leds, 1.5)
-        # )
         pass
 
     def getAutonomousCommand(self) -> Command:
