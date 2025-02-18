@@ -228,6 +228,7 @@ class MyRobot(TimedCommandRobot):
             "Print Auto String",PrintCommand("This is the auto shooter command string")
         )
         self._auto_chooser.addOption("ExampleAuto", PathPlannerAuto("ExampleAuto"))
+        self._auto_chooser.addOption("Best Auto", PathPlannerAuto("Best Auto"))
 
         wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
 

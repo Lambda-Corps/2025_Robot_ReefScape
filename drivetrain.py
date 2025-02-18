@@ -11,17 +11,12 @@ from wpimath.kinematics import (
     ChassisSpeeds,
     DifferentialDriveWheelSpeeds,
 )
-from wpimath.system.plant import DCMotor, LinearSystemId
-from wpimath.trajectory.constraint import DifferentialDriveVoltageConstraint
-from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator, Trajectory
 from wpimath.filter import SlewRateLimiter
 from wpilib import SmartDashboard, Field2d
-from commands2 import Subsystem, Command, cmd, InstantCommand, PIDCommand
+from commands2 import Subsystem, Command, cmd, PIDCommand
 from phoenix6 import StatusCode
 from phoenix6.configs import (
     TalonFXConfiguration,
-    TalonFXConfigurator,
-    MotionMagicConfigs,
     Slot0Configs,
 )
 from phoenix6.hardware.talon_fx import TalonFX
@@ -30,16 +25,12 @@ from phoenix6.signals.spn_enums import (
     InvertedValue,
     NeutralModeValue,
     FeedbackSensorSourceValue,
-    MotionMagicIsRunningValue,
-    ControlModeValue,
 )
-from phoenix6.sim import ChassisReference
 from phoenix6.controls import (
     DutyCycleOut,
     VoltageOut,
     MotionMagicVoltage,
 )
-from phoenix6.unmanaged import feed_enable
 import navx
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.controller import PPLTVController
@@ -133,6 +124,9 @@ class DriveTrain(Subsystem):
             self.should_flip_path,  # Flip if we're on the red side
             self,  # Reference to this subsystem to set requirements
         )
+
+        self._field = Field2d()
+        SmartDashboard.putData("MyField", self._field)
 
 
     def __configure_motion_magic(self, config: TalonFXConfiguration) -> None:
@@ -567,10 +561,11 @@ class DriveTrain(Subsystem):
             ),
         )
 
+        self._field.setRobotPose(pose)
+
         SmartDashboard.putNumber("CCW Angle", self.__get_gyro_heading())
         SmartDashboard.putNumber("LeftVelOut", self._left_volts_out.output)
         SmartDashboard.putNumber("rightVelOut", self._right_volts_out.output)
-
 
     ############# Drivetrain Odometry methods ###################
 
