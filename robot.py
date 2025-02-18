@@ -24,7 +24,7 @@ from wrist import WristControl, SetWrist, SetWrist_Manual
 from leds import LEDSubsystem, FlashLEDCommand
 from wrist import WristControl, SetWrist
 ####>>> from vision import VisionSystem
-from elevator import ELEVATOR, MoveELEVATOR, MoveELEVATORToSetPoint, MoveELEVATORToZero
+from elevator import ELEVATOR, MoveELEVATOR, MoveELEVATORToSetPoint, MoveELEVATORToZero, Move_Elevator_L3
 
 import constants
 from typing import Tuple, List
@@ -195,8 +195,18 @@ class MyRobot(TimedCommandRobot):
         # These commands have to match exactly in the PathPlanner application
         # as we name them here in the registration
         NamedCommands.registerCommand(
-            "RunIntake", PrintCommand("This is placeholder for a command that runs the intake")
-        )
+            "RunIntake", PrintCommand("RunIntake")
+     )
+        NamedCommands.registerCommand(
+            "RaiseElevator", PrintCommand("RaiseElevator")
+     )
+        NamedCommands.registerCommand(
+            "RunWrist",PrintCommand("RunWrist")
+     )    
+        NamedCommands.registerCommand(
+            "Move_Elevator_L3",PrintCommand("Move_Elevator_L3")
+     )
+        
 
         # To configure the Autonomous routines use PathPlanner to define the auto routines
         # Then, take all of the path planner created routines and add them to the auto
@@ -205,7 +215,11 @@ class MyRobot(TimedCommandRobot):
         self._auto_chooser.setDefaultOption(
             "Best Auto",PathPlannerAuto("Best Auto")
         )
-        self._auto_chooser.addOption("Best Auto", PathPlannerAuto("Best Auto"))
+        # self._auto_chooser.addOption("Best Auto", PathPlannerAuto("Best Auto"))
+        self._auto_chooser.addOption("W1 Auto",PathPlannerAuto("W1 Auto"))
+        self._auto_chooser.addOption("W2 Auto",PathPlannerAuto("W2 Auto"))
+        self._auto_chooser.addOption("Mid Auto",PathPlannerAuto("Mid Auto"))
+        self._auto_chooser.addOption("StraightPath",PathPlannerAuto("StraightPath"))
 
         wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
 

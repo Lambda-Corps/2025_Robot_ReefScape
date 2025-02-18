@@ -262,3 +262,9 @@ class MoveELEVATORToZero(Command):
     def end(self, interrupted: bool):
         self._ELEVATOR.stop_ELEVATOR_motors()
         self._ELEVATOR.reset_encoder()
+# ======================================================================================================
+class Move_Elevator_L3(Command):
+    def __init__(self, Elevator: ELEVATOR ):
+        self.elevator = Elevator
+        self.target_position = constants.L3
+        self.addRequirements(self.elevator)
