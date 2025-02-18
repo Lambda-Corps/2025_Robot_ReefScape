@@ -141,7 +141,21 @@ class MyRobot(TimedCommandRobot):
         self._partner_controller.leftTrigger().whileTrue(
             MoveELEVATOR(self._ELEVATOR, -0.4).withName("ElevatorDown")
         )
-
+        self._partner_controller.a().onTrue(
+             MoveELEVATORToSetPoint(self._ELEVATOR,-5)
+        )
+        self._partner_controller.b().onTrue(
+             MoveELEVATORToSetPoint(self._ELEVATOR,-4)
+        )
+        self._partner_controller.x().onTrue(
+             MoveELEVATORToSetPoint(self._ELEVATOR,-3)
+        )
+        self._partner_controller.b().onTrue(
+             MoveELEVATORToSetPoint(self._ELEVATOR,-2)
+        )
+        self._partner_controller.start().onTrue(
+             MoveELEVATORToZero(self._ELEVATOR)
+             )
         
         self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
 
