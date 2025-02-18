@@ -20,8 +20,7 @@ from phoenix6.configs import (
 from phoenix6 import hardware, controls, signals
 from phoenix6.hardware.talon_fx import TalonFX
 from phoenix6.controls.follower import Follower
-from phoenix6.signals.spn_enums import InvertedValue, NeutralModeValue
-from phoenix6.controls import DutyCycleOut, VelocityVoltage
+from phoenix6.signals.spn_enums import InvertedValue, NeutralModeValue, ForwardLimitValue, ReverseLimitValue
 from phoenix6.unmanaged import feed_enable
 from phoenix6.configs import TalonFXConfiguration
 from phoenix6.signals.spn_enums import (InvertedValue, NeutralModeValue, FeedbackSensorSourceValue)
@@ -152,7 +151,6 @@ class ELEVATOR(Subsystem):
     #     SmartDashboard.putBoolean("Elev Forward Limit", self._ELEVATOR.get_forward_limit()==1)                                 
     #     SmartDashboard.putBoolean("Elev Reverse Limit", self._ELEVATOR.get_reverse_limit()==1) 
     #     # This code does not work.        
-
 
 class MoveELEVATOR(Command):
     def __init__(self, sub: ELEVATOR, speed: float, timeout = 0):
