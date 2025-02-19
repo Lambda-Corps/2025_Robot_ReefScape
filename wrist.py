@@ -18,13 +18,16 @@ class WristControl(Subsystem):
         # Initialize the absolute encoder
         self._wrist_angle = self.__configure_wrist_encoder()
 
+        # self.controller = CommandXboxController(constants.CONTROLLER_PORT)
+        # self.configureButtonBindings()
+
     def __configure_wrist_encoder(self) -> DutyCycleEncoder:
         wrist_encoder = DutyCycleEncoder(constants.WRIST_ANGLE_ENCODER)  # DIO port
         return wrist_encoder
 
     def move_wrist(self, speed: float):
         # Use the joystick input to control the motor speed.
-        # Adjust the speed values as needed for your specific setup.
+        # Adjust the speed values as needed
         self.wrist_motor.set(ControlMode.PercentOutput, speed)
         SmartDashboard.putNumber("Wrist_speed", speed)
 
@@ -60,6 +63,7 @@ class WristControl(Subsystem):
         else:
             self.move_wrist(0)
 
+   
     
 
 #================================================================================================
@@ -112,6 +116,36 @@ class SetWrist_Manual(Command):
 
 
 #================================================================================================
+
+
+class Set_Wrist_Angle(Command):
+    def __init__(self, Wrist: WristControl, target_angle: float):
+        super().__init__()
+        self._Wrist = Wrist
+        self.target_angle = target_angle
+        self.addRequirements(self._Wrist)
+
+    def initialize(self):
+        pass
+
+    def execute(self):
+        current_angle = self._Wrist.getAbsolutePosition()
+        if current_angle > self.target_angle:
+            self._Wrist.move_wrist_down(0.2)
+        else:
+            self._Wrist.move_wrist_up(0.2) 
+        
+    def isFinished(self) -> bool:
+        current_angle = self._Wrist.getAbsolutePosition()
+        #abs(current_angle - self.target_angle) < 20
+        print ((current_angle - self.target_angle))
+        return abs(current_angle - self.target_angle) < 5
+
+
+
+    def end(self, interrupted: bool):
+        self._Wrist.move_wrist(0)
+        pass
 
 
 

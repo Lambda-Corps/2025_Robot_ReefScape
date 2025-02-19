@@ -19,7 +19,7 @@ robotpy_extras = [
    "commands2",
    # "cscore"
    "navx",
-   # "pathplannerlib"
+   "pathplannerlib"
    "phoenix5",
    "phoenix6",
    # "playingwithfusion"
@@ -34,7 +34,6 @@ robotpy_extras = [
 requires = [
    #"robotpy-ctre==2024.1.3",
    #"photonlibpy>=2024.2.10",
-   "robotpy-pathplannerlib>=2025.2.1",
    "numpy"
 ]
 
