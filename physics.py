@@ -1,9 +1,10 @@
 import wpilib.simulation as sim
-from wpilib import RobotController, Mechanism2d, SmartDashboard
+from wpilib import RobotController, Mechanism2d, SmartDashboard, DriverStation
 
-from wpilib.simulation import DifferentialDrivetrainSim, SimDeviceSim, ElevatorSim
+from wpilib.simulation import DifferentialDrivetrainSim, SimDeviceSim, ElevatorSim, DCMotorSim
 from wpimath.kinematics import DifferentialDriveKinematics, DifferentialDriveWheelSpeeds
-from wpimath.system.plant import DCMotor
+from wpimath.system.plant import DCMotor, LinearSystemId
+from wpimath.units import radiansToRotations
 
 from pyfrc.physics.core import PhysicsInterface
 
@@ -57,25 +58,26 @@ class PhysicsEngine:
         # Add in the elevator Talon for physics simulation
         self.elevator_sim = robot._ELEVATOR._ELEVATOR.sim_state
         self.elevator_sim.orientation = sim.ChassisReference.CounterClockwise_Positive
-        self.elevator_gearbox = DCMotor.falcon500(1)
-        self.elevator: ElevatorSim = ElevatorSim(
-            self.elevator_gearbox,
-            constants.ELEVATOR_GEAR_RATIO,
-            constants.ELEVATOR_CARRIAGE_MASS,
-            constants.ELEVATOR_DRUM_RADIUS_M,
-            constants.ELEVATOR_MIN_HEIGHT_M,
-            constants.ELEVATOR_MAX_HEIGHT_M,
-            True,
-            0,
-            [0.01, 0.0]
-        )
+        self.elevator_gearbox: DCMotor = DCMotor.falcon500(1)
+        self.elevator: DCMotorSim = DCMotorSim(LinearSystemId.DCMotorSystem(self.elevator_gearbox, 0.02, constants.ELEVATOR_GEAR_RATIO ), self.elevator_gearbox)
+        # self.elevator: ElevatorSim = ElevatorSim(
+        #     self.elevator_gearbox,
+        #     constants.ELEVATOR_GEAR_RATIO,
+        #     constants.ELEVATOR_CARRIAGE_MASS,
+        #     constants.ELEVATOR_DRUM_RADIUS_M,
+        #     constants.ELEVATOR_MIN_HEIGHT_M,
+        #     constants.ELEVATOR_MAX_HEIGHT_M,
+        #     True,
+        #     0,
+        #     [0.01, 0.0]
+        # )
 
-        # Create the mechanism visualization
-        self.elev_mech_2d = Mechanism2d(18, 55)
-        self.elev_root = self.elev_mech_2d.getRoot("Elevator Root", 10, 0)
-        self.elev_mech_upper_2d = self.elev_root.appendLigament("Elevator", self.elevator.getPositionInches(), 90)
+        # # Create the mechanism visualization
+        # self.elev_mech_2d = Mechanism2d(18, 55)
+        # self.elev_root = self.elev_mech_2d.getRoot("Elevator Root", 10, 0)
+        # self.elev_mech_upper_2d = self.elev_root.appendLigament("Elevator", self.elevator.getPositionInches(), 90)
 
-        SmartDashboard.putData("Elevator Sim", self.elev_mech_2d)
+        # SmartDashboard.putData("Elevator Sim", self.elev_mech_2d)
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         """
@@ -86,6 +88,9 @@ class PhysicsEngine:
         :param tm_diff: The amount of time that has passed since the last
                         time that this function was called
         """
+        if DriverStation.isEnabled():
+            unmanaged.feed_enable(100)
+
         #-------------- Give Simulation objects voltage -----------------#
         battery_v = RobotController.getBatteryVoltage()
         self.left_talon_sim.set_supply_voltage(battery_v)
@@ -130,11 +135,14 @@ class PhysicsEngine:
 
         # ------------------------------- Elevator Simulation -------------------------------------#
         # Update the simulator calculation
-        self.elevator.setInput(0, self.elevator_sim.motor_voltage)
+        #self.elevator.setInput(0, self.elevator_sim.supply_current)
+        self.elevator.setInputVoltage(self.elevator_sim.motor_voltage)
         self.elevator.update(tm_diff)
         # self.elevator_sim.set_raw_rotor_position(self.meters_to_rotations(self.elevator.getPosition()))
         # self.elevator_sim.set_rotor_velocity(self.meters_to_rotations(self.elevator.getVelocity()))
-        self.elev_mech_upper_2d.setLength(self.elevator.getPositionInches())
+        self.elevator_sim.set_raw_rotor_position(radiansToRotations(self.elevator.getAngularPosition()))
+        self.elevator_sim.set_rotor_velocity(self.meters_to_rotations(self.elevator.getAngularVelocity()))
+        # self.elev_mech_upper_2d.setLength(self.elevator.getPositionInches())
 
     def meters_to_rotations(self, dist: float) -> float:
         circumference = self.wheel_radius * 2.0 * math.pi
