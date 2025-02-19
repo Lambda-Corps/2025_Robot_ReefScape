@@ -1,11 +1,11 @@
 import math
+from enum import Enum
 
 METERS_PER_INCH = 0.0254
 INCHES_PER_METER = 39.37
-ROBOT_MASS = 80
 
 # Robot Physical Characteristics with dimensional units
-ROBOT_MASS = 70
+ROBOT_MASS = 80
 DT_GEAR_RATIO = (60 / 13) * (34 / 18)
 DT_MOTORS_PER_SIDE = 2
 DT_WHEEL_DIAMETER = 4
@@ -84,9 +84,48 @@ CONTROLLER_TURN_REAL = 4
 CONTROLLER_TURN_SIM = 0
 
 # Elevator stopping positions
-L0 = 0
-L1 = 50
-L2 = 100
-L3 = 150
-L4 = 200
+class ElevatorPosition(Enum):
+    LEVEL_BOTTOM = 0
+    LEVEL_ONE = 50
+    LEVEL_TWO = 100
+    LEVEL_THREE = 150
+    LEVEL_FOUR = 200
+    LEVEL_UKNOWN = 999999
+
+def get_closest_elevator_position(value: int) -> ElevatorPosition:
+    '''
+    This function calculates the distance between two points and returns 
+    which of the ElevatorPositions is the closest to the input number.
+    
+    The first step is to take the ElevatorPosition enumeration, and make
+    a list representing the values.  For example, below the variable named
+    enum_values is actually a python list that looks like:
+          [0, 50, 100, 150, 200, 999999]
+    Then for each of the values in that list (x) perform the calculation:
+        abs_value( x - input_number )
+    Find the lowest number (min) of all those calculations and return the
+    corresponding Enum value.  
+    '''
+    # Convert the enum values to a list of tuples (value, enum member)
+    # This pairs the data with the encoder number being the first member
+    # which is accessed by array notation [0] (first member of the array)
+    # and the Enum item being the second member which is accessed by the
+    # array notation [1]
+    enum_values = [(item.value, item) for item in ElevatorPosition]
+
+    # Find the closest value. Closes value will be a Tuple, or grouping,
+    # taking the form of (encoder int, ElevatorPosition object)
+    closest_value = min(enum_values, key=lambda x: abs(x[0] - value))
+
+    # Return only the ElevatorPosition object to the caller
+    return closest_value[1]
+
+# TODO -- This needs to be fixed for simulation accuracy
+ELEVATOR_GEAR_RATIO = 10.0
+ELEVATOR_CARRIAGE_MASS = 5 # in Kilograms
+ELEVATOR_DRUM_RADIUS_M = 2 * INCHES_PER_METER # in meters
+ELEVATOR_MIN_HEIGHT_M = 6 * INCHES_PER_METER # base elevator 6 inches off the ground
+ELEVATOR_MAX_HEIGHT_M = 93 * INCHES_PER_METER # Top of the elevator stack
+
+
 CS = 175

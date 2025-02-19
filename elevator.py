@@ -1,4 +1,5 @@
 from typing import Self
+from enum import Enum
 from phoenix6 import controls
 from commands2 import Subsystem, Command, cmd
 # from phoenix5 import (
@@ -69,7 +70,7 @@ class ELEVATOR(Subsystem):
         # This configuration item supports counting wheel rotations
         # This item sets the gear ratio between motor turns and wheel turns
         config.feedback.feedback_sensor_source = FeedbackSensorSourceValue.ROTOR_SENSOR
-        config.feedback.sensor_to_mechanism_ratio = 10
+        config.feedback.sensor_to_mechanism_ratio = constants.ELEVATOR_GEAR_RATIO
 
         # Apply the configuration to the motors
         for i in range(6):  # Try 5 times with results returned into "ret"
@@ -130,7 +131,8 @@ class ELEVATOR(Subsystem):
 
 
     def periodic(self) -> None:
-        SmartDashboard.putNumber("Elevator_Position", self._ELEVATOR.get_position().value)
+        position: constants.ElevatorPosition = constants.get_closest_elevator_position(self._ELEVATOR.get_position().value)
+        SmartDashboard.putNumber("Elevator_Position", position.value)
         SmartDashboard.putBoolean("Elevator_At_Lower_Limit", self.ELEVATOR_at_bottom())
     
     # def elevator_position(self, position) -> None:
@@ -186,13 +188,7 @@ class MoveELEVATOR(Command):
     def end(self, interrupted: bool):
         self._ELEVATOR.stop_ELEVATOR_motors()
     #==================================================================================
-class ElevatorPosition(enumerate):
-    LEVELS = {
-        "A": 50,
-        "B": 100,
-        "X": 150,
-        "Y": 200
-    }
+
     #==================================================================================
 class MoveELEVATORToSetPoint(Command):
     def __init__(self, sub: ELEVATOR, TargetPosition: float, ):

@@ -148,7 +148,7 @@ class MyRobot(TimedCommandRobot):
             MoveELEVATOR(self._ELEVATOR, -0.4).withName("ElevatorDown")
         )
         self._partner_controller.a().onTrue(
-             MoveELEVATORToSetPoint(self._ELEVATOR,-5)
+             MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_TWO.value)
         )
         self._partner_controller.b().onTrue(
              MoveELEVATORToSetPoint(self._ELEVATOR,-4)
@@ -165,10 +165,10 @@ class MyRobot(TimedCommandRobot):
         
         self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
 
-        self._partner_controller.a().onTrue(Set_Wrist_Angle(self._wrist, 10))  # Example target angle
-        self._partner_controller.b().onTrue(Set_Wrist_Angle(self._wrist, 20))  # Example target angle
-        self._partner_controller.x().onTrue(Set_Wrist_Angle(self._wrist, 60))  # Example target angle
-        self._partner_controller.y().onTrue(Set_Wrist_Angle(self._wrist, 120))  # Example target angle
+        # self._partner_controller.a().onTrue(Set_Wrist_Angle(self._wrist, 10))  # Example target angle
+        # self._partner_controller.b().onTrue(Set_Wrist_Angle(self._wrist, 20))  # Example target angle
+        # self._partner_controller.x().onTrue(Set_Wrist_Angle(self._wrist, 60))  # Example target angle
+        # self._partner_controller.y().onTrue(Set_Wrist_Angle(self._wrist, 120))  # Example target angle
 
 
         wpilib.SmartDashboard.putData("Turn90", TurnToAnglePID(self._drivetrain, 90, 3))

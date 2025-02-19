@@ -45,7 +45,11 @@ FOLLOWER_MOTORS_PRESENT = False
 
 class DriveTrain(Subsystem):
     __DRIVER_DEADBAND = 0.1
-    __FORWARD_SLEW = 3  # 1/3 of a second to full speed
+    __LEVEL0_SLEW = 3  # .33 seconds to full speed
+    __LEVEL1_SLEW = 2.6 # .38 seconds to full speed
+    __LEVEL2_SLEW = 2.2 # .45 seconds to full speed
+    __LEVEL3_SLEW = 1.8 # .55 seconds to full speed
+    __LEVEL4_SLEW = 1.4 # .70 seconds to full speed
     __CLAMP_SPEED = 1.0
     __TURN_PID_SPEED = 0.3
 
@@ -78,7 +82,11 @@ class DriveTrain(Subsystem):
 
         SmartDashboard.putData("Navx", self._gyro)
 
-        self._forward_limiter: SlewRateLimiter = SlewRateLimiter(self.__FORWARD_SLEW)
+        self._base_fwd_limiter:   SlewRateLimiter = SlewRateLimiter(self.__LEVEL0_SLEW)
+        self._level1_fwd_limiter: SlewRateLimiter = SlewRateLimiter(self.__LEVEL1_SLEW)
+        self._level2_fwd_limiter: SlewRateLimiter = SlewRateLimiter(self.__LEVEL2_SLEW)
+        self._level3_fwd_limiter: SlewRateLimiter = SlewRateLimiter(self.__LEVEL3_SLEW)
+        self._level4_fwd_limiter: SlewRateLimiter = SlewRateLimiter(self.__LEVEL4_SLEW)
 
         self._test_mode = test_mode
         if self._test_mode:
@@ -127,6 +135,10 @@ class DriveTrain(Subsystem):
 
         self._field = Field2d()
         SmartDashboard.putData("MyField", self._field)
+
+        # Maintain knowledge of where the elevator position is, so we can adjust the 
+        # acceleration constraints accordingly
+        self._elevator_pos: constants.ElevatorPosition = constants.ElevatorPosition.LEVEL_UKNOWN
 
 
     def __configure_motion_magic(self, config: TalonFXConfiguration) -> None:
@@ -323,7 +335,26 @@ class DriveTrain(Subsystem):
         self._mm_out.with_position(curr_right + distance_in_rotations).with_slot(0)
 
     ########################### Drivetrain Drive methods #######################
+    def __get_slewrate_limited_fwd_speed(self, forward: float) -> float:
+        match self._elevator_pos:
+            case constants.ElevatorPosition.LEVEL_BOTTOM:
+                forward = self._base_fwd_limiter.calculate(forward)
+            case constants.ElevatorPosition.LEVEL_ONE:
+                forward = self._level1_fwd_limiter.calculate(forward)
+            case constants.ElevatorPosition.LEVEL_TWO:
+                forward = self._level2_fwd_limiter.calculate(forward)
+            case constants.ElevatorPosition.LEVEL_THREE:
+                forward = self._level3_fwd_limiter.calculate(forward)
+            case constants.ElevatorPosition.LEVEL_FOUR:
+                forward = self._level4_fwd_limiter.calculate(forward)
+            case constants.ElevatorPosition.LEVEL_UKNOWN:
+                forward = self._base_fwd_limiter.calculate(forward)
+            case _: 
+                # This is the default case in the event nothing matches
+                forward = self._base_fwd_limiter.calculate(forward)
 
+        return forward
+            
     def drive_teleop(self, forward: float, turn: float, percent_out=False):
         if self._test_mode:
             self.__CLAMP_SPEED = SmartDashboard.getNumber("ClampSpeed", 0.3)
@@ -332,6 +363,9 @@ class DriveTrain(Subsystem):
 
         turn = self.__clamp(turn, self.__CLAMP_SPEED)
         forward = self.__clamp(forward, self.__CLAMP_SPEED)
+
+        # Limit the acceleration based on the elevator position
+        forward = self.__get_slewrate_limited_fwd_speed(forward)
 
         if percent_out:
             self.__drive_teleop_percent(forward, turn)
