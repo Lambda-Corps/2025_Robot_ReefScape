@@ -31,7 +31,7 @@ from robot import CommandXboxController
 
 from wpilib import SmartDashboard, AnalogInput, RobotBase, Timer
 import constants
-
+from constants import ElevatorPosition
 class ELEVATOR(Subsystem):
     ELEVATOR_TOP_LIMIT = 5000
     ELEVATOR_UP_SPEED = 0.2
@@ -103,9 +103,8 @@ class ELEVATOR(Subsystem):
     # def getPosition(self) -> float:
     #     return self._ELEVATOR.get_position()
     
-    def get_elevator_count(self) -> float:
-        self._ELEVATOR.get_rotor_position()
-        return -self._ELEVATOR.get_position().value
+    def get_rotation_count(self) -> float:
+        return self._ELEVATOR.get_position().value
 
 #==================================================================================
 ##   SOURCE:  https://v6.docs.ctr-electronics.com/en/2024/docs/api-reference/api-usage/actuator-limits.html
@@ -191,33 +190,53 @@ class MoveELEVATOR(Command):
 
     #==================================================================================
 class MoveELEVATORToSetPoint(Command):
-    def __init__(self, sub: ELEVATOR, TargetPosition: float, ):
+    DIRECTION_UP=1
+    DIRECTION_DOWN=-1
+    def __init__(self, sub: ELEVATOR, TargetPosition: ElevatorPosition, ):
      super().__init__()
 
      self._ELEVATOR = sub
      self._TargetPosition = TargetPosition
      self._timer = Timer()
+     self._direction = 0
      self._timer.start()
      self.addRequirements(self._ELEVATOR)     
 
     def initialize(self):
         self._timer.restart()
-        self.currentposition = self._ELEVATOR.get_elevator_count()
+        self.currentposition = self._ELEVATOR.get_rotation_count()
+        SmartDashboard.putNumber("current position",self.currentposition)
+        if self._TargetPosition.value > self.currentposition:
+            self._direction = MoveELEVATORToSetPoint.DIRECTION_UP
+        else:
+            self._direction = MoveELEVATORToSetPoint.DIRECTION_DOWN
 
     def execute(self):
-        self.currentposition = self._ELEVATOR.get_elevator_count()
-        if self._TargetPosition > self.currentposition:
+        self.currentposition = self._ELEVATOR.get_rotation_count()
+        SmartDashboard.putNumber("current position",self.currentposition)
+      
+        if self._direction == MoveELEVATORToSetPoint.DIRECTION_UP:
             self._ELEVATOR.move_ELEVATOR_up()
-        else:
+        elif self._direction == MoveELEVATORToSetPoint.DIRECTION_DOWN:
             self._ELEVATOR.move_ELEVATOR_down()
+        else:
+            self._ELEVATOR.stop_ELEVATOR_motors()
         
 
 
     def isFinished(self) -> bool:
-        dif = abs(self._TargetPosition + self.currentposition)
-        # print (dif)
-        if dif < 1:
-            return True
+        ret = False
+        if self._direction == MoveELEVATORToSetPoint.DIRECTION_UP:
+            if self.currentposition > self._TargetPosition.value:
+                ret = True
+        elif self._direction == MoveELEVATORToSetPoint.DIRECTION_DOWN:
+            if self.currentposition < self._TargetPosition.value:
+                ret = True
+        else:
+            print ("wrong direction: {}".format(self._direction))
+
+        return ret
+        
 
     def end(self, interrupted: bool):
         self._ELEVATOR.stop_ELEVATOR_motors()
@@ -245,7 +264,7 @@ class MoveELEVATORToZero(Command):
         self._ELEVATOR.move_ELEVATOR_down_with_speed(0.2)
 
     def execute(self):
-       SmartDashboard.putNumber("Elevator_Position", self._ELEVATOR.get_elevator_count())
+       SmartDashboard.putNumber("Elevator_Position", self._ELEVATOR.get_rotation_count())
        pass
 
 
@@ -262,3 +281,5 @@ class Move_Elevator_L3(Command):
         self.elevator = Elevator
         self.target_position = constants.L3
         self.addRequirements(self.elevator)
+
+        

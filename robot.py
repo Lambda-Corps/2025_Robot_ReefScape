@@ -148,7 +148,7 @@ class MyRobot(TimedCommandRobot):
             MoveELEVATOR(self._ELEVATOR, -0.4).withName("ElevatorDown")
         )
         self._partner_controller.a().onTrue(
-             MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_TWO.value)
+             MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_TWO)
         )
         self._partner_controller.b().onTrue(
              MoveELEVATORToSetPoint(self._ELEVATOR,-4)
@@ -156,7 +156,7 @@ class MyRobot(TimedCommandRobot):
         self._partner_controller.x().onTrue(
              MoveELEVATORToSetPoint(self._ELEVATOR,-3)
         )
-        self._partner_controller.b().onTrue(
+        self._partner_controller.y().onTrue(
              MoveELEVATORToSetPoint(self._ELEVATOR,-2)
         )
         self._partner_controller.start().onTrue(
