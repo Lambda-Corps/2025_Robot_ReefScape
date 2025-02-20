@@ -23,7 +23,7 @@ from pathplannerlib.auto import (
 )
 from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
-from intake import Intake, SetIntake, SetIntakeSpeedandTime
+from intake import Intake,  SetIntakeSpeedandTime, SetIntakeManual
 from wrist import WristControl, SetWrist, SetWrist_Manual
 from leds import LEDSubsystem, FlashLEDCommand
 from wrist import WristControl, SetWrist, Set_Wrist_Angle
@@ -176,7 +176,7 @@ class MyRobot(TimedCommandRobot):
 
         #=======(Intake controls)===================================
 
-        self._intake.setDefaultCommand(SetIntake(self._intake))
+        self._intake.setDefaultCommand(SetIntakeManual(self._intake, self._partner_controller))
 
         # wpilib.SmartDashboard.putData("Turn90", TurnToAnglePID(self._drivetrain, 90, 3))
         # wpilib.SmartDashboard.putData(

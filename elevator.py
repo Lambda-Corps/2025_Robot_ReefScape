@@ -34,8 +34,8 @@ import constants
 from constants import ElevatorPosition
 class ELEVATOR(Subsystem):
     ELEVATOR_TOP_LIMIT = 5000.
-    ELEVATOR_UP_SPEED = 0.2
-    ELEVATOR_DOWN_SPEED = -0.2
+    ELEVATOR_UP_SPEED = -0.2  # was 0.2
+    ELEVATOR_DOWN_SPEED = 0.2
 
     def __init__(self) -> None:
         super().__init__()
@@ -64,7 +64,7 @@ class ELEVATOR(Subsystem):
         config.slot0.k_d = 0
 
         # Set the left side motors to be counter clockwise positive
-        config.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
+        config.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE  #  Red going upward
         # config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
         config.motor_output.neutral_mode = NeutralModeValue.BRAKE
@@ -200,8 +200,8 @@ class MoveELEVATOR(Command):
 
     #==================================================================================
 class MoveELEVATORToSetPoint(Command):
-    DIRECTION_UP=1
-    DIRECTION_DOWN=-1
+    DIRECTION_UP = -1    # was 1
+    DIRECTION_DOWN = 1
     def __init__(self, sub: ELEVATOR, TargetPosition: ElevatorPosition, ):
      super().__init__()
 
@@ -216,7 +216,7 @@ class MoveELEVATORToSetPoint(Command):
         print ("Elevator to set position: ", self._TargetPosition, "  at ", wpilib.Timer.getFPGATimestamp())
         self._timer.restart()
         self.currentposition = self._ELEVATOR.get_rotation_count()
-        if self._TargetPosition.value > self.currentposition:
+        if self._TargetPosition.value < self.currentposition:    # trying to reverse direction (Was >)
             self._direction = MoveELEVATORToSetPoint.DIRECTION_UP
         else:
             self._direction = MoveELEVATORToSetPoint.DIRECTION_DOWN
@@ -270,7 +270,7 @@ class MoveELEVATORToZero(Command):
         self.addRequirements(self._ELEVATOR)     
 
     def initialize(self):
-        self._ELEVATOR.move_ELEVATOR_down_with_speed(0.2)
+        self._ELEVATOR.move_ELEVATOR_down_with_speed(-0.2)
 
     def execute(self):
        SmartDashboard.putNumber("Elevator_Position", self._ELEVATOR.get_rotation_count())
@@ -284,6 +284,8 @@ class MoveELEVATORToZero(Command):
     def end(self, interrupted: bool):
         self._ELEVATOR.stop_ELEVATOR_motors()
         self._ELEVATOR.reset_encoder()
+        SmartDashboard.putNumber("Elevator Encoder", self._ELEVATOR.get_position().value_as_double)
+
 # ======================================================================================================
 class Move_Elevator_L3(Command):
     def __init__(self, Elevator: ELEVATOR ):

@@ -4,6 +4,8 @@ from wpilib import SmartDashboard, RobotBase, RobotController, DutyCycleEncoder,
 from phoenix5 import TalonSRX, TalonSRXConfiguration, ControlMode, TalonSRXControlMode
 import constants
 import wpilib
+from commands2.button import CommandXboxController
+
 
 class Intake(Subsystem):
     """
@@ -28,9 +30,12 @@ class Intake(Subsystem):
         # SmartDashboard.putNumber("Intake_Speed", self.Intake_Motor.getMotorOutputPercent)
         pass
 
-class SetIntake(Command):
-    def __init__(self, Intake: Intake):
+#=====================================================================
+
+class SetIntakeManual(Command):
+    def __init__(self, Intake: Intake, controller: CommandXboxController):
         self._Intake = Intake
+        self._controller = controller
 
         self.addRequirements(self._Intake)
 
@@ -39,7 +44,7 @@ class SetIntake(Command):
         pass 
 
     def execute(self):
-        self._Intake.drive_motor(0.2)
+        self._Intake.drive_motor(self._controller.getRightY())
        
     def isFinished(self) -> bool:
         return False
