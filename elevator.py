@@ -200,6 +200,7 @@ class MoveELEVATORToSetPoint(Command):
      self._timer = Timer()
      self._direction = 0
      self._timer.start()
+     print ("Elevator to set position: ", self._TargetPosition)
      self.addRequirements(self._ELEVATOR)     
 
     def initialize(self):

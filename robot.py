@@ -255,15 +255,15 @@ class MyRobot(TimedCommandRobot):
         #  The wrist 90 degree position is low
 
         NamedCommands.registerCommand(
-            "WristToHighPosition",Set_Wrist_Angle(self._wrist, 0)
+            "WristToHighPosition",Set_Wrist_Angle(self._wrist, 0).withTimeout(1)
             )  
          
         NamedCommands.registerCommand(
-            "WristToMediumPosition",Set_Wrist_Angle(self._wrist, 45)
+            "WristToMediumPosition",Set_Wrist_Angle(self._wrist, 45).withTimeout(1)
             )  
         
         NamedCommands.registerCommand(
-            "WristToLowPosition",Set_Wrist_Angle(self._wrist, 90)
+            "WristToLowPosition",Set_Wrist_Angle(self._wrist, 90).withTimeout(1)
             )  
         
         #===(Intake Named Commands)====================================
@@ -277,7 +277,7 @@ class MyRobot(TimedCommandRobot):
             )
 
         NamedCommands.registerCommand(
-            "IntakeOutFor1Second", SetIntakeSpeedandTime(self._intake,1,1)
+            "IntakeOutFor1Second", SetIntakeSpeedandTime(self._intake,-1,1)
             )
         
         # To configure the Autonomous routines use PathPlanner to define the auto routines
@@ -287,7 +287,7 @@ class MyRobot(TimedCommandRobot):
         self._auto_chooser.setDefaultOption(
             "Best Auto",PathPlannerAuto("Best Auto")
         )
-        # self._auto_chooser.addOption("Best Auto", PathPlannerAuto("Best Auto"))
+        self._auto_chooser.addOption("TestSubSystems", PathPlannerAuto("TestSubSystems"))
         self._auto_chooser.addOption("W1 Auto",PathPlannerAuto("W1 Auto"))
         self._auto_chooser.addOption("W2 Auto",PathPlannerAuto("W2 Auto"))
         self._auto_chooser.addOption("Mid Auto",PathPlannerAuto("Mid Auto"))

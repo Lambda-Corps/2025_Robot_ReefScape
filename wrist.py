@@ -1,6 +1,6 @@
 from commands2 import Subsystem, Command
 from commands2.button import CommandXboxController
-from wpilib import SmartDashboard, DutyCycleEncoder
+from wpilib import SmartDashboard, DutyCycleEncoder, Timer
 from phoenix5 import TalonSRX, ControlMode, Faults
 import constants
 
@@ -119,14 +119,19 @@ class SetWrist_Manual(Command):
 
 
 class Set_Wrist_Angle(Command):
-    def __init__(self, Wrist: WristControl, target_angle: float):
+    def __init__(self, Wrist: WristControl, target_angle: float, timeout = 1):
         super().__init__()
         self._Wrist = Wrist
         self.target_angle = target_angle
+        self._timeout = timeout
+
+        self._timer = Timer()
+        self._timer.start()
         self.addRequirements(self._Wrist)
 
     def initialize(self):
-        pass
+        self._timer.restart()
+        print ("Moving wrist to: ",self.target_angle )
 
     def execute(self):
         current_angle = self._Wrist.getAbsolutePosition()
@@ -136,10 +141,15 @@ class Set_Wrist_Angle(Command):
             self._Wrist.move_wrist_up(0.2) 
         
     def isFinished(self) -> bool:
+        ret = False
         current_angle = self._Wrist.getAbsolutePosition()
         #abs(current_angle - self.target_angle) < 20
-        print ((current_angle - self.target_angle))
-        return abs(current_angle - self.target_angle) < 5
+        # print ((current_angle - self.target_angle))
+        if (abs(current_angle - self.target_angle) < 5):
+            ret = True
+        if (self._timer.hasElapsed(self._timeout)):
+            ret = True
+        return ret
 
 
 

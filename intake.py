@@ -55,6 +55,7 @@ class SetIntakeSpeedandTime(Command):
         self.runseconds = runseconds
         self._timer = Timer()
         self._timer.start()
+        print ("Running Intake speed: ",self.speed, " for ", self.runseconds, "seconds"  )
         self.addRequirements(self._Intake)
 
     def initialize(self):
