@@ -3,6 +3,7 @@ from commands2 import Subsystem, Command, RunCommand
 from wpilib import SmartDashboard, RobotBase, RobotController, DutyCycleEncoder, Timer
 from phoenix5 import TalonSRX, TalonSRXConfiguration, ControlMode, TalonSRXControlMode
 import constants
+import wpilib
 
 class Intake(Subsystem):
     """
@@ -55,11 +56,12 @@ class SetIntakeSpeedandTime(Command):
         self.runseconds = runseconds
         self._timer = Timer()
         self._timer.start()
-        print ("Running Intake speed: ",self.speed, " for ", self.runseconds, "seconds"  )
         self.addRequirements(self._Intake)
 
     def initialize(self):
         self._timer.restart()
+        print ("Running Intake speed: ",self.speed, " for ", self.runseconds, "seconds at "
+               , wpilib.Timer.getFPGATimestamp()  )
 
     def execute(self):
         self._Intake.drive_motor(self.speed)

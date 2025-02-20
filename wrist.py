@@ -3,6 +3,7 @@ from commands2.button import CommandXboxController
 from wpilib import SmartDashboard, DutyCycleEncoder, Timer, RobotBase
 from phoenix5 import TalonSRX, ControlMode, Faults
 import constants
+import wpilib
 
 
 class WristControl(Subsystem):
@@ -131,7 +132,7 @@ class Set_Wrist_Angle(Command):
 
     def initialize(self):
         self._timer.restart()
-        print ("Moving wrist to: ",self.target_angle )
+        print ("Moving wrist to: ",self.target_angle, "  at " , wpilib.Timer.getFPGATimestamp() )
 
     def execute(self):
         current_angle = self._Wrist.getAbsolutePosition()
@@ -155,7 +156,7 @@ class Set_Wrist_Angle(Command):
 
     def end(self, interrupted: bool):
         self._Wrist.move_wrist(0)
-        print ("WRIST MOVEMENT DONE")
+        print ("WRIST MOVEMENT DONE at ", wpilib.Timer.getFPGATimestamp())
 
 
 

@@ -200,10 +200,10 @@ class MoveELEVATORToSetPoint(Command):
      self._timer = Timer()
      self._direction = 0
      self._timer.start()
-     print ("Elevator to set position: ", self._TargetPosition)
      self.addRequirements(self._ELEVATOR)     
 
     def initialize(self):
+        print ("Elevator to set position: ", self._TargetPosition, "  at ", wpilib.Timer.getFPGATimestamp())
         self._timer.restart()
         self.currentposition = self._ELEVATOR.get_rotation_count()
         SmartDashboard.putNumber("current position",self.currentposition)
@@ -224,7 +224,6 @@ class MoveELEVATORToSetPoint(Command):
             self._ELEVATOR.stop_ELEVATOR_motors()
         
 
-
     def isFinished(self) -> bool:
         ret = False
         if self._direction == MoveELEVATORToSetPoint.DIRECTION_UP:
@@ -235,12 +234,13 @@ class MoveELEVATORToSetPoint(Command):
                 ret = True
         else:
             print ("wrong direction: {}".format(self._direction))
-
         return ret
         
 
     def end(self, interrupted: bool):
         self._ELEVATOR.stop_ELEVATOR_motors()
+        print ("Elevator DONE movement at ", wpilib.Timer.getFPGATimestamp())
+
     
 #==================================================================================
 

@@ -231,19 +231,23 @@ class MyRobot(TimedCommandRobot):
             )
         
         NamedCommands.registerCommand(
-            "ElevatorToL1", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_ONE).withTimeout(1)
+            "ElevatorToL1", 
+            MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_ONE).withTimeout(5)
             )
  
         NamedCommands.registerCommand(
-            "ElevatorToL2", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_TWO).withTimeout(1)
+            "ElevatorToL2", 
+            MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_TWO).withTimeout(5)
             )
 
         NamedCommands.registerCommand(
-            "ElevatorToL3", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_THREE).withTimeout(1)
+            "ElevatorToL3", 
+            MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_THREE).withTimeout(5)
             )
 
         NamedCommands.registerCommand(
-            "ElevatorToL4", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_FOUR).withTimeout(1)
+            "ElevatorToL4", 
+            MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_FOUR).withTimeout(5)
             )
 
         #===(Wrist Named Commands)====================================
@@ -255,15 +259,15 @@ class MyRobot(TimedCommandRobot):
         #  The wrist 90 degree position is low
 
         NamedCommands.registerCommand(
-            "WristToHighPosition",Set_Wrist_Angle(self._wrist, 0).withTimeout(1)
+            "WristToHighPosition",Set_Wrist_Angle(self._wrist, 0).withTimeout(2)
             )  
          
         NamedCommands.registerCommand(
-            "WristToMediumPosition",Set_Wrist_Angle(self._wrist, 45).withTimeout(1)
+            "WristToMediumPosition",Set_Wrist_Angle(self._wrist, 45).withTimeout(2)
             )  
         
         NamedCommands.registerCommand(
-            "WristToLowPosition",Set_Wrist_Angle(self._wrist, 90).withTimeout(1)
+            "WristToLowPosition",Set_Wrist_Angle(self._wrist, 90).withTimeout(2)
             )  
         
         #===(Intake Named Commands)====================================
