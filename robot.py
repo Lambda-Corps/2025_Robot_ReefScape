@@ -23,7 +23,7 @@ from pathplannerlib.auto import (
 )
 from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
-from intake import Intake, SetIntake
+from intake import Intake, SetIntake, SetIntakeSpeedandTime
 from wrist import WristControl, SetWrist, SetWrist_Manual
 from leds import LEDSubsystem, FlashLEDCommand
 from wrist import WristControl, SetWrist, Set_Wrist_Angle
@@ -106,9 +106,9 @@ class MyRobot(TimedCommandRobot):
         # )
         # Right Trigger April Tag
         # Create a button that maps to the proper integer number (found in driverstation)
-        self._right_controller_button: JoystickButton = JoystickButton(
-            self._driver_controller.getHID(), 13  # TODO -- Assign this correct number
-        )
+        # self._right_controller_button: JoystickButton = JoystickButton(
+        # #     self._driver_controller.getHID(), 13  # TODO -- Assign this correct number
+        # )
         # ####>>>self._right_controller_button.whileTrue(
         #     TeleopDriveWithVision(
         #         self._drivetrain, self._vision.get_tag_yaw, self._driver_controller
@@ -138,7 +138,7 @@ class MyRobot(TimedCommandRobot):
         #     MoveELEVATOR(self._ELEVATOR, 0.4).withName("ElevatorUp")
         # )
 
-        #=======(elevator)===================================
+        #=======(elevator controls)===================================
                 # Right Trigger Climber Up
         self._partner_controller.rightTrigger().whileTrue(
             MoveELEVATOR(self._ELEVATOR, 0.4).withName("ElevatorUp")
@@ -162,7 +162,8 @@ class MyRobot(TimedCommandRobot):
         self._partner_controller.start().onTrue(
              MoveELEVATORToZero(self._ELEVATOR)
              )
-        
+        #=======(Wrist controls)===================================
+
         self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
 
         # self._partner_controller.a().onTrue(Set_Wrist_Angle(self._wrist, 10))  # Example target angle
@@ -170,11 +171,17 @@ class MyRobot(TimedCommandRobot):
         # self._partner_controller.x().onTrue(Set_Wrist_Angle(self._wrist, 60))  # Example target angle
         # self._partner_controller.y().onTrue(Set_Wrist_Angle(self._wrist, 120))  # Example target angle
 
+        # self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, 0))
 
-        wpilib.SmartDashboard.putData("Turn90", TurnToAnglePID(self._drivetrain, 90, 3))
-        wpilib.SmartDashboard.putData(
-            "Turn-90", TurnToAnglePID(self._drivetrain, -90, 3)
-        )
+        #=======(Intake controls)===================================
+
+        self._intake.setDefaultCommand(SetIntake(self._intake))
+
+        # wpilib.SmartDashboard.putData("Turn90", TurnToAnglePID(self._drivetrain, 90, 3))
+        # wpilib.SmartDashboard.putData(
+        #     "Turn-90", TurnToAnglePID(self._drivetrain, -90, 3)
+        # )
+        #=======(Drivetrain controls)===================================
 
     def __configure_default_commands(self) -> None:
         # Setup the default commands for subsystems
@@ -208,31 +215,71 @@ class MyRobot(TimedCommandRobot):
                 ).withName("DefaultDrive")
             )
 
-        self._intake.setDefaultCommand(SetIntake(self._intake))
-
-
-        #self._wrist.setDefaultCommand(SetWrist(self._wrist, self._partner_controller.getLeftY()))
-        self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, 0))
-
 
     def __configure_autonomous_commands(self) -> None:
         # Register the named commands used by the PathPlanner auto builder
         # These commands have to match exactly in the PathPlanner application
         # as we name them here in the registration
-        NamedCommands.registerCommand(
-            "RunIntake", PrintCommand("RunIntake")
-     )
+
+        #===( Elevator Named commands [needed for PathPlanner])==============
         NamedCommands.registerCommand(
             "RaiseElevator", PrintCommand("RaiseElevator")
-     )
-        NamedCommands.registerCommand(
-            "RunWrist",PrintCommand("RunWrist")
-     )    
+            )
+        
         NamedCommands.registerCommand(
             "Move_Elevator_L3",PrintCommand("Move_Elevator_L3")
-     )
+            )
         
+        NamedCommands.registerCommand(
+            "ElevatorToL1", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_ONE)
+            )
+ 
+        NamedCommands.registerCommand(
+            "ElevatorToL2", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_TWO)
+            )
 
+        NamedCommands.registerCommand(
+            "ElevatorToL3", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_THREE)
+            )
+
+        NamedCommands.registerCommand(
+            "ElevatorToL4", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_FOUR)
+            )
+
+        #===(Wrist Named Commands)====================================
+        
+        NamedCommands.registerCommand(
+            "RunWrist",PrintCommand("RunWrist")
+            )  
+        #  The wrist 0 degree position is high
+        #  The wrist 90 degree position is low
+
+        NamedCommands.registerCommand(
+            "WristToHighPosition",Set_Wrist_Angle(self._wrist, 0)
+            )  
+         
+        NamedCommands.registerCommand(
+            "WristToMediumPosition",Set_Wrist_Angle(self._wrist, 45)
+            )  
+        
+        NamedCommands.registerCommand(
+            "WristToLowPosition",Set_Wrist_Angle(self._wrist, 90)
+            )  
+        
+        #===(Intake Named Commands)====================================
+
+        NamedCommands.registerCommand(
+            "RunIntake", PrintCommand("RunIntake")
+            )
+        
+        NamedCommands.registerCommand(
+            "IntakeInFor1Second", SetIntakeSpeedandTime(self._intake,1,1)
+            )
+
+        NamedCommands.registerCommand(
+            "IntakeOutFor1Second", SetIntakeSpeedandTime(self._intake,1,1)
+            )
+        
         # To configure the Autonomous routines use PathPlanner to define the auto routines
         # Then, take all of the path planner created routines and add them to the auto
         # chooser so the drive team can select the starting auto.

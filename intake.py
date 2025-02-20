@@ -1,6 +1,6 @@
 # from enum import Enum
 from commands2 import Subsystem, Command, RunCommand
-from wpilib import SmartDashboard, RobotBase, RobotController, DutyCycleEncoder
+from wpilib import SmartDashboard, RobotBase, RobotController, DutyCycleEncoder, Timer
 from phoenix5 import TalonSRX, TalonSRXConfiguration, ControlMode, TalonSRXControlMode
 import constants
 
@@ -42,6 +42,29 @@ class SetIntake(Command):
        
     def isFinished(self) -> bool:
         return False
+    
+    def end(self, interrupted: bool):
+        self._Intake.stop_motor()
+
+#=====================================================================
+
+class SetIntakeSpeedandTime(Command):
+    def __init__(self, Intake: Intake, speed: float, runseconds: float):
+        self._Intake = Intake
+        self.speed = speed
+        self.runseconds = runseconds
+        self._timer = Timer()
+        self._timer.start()
+        self.addRequirements(self._Intake)
+
+    def initialize(self):
+        self._timer.restart()
+
+    def execute(self):
+        self._Intake.drive_motor(self.speed)
+       
+    def isFinished(self) -> bool:
+        return self._timer.hasElapsed(self.runseconds)
     
     def end(self, interrupted: bool):
         self._Intake.stop_motor()
