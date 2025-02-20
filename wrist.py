@@ -1,6 +1,6 @@
 from commands2 import Subsystem, Command
 from commands2.button import CommandXboxController
-from wpilib import SmartDashboard, DutyCycleEncoder, Timer
+from wpilib import SmartDashboard, DutyCycleEncoder, Timer, RobotBase
 from phoenix5 import TalonSRX, ControlMode, Faults
 import constants
 
@@ -142,8 +142,10 @@ class Set_Wrist_Angle(Command):
         
     def isFinished(self) -> bool:
         ret = False
+        if RobotBase.isSimulation():
+            ret = True    # just for testing simulation
+
         current_angle = self._Wrist.getAbsolutePosition()
-        #abs(current_angle - self.target_angle) < 20
         # print ((current_angle - self.target_angle))
         if (abs(current_angle - self.target_angle) < 5):
             ret = True
@@ -151,11 +153,9 @@ class Set_Wrist_Angle(Command):
             ret = True
         return ret
 
-
-
     def end(self, interrupted: bool):
         self._Wrist.move_wrist(0)
-        pass
+        print ("WRIST MOVEMENT DONE")
 
 
 

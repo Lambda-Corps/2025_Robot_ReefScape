@@ -231,19 +231,19 @@ class MyRobot(TimedCommandRobot):
             )
         
         NamedCommands.registerCommand(
-            "ElevatorToL1", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_ONE)
+            "ElevatorToL1", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_ONE).withTimeout(1)
             )
  
         NamedCommands.registerCommand(
-            "ElevatorToL2", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_TWO)
+            "ElevatorToL2", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_TWO).withTimeout(1)
             )
 
         NamedCommands.registerCommand(
-            "ElevatorToL3", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_THREE)
+            "ElevatorToL3", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_THREE).withTimeout(1)
             )
 
         NamedCommands.registerCommand(
-            "ElevatorToL4", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_FOUR)
+            "ElevatorToL4", MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_FOUR).withTimeout(1)
             )
 
         #===(Wrist Named Commands)====================================
