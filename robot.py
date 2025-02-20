@@ -28,7 +28,7 @@ from wrist import WristControl, SetWrist, SetWrist_Manual
 from leds import LEDSubsystem, FlashLEDCommand
 from wrist import WristControl, SetWrist, Set_Wrist_Angle
 ####>>> from vision import VisionSystem
-from elevator import ELEVATOR, MoveELEVATOR, MoveELEVATORToSetPoint, MoveELEVATORToZero, Move_Elevator_L3
+from elevator import ELEVATOR, CancelElevatorMovement, MoveELEVATOR, MoveELEVATORToSetPoint, MoveELEVATORToZero, Move_Elevator_L3
 
 import constants
 from typing import Tuple, List
@@ -74,8 +74,8 @@ class MyRobot(TimedCommandRobot):
 
         self._leds: LEDSubsystem = LEDSubsystem()
 
-        self._ELEVATOR: ELEVATOR = ELEVATOR()
-        wpilib.SmartDashboard.putData("Elevator", self._ELEVATOR)
+        self._elevator: ELEVATOR = ELEVATOR()
+        wpilib.SmartDashboard.putData("Elevator", self._elevator)
 
         # self._vision: VisionSystem = VisionSystem(False, True)
         # self._vision: VisionSystem = VisionSystem(True, True)
@@ -135,33 +135,34 @@ class MyRobot(TimedCommandRobot):
         ######################## Partner controller controls #########################
           # Right Joystick Wrist Up/Down
         # self._partner_controller.getLeftY().whileTrue(
-        #     MoveELEVATOR(self._ELEVATOR, 0.4).withName("ElevatorUp")
+        #     MoveELEVATOR(self._elevator, 0.4).withName("ElevatorUp")
         # )
 
         #=======(elevator controls)===================================
                 # Right Trigger Climber Up
         self._partner_controller.rightTrigger().whileTrue(
-            MoveELEVATOR(self._ELEVATOR, 0.4).withName("ElevatorUp")
+            MoveELEVATOR(self._elevator, 0.4).withName("ElevatorUp")
         )
         # Left Trigger Climber Down
         self._partner_controller.leftTrigger().whileTrue(
-            MoveELEVATOR(self._ELEVATOR, -0.4).withName("ElevatorDown")
+            MoveELEVATOR(self._elevator, -0.4).withName("ElevatorDown")
         )
         self._partner_controller.a().onTrue(
-             MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_TWO)
+            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE)
         )
         self._partner_controller.b().onTrue(
-             MoveELEVATORToSetPoint(self._ELEVATOR,-4)
+            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_TWO)
         )
         self._partner_controller.x().onTrue(
-             MoveELEVATORToSetPoint(self._ELEVATOR,-3)
+            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_THREE)
         )
         self._partner_controller.y().onTrue(
-             MoveELEVATORToSetPoint(self._ELEVATOR,-2)
+            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_FOUR)
         )
+
         self._partner_controller.start().onTrue(
-             MoveELEVATORToZero(self._ELEVATOR)
-             )
+            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_BOTTOM)
+        )
         #=======(Wrist controls)===================================
 
         self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
@@ -231,23 +232,19 @@ class MyRobot(TimedCommandRobot):
             )
         
         NamedCommands.registerCommand(
-            "ElevatorToL1", 
-            MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_ONE).withTimeout(5)
+            "ElevatorToL1", MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE).withTimeout(5)
             )
  
         NamedCommands.registerCommand(
-            "ElevatorToL2", 
-            MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_TWO).withTimeout(5)
+            "ElevatorToL2", MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_TWO).withTimeout(5)
             )
 
         NamedCommands.registerCommand(
-            "ElevatorToL3", 
-            MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_THREE).withTimeout(5)
+            "ElevatorToL3", MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_THREE).withTimeout(5)
             )
 
         NamedCommands.registerCommand(
-            "ElevatorToL4", 
-            MoveELEVATORToSetPoint(self._ELEVATOR,constants.ElevatorPosition.LEVEL_FOUR).withTimeout(5)
+            "ElevatorToL4", MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_FOUR).withTimeout(5)
             )
 
         #===(Wrist Named Commands)====================================

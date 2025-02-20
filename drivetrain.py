@@ -601,6 +601,10 @@ class DriveTrain(Subsystem):
         SmartDashboard.putNumber("LeftVelOut", self._left_volts_out.output)
         SmartDashboard.putNumber("rightVelOut", self._right_volts_out.output)
 
+        # Get the elevator position so we can limit the acceleration
+        elev_pos_val: float = SmartDashboard.getNumber("Elevator_Position", 0.0)
+        self._elevator_pos = constants.get_closest_elevator_position(elev_pos_val)
+
     ############# Drivetrain Odometry methods ###################
 
     def __rotations_to_meters(self, rotations: float) -> float:

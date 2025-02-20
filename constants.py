@@ -121,7 +121,8 @@ def get_closest_elevator_position(value: int) -> ElevatorPosition:
     return closest_value[1]
 
 # TODO -- This needs to be fixed for simulation accuracy
-ELEVATOR_GEAR_RATIO = (10/1)*(42/14)
+ELEVATOR_GEAR_RATIO = 10
+# ELEVATOR_GEAR_RATIO = (10/1)*(42/14)
 ELEVATOR_CARRIAGE_MASS = 5 # in Kilograms
 ELEVATOR_DRUM_RADIUS_M = 2 * INCHES_PER_METER # in meters
 ELEVATOR_MIN_HEIGHT_M = 6 * INCHES_PER_METER # base elevator 6 inches off the ground

@@ -56,7 +56,7 @@ class PhysicsEngine:
         self.navx_yaw = self._sim_gyro.getDouble("Yaw")
 
         # Add in the elevator Talon for physics simulation
-        self.elevator_sim = robot._ELEVATOR._ELEVATOR.sim_state
+        self.elevator_sim = robot._elevator._ELEVATOR.sim_state
         self.elevator_sim.orientation = sim.ChassisReference.CounterClockwise_Positive
         self.elevator_gearbox: DCMotor = DCMotor.falcon500(1)
         self.elevator: DCMotorSim = DCMotorSim(LinearSystemId.DCMotorSystem(self.elevator_gearbox, 0.02, constants.ELEVATOR_GEAR_RATIO ), self.elevator_gearbox)
@@ -88,8 +88,8 @@ class PhysicsEngine:
         :param tm_diff: The amount of time that has passed since the last
                         time that this function was called
         """
-        if DriverStation.isEnabled():
-            unmanaged.feed_enable(100)
+        # if DriverStation.isEnabled():
+        #     unmanaged.feed_enable(100)
 
         #-------------- Give Simulation objects voltage -----------------#
         battery_v = RobotController.getBatteryVoltage()
@@ -141,7 +141,7 @@ class PhysicsEngine:
         # self.elevator_sim.set_raw_rotor_position(self.meters_to_rotations(self.elevator.getPosition()))
         # self.elevator_sim.set_rotor_velocity(self.meters_to_rotations(self.elevator.getVelocity()))
         self.elevator_sim.set_raw_rotor_position(radiansToRotations(self.elevator.getAngularPosition()))
-        self.elevator_sim.set_rotor_velocity(self.meters_to_rotations(self.elevator.getAngularVelocity()))
+        self.elevator_sim.set_rotor_velocity(radiansToRotations(self.elevator.getAngularVelocity()))
         # self.elev_mech_upper_2d.setLength(self.elevator.getPositionInches())
 
     def meters_to_rotations(self, dist: float) -> float:

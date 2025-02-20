@@ -1,7 +1,7 @@
 from typing import Self
 from enum import Enum
 from phoenix6 import controls
-from commands2 import Subsystem, Command, cmd
+from commands2 import InstantCommand, Subsystem, Command, cmd
 # from phoenix5 import (
 #     TalonSRX,
 #     TalonSRXControlMode,
@@ -33,7 +33,7 @@ from wpilib import SmartDashboard, AnalogInput, RobotBase, Timer
 import constants
 from constants import ElevatorPosition
 class ELEVATOR(Subsystem):
-    ELEVATOR_TOP_LIMIT = 5000
+    ELEVATOR_TOP_LIMIT = 5000.
     ELEVATOR_UP_SPEED = 0.2
     ELEVATOR_DOWN_SPEED = -0.2
 
@@ -42,6 +42,8 @@ class ELEVATOR(Subsystem):
 
 #===========================================================
         self._ELEVATOR: TalonFX = self.__configure_elevatorMotor()
+
+        self.duty_cycle_out = controls.DutyCycleOut(0, enable_foc=False)
 
     def __configure_elevatorMotor(self,) -> TalonFX:
         
@@ -81,13 +83,16 @@ class ELEVATOR(Subsystem):
         return talon
 
     def move_ELEVATOR_up(self) -> None:
-        self._ELEVATOR.set_control(controls.DutyCycleOut(self.ELEVATOR_UP_SPEED))  # FX Control Code
+        self.duty_cycle_out.output = self.ELEVATOR_UP_SPEED
+        self.__set_elevator_duty_cycle()
 
     def move_ELEVATOR_down(self) -> None:
-        self._ELEVATOR.set_control(controls.DutyCycleOut(self.ELEVATOR_DOWN_SPEED))  # FX Control Code
+        self.duty_cycle_out.output = self.ELEVATOR_DOWN_SPEED
+        self.__set_elevator_duty_cycle()
     
     def move_ELEVATOR_down_with_speed(self,speed:float) -> None:
-        self._ELEVATOR.set_control(controls.DutyCycleOut(speed))  # FX Control Code
+        self.duty_cycle_out.output = speed
+        self.__set_elevator_duty_cycle()
 
     def ELEVATOR_at_top(self) -> bool:
         reverse_limit = self._ELEVATOR.get_reverse_limit() 
@@ -98,13 +103,17 @@ class ELEVATOR(Subsystem):
         return(forward_limit.value is signals.ReverseLimitValue.CLOSED_TO_GROUND)
     
     def stop_ELEVATOR_motors(self) -> None:
-        self._ELEVATOR.set_control(controls.DutyCycleOut(0))       # FX Control Code
+        self.duty_cycle_out.output = 0
+        self.__set_elevator_duty_cycle()
+
+    def __set_elevator_duty_cycle(self) -> None:
+        self._ELEVATOR.set_control(self.duty_cycle_out)       # FX Control Code
     
     # def getPosition(self) -> float:
     #     return self._ELEVATOR.get_position()
     
     def get_rotation_count(self) -> float:
-        return self._ELEVATOR.get_position().value
+        return self._ELEVATOR.get_position().value_as_double
 
 #==================================================================================
 ##   SOURCE:  https://v6.docs.ctr-electronics.com/en/2024/docs/api-reference/api-usage/actuator-limits.html
@@ -130,6 +139,7 @@ class ELEVATOR(Subsystem):
 
 
     def periodic(self) -> None:
+        SmartDashboard.putNumber("Elevator Encoder", self._ELEVATOR.get_position().value_as_double)
         position: constants.ElevatorPosition = constants.get_closest_elevator_position(self._ELEVATOR.get_position().value)
         SmartDashboard.putNumber("Elevator_Position", position.value)
         SmartDashboard.putBoolean("Elevator_At_Lower_Limit", self.ELEVATOR_at_bottom())
@@ -206,7 +216,6 @@ class MoveELEVATORToSetPoint(Command):
         print ("Elevator to set position: ", self._TargetPosition, "  at ", wpilib.Timer.getFPGATimestamp())
         self._timer.restart()
         self.currentposition = self._ELEVATOR.get_rotation_count()
-        SmartDashboard.putNumber("current position",self.currentposition)
         if self._TargetPosition.value > self.currentposition:
             self._direction = MoveELEVATORToSetPoint.DIRECTION_UP
         else:
@@ -214,7 +223,6 @@ class MoveELEVATORToSetPoint(Command):
 
     def execute(self):
         self.currentposition = self._ELEVATOR.get_rotation_count()
-        SmartDashboard.putNumber("current position",self.currentposition)
       
         if self._direction == MoveELEVATORToSetPoint.DIRECTION_UP:
             self._ELEVATOR.move_ELEVATOR_up()
@@ -283,4 +291,12 @@ class Move_Elevator_L3(Command):
         self.target_position = constants.L3
         self.addRequirements(self.elevator)
 
+class CancelElevatorMovement(InstantCommand):
+    def __init__(self, elevator: ELEVATOR):
+        super().__init__()
+        self._elevator = elevator
+        self.addRequirements(self._elevator)
+
+    def initialize(self):
+        self._elevator.stop_ELEVATOR_motors()
         
