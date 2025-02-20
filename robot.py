@@ -160,8 +160,11 @@ class MyRobot(TimedCommandRobot):
             MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_FOUR)
         )
 
+        # self._partner_controller.start().onTrue(
+        #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_BOTTOM)
+        # )
         self._partner_controller.start().onTrue(
-            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_BOTTOM)
+            MoveELEVATORToZero(self._elevator)
         )
         #=======(Wrist controls)===================================
 

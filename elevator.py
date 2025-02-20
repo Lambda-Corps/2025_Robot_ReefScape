@@ -113,7 +113,7 @@ class ELEVATOR(Subsystem):
     #     return self._ELEVATOR.get_position()
     
     def get_rotation_count(self) -> float:
-        return self._ELEVATOR.get_position().value_as_double
+        return 0 -self._ELEVATOR.get_position().value_as_double
 
 #==================================================================================
 ##   SOURCE:  https://v6.docs.ctr-electronics.com/en/2024/docs/api-reference/api-usage/actuator-limits.html
@@ -139,7 +139,8 @@ class ELEVATOR(Subsystem):
 
 
     def periodic(self) -> None:
-        SmartDashboard.putNumber("Elevator Encoder", self._ELEVATOR.get_position().value_as_double)
+        # SmartDashboard.putNumber("Elevator Encoder", self._ELEVATOR.get_position().value_as_double)
+        SmartDashboard.putNumber("Elevator Encoder", self.get_rotation_count())
         position: constants.ElevatorPosition = constants.get_closest_elevator_position(self._ELEVATOR.get_position().value)
         SmartDashboard.putNumber("Elevator_Position", position.value)
         SmartDashboard.putBoolean("Elevator_At_Lower_Limit", self.ELEVATOR_at_bottom())
@@ -216,7 +217,7 @@ class MoveELEVATORToSetPoint(Command):
         print ("Elevator to set position: ", self._TargetPosition, "  at ", wpilib.Timer.getFPGATimestamp())
         self._timer.restart()
         self.currentposition = self._ELEVATOR.get_rotation_count()
-        if self._TargetPosition.value < self.currentposition:    # trying to reverse direction (Was >)
+        if self._TargetPosition.value > self.currentposition:    # trying to reverse direction (Was >)
             self._direction = MoveELEVATORToSetPoint.DIRECTION_UP
         else:
             self._direction = MoveELEVATORToSetPoint.DIRECTION_DOWN
@@ -234,6 +235,8 @@ class MoveELEVATORToSetPoint(Command):
 
     def isFinished(self) -> bool:
         ret = False
+        print ("Current: ",  self.currentposition,   "  target " , self._TargetPosition.value, 
+               " Delta: ", self.currentposition > self._TargetPosition.value)
         if self._direction == MoveELEVATORToSetPoint.DIRECTION_UP:
             if self.currentposition > self._TargetPosition.value:
                 ret = True
@@ -270,7 +273,7 @@ class MoveELEVATORToZero(Command):
         self.addRequirements(self._ELEVATOR)     
 
     def initialize(self):
-        self._ELEVATOR.move_ELEVATOR_down_with_speed(-0.2)
+        self._ELEVATOR.move_ELEVATOR_down_with_speed(0.2)
 
     def execute(self):
        SmartDashboard.putNumber("Elevator_Position", self._ELEVATOR.get_rotation_count())
@@ -284,7 +287,7 @@ class MoveELEVATORToZero(Command):
     def end(self, interrupted: bool):
         self._ELEVATOR.stop_ELEVATOR_motors()
         self._ELEVATOR.reset_encoder()
-        SmartDashboard.putNumber("Elevator Encoder", self._ELEVATOR.get_position().value_as_double)
+        # SmartDashboard.putNumber("Elevator Encoder", self._ELEVATOR.get_position().value_as_double)
 
 # ======================================================================================================
 class Move_Elevator_L3(Command):

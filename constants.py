@@ -86,10 +86,10 @@ CONTROLLER_TURN_SIM = 0
 # Elevator stopping positions counting rotations of the mechanism
 class ElevatorPosition(Enum):
     LEVEL_BOTTOM = 0
-    LEVEL_ONE = 3
-    LEVEL_TWO = 5
-    LEVEL_THREE = 7
-    LEVEL_FOUR = 9
+    LEVEL_ONE = 5
+    LEVEL_TWO = 10
+    LEVEL_THREE = 15
+    LEVEL_FOUR = 20
     LEVEL_UKNOWN = 999999
 
 def get_closest_elevator_position(value: int) -> ElevatorPosition:
