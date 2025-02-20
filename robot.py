@@ -249,6 +249,9 @@ class MyRobot(TimedCommandRobot):
         NamedCommands.registerCommand(
             "ElevatorToL4", MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_FOUR).withTimeout(5)
             )
+        NamedCommands.registerCommand(
+            "ElevatorToBottom", MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_BOTTOM).withTimeout(5)
+            )
 
         #===(Wrist Named Commands)====================================
         
@@ -277,11 +280,11 @@ class MyRobot(TimedCommandRobot):
             )
         
         NamedCommands.registerCommand(
-            "IntakeInFor1Second", SetIntakeSpeedandTime(self._intake,1,1)
+            "IntakeInFor1Second", SetIntakeSpeedandTime(self._intake,-1,1)
             )
 
         NamedCommands.registerCommand(
-            "IntakeOutFor1Second", SetIntakeSpeedandTime(self._intake,-1,1)
+            "IntakeOutFor1Second", SetIntakeSpeedandTime(self._intake,1,1)
             )
         
         # To configure the Autonomous routines use PathPlanner to define the auto routines
@@ -289,7 +292,7 @@ class MyRobot(TimedCommandRobot):
         # chooser so the drive team can select the starting auto.
         self._auto_chooser: wpilib.SendableChooser = wpilib.SendableChooser()
         self._auto_chooser.setDefaultOption(
-            "Best Auto",PathPlannerAuto("Best Auto")
+            "Best Auto2",PathPlannerAuto("Best Auto2")
         )
         self._auto_chooser.addOption("TestSubSystems", PathPlannerAuto("TestSubSystems"))
         self._auto_chooser.addOption("W1 Auto",PathPlannerAuto("W1 Auto"))

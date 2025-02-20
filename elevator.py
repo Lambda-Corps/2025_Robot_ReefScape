@@ -235,8 +235,8 @@ class MoveELEVATORToSetPoint(Command):
 
     def isFinished(self) -> bool:
         ret = False
-        print ("Current: ",  self.currentposition,   "  target " , self._TargetPosition.value, 
-               " Delta: ", self.currentposition > self._TargetPosition.value)
+        # print ("Current: ",  self.currentposition,   "  target " , self._TargetPosition.value, 
+        #        " Delta: ", self.currentposition > self._TargetPosition.value)
         if self._direction == MoveELEVATORToSetPoint.DIRECTION_UP:
             if self.currentposition > self._TargetPosition.value:
                 ret = True
