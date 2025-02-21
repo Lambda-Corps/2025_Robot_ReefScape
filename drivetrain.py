@@ -597,7 +597,7 @@ class DriveTrain(Subsystem):
 
         self._field.setRobotPose(pose)
 
-        SmartDashboard.putNumber("CCW Angle", self.__get_gyro_heading())
+        SmartDashboard.putNumber("Gyro CCW Angle", self.__get_gyro_heading())
         SmartDashboard.putNumber("LeftVelOut", self._left_volts_out.output)
         SmartDashboard.putNumber("rightVelOut", self._right_volts_out.output)
 

@@ -86,10 +86,10 @@ CONTROLLER_TURN_SIM = 0
 # Elevator stopping positions counting rotations of the mechanism
 class ElevatorPosition(Enum):
     LEVEL_BOTTOM = 0
-    LEVEL_ONE = 5
-    LEVEL_TWO = 10
-    LEVEL_THREE = 15
-    LEVEL_FOUR = 20
+    LEVEL_ONE = 1
+    LEVEL_TWO = 2
+    LEVEL_THREE = 3
+    LEVEL_FOUR = 4
     LEVEL_UKNOWN = 999999
 
 def get_closest_elevator_position(value: int) -> ElevatorPosition:
@@ -121,7 +121,7 @@ def get_closest_elevator_position(value: int) -> ElevatorPosition:
     return closest_value[1]
 
 # TODO -- This needs to be fixed for simulation accuracy
-ELEVATOR_GEAR_RATIO = 10
+ELEVATOR_GEAR_RATIO = (16 / 1) * (42 / 14)
 # ELEVATOR_GEAR_RATIO = (10/1)*(42/14)
 ELEVATOR_CARRIAGE_MASS = 5 # in Kilograms
 ELEVATOR_DRUM_RADIUS_M = 2 * INCHES_PER_METER # in meters
