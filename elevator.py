@@ -65,7 +65,6 @@ class ELEVATOR(Subsystem):
 
         # Set the left side motors to be counter clockwise positive
         config.motor_output.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE  #  Red going upward
-        # config.motor_output.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
         config.motor_output.neutral_mode = NeutralModeValue.BRAKE
 
@@ -73,6 +72,10 @@ class ELEVATOR(Subsystem):
         # This item sets the gear ratio between motor turns and wheel turns
         config.feedback.feedback_sensor_source = FeedbackSensorSourceValue.ROTOR_SENSOR
         config.feedback.sensor_to_mechanism_ratio = constants.ELEVATOR_GEAR_RATIO
+
+        # reset the relative encoder to 0 at the bottom
+        config.hardware_limit_switch.forward_limit_autoset_position_enable = True
+        config.hardware_limit_switch.forward_limit_autoset_position_value = 0
 
         # Apply the configuration to the motors
         for i in range(6):  # Try 5 times with results returned into "ret"
@@ -113,7 +116,11 @@ class ELEVATOR(Subsystem):
     #     return self._ELEVATOR.get_position()
     
     def get_rotation_count(self) -> float:
-        return 0 -self._ELEVATOR.get_position().value_as_double
+        '''
+        To make sure the limit switches all function correctly, they are wired so the 
+        reverse limit is at the top of the elevator
+        '''
+        return -self._ELEVATOR.get_position().value_as_double
 
 #==================================================================================
 ##   SOURCE:  https://v6.docs.ctr-electronics.com/en/2024/docs/api-reference/api-usage/actuator-limits.html
