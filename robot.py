@@ -92,8 +92,28 @@ class MyRobot(TimedCommandRobot):
         self._current_pose = Pose2d()
 
     def __configure_button_bindings(self) -> None:
-        # Driver controller controls first
+        # ############ Driver controller controls first ##################################
         ####>> self._driver_controller.a().whileTrue(IntakeCommand(self._intake))
+
+        self._driver_controller.rightTrigger().onTrue(
+            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE)
+        )
+        self._driver_controller.rightBumper().onTrue(
+            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_TWO)
+        )
+        self._driver_controller.leftBumper().onTrue(
+            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_THREE)
+        )
+        self._driver_controller.leftTrigger().onTrue(
+            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_FOUR)
+        )
+
+        self._driver_controller.start().onTrue(
+            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_BOTTOM)
+        )
+        self._driver_controller.start().onTrue(
+            MoveELEVATORToZero(self._elevator)
+        )
 
         # Left Button Note Aim
         # The WPILIB enum and our controller mapping are different.  On the Zorro
@@ -140,32 +160,32 @@ class MyRobot(TimedCommandRobot):
 
         #=======(elevator controls)===================================
                 # Right Trigger Climber Up
-        self._partner_controller.rightTrigger().whileTrue(
+        self._partner_controller.povUp().onTrue(
             MoveELEVATOR(self._elevator, 0.4).withName("ElevatorUp")
         )
         # Left Trigger Climber Down
-        self._partner_controller.leftTrigger().whileTrue(
+        self._partner_controller.povDown().onTrue(
             MoveELEVATOR(self._elevator, -0.4).withName("ElevatorDown")
         )
-        self._partner_controller.a().onTrue(
-            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE)
-        )
-        self._partner_controller.b().onTrue(
-            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_TWO)
-        )
-        self._partner_controller.x().onTrue(
-            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_THREE)
-        )
-        self._partner_controller.y().onTrue(
-            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_FOUR)
-        )
+        # self._partner_controller.a().onTrue(
+        #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE)
+        # )
+        # self._partner_controller.b().onTrue(
+        #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_TWO)
+        # )
+        # self._partner_controller.x().onTrue(
+        #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_THREE)
+        # )
+        # self._partner_controller.y().onTrue(
+        #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_FOUR)
+        # )
 
         # self._partner_controller.start().onTrue(
         #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_BOTTOM)
         # )
-        self._partner_controller.start().onTrue(
-            MoveELEVATORToZero(self._elevator)
-        )
+        # self._partner_controller.start().onTrue(
+        #     MoveELEVATORToZero(self._elevator)
+        # )
         #=======(Wrist controls)===================================
 
         self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
