@@ -160,11 +160,11 @@ class MyRobot(TimedCommandRobot):
 
         #=======(elevator controls)===================================
         # POV Up Elevator Up
-        # self._partner_controller.povUp().onTrue(
+        # self._partner_controller.povUp().whileTrue(
         #     MoveELEVATOR(self._elevator, 0.4).withName("ElevatorUp")
         # )
         # # POV Down Elevator Down
-        # self._partner_controller.povDown().onTrue(
+        # self._partner_controller.povDown().whileTrue(
         #     MoveELEVATOR(self._elevator, -0.4).withName("ElevatorDown")
         # )
        
