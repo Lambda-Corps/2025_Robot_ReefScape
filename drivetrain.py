@@ -205,7 +205,7 @@ class DriveTrain(Subsystem):
 
         self._turn_pid_controller.enableContinuousInput(-180, 180)
         self._turn_pid_controller.setTolerance(1)
-        SmartDashboard.putData("Turn PID", self._turn_pid_controller)
+        # SmartDashboard.putData("Turn PID", self._turn_pid_controller)
 
     def __create_path_pid_objects(self) -> None:
         if RobotBase.isSimulation():
@@ -435,11 +435,11 @@ class DriveTrain(Subsystem):
             self._path_feedforward.calculate(right) + right_pid
         )
 
-        if self._test_mode:
-            SmartDashboard.putNumber("LeftPID", left_pid)
-            SmartDashboard.putNumber("RightPID", right_pid)
-            SmartDashboard.putNumber("LeftSpeed", left)
-            SmartDashboard.putNumber("RightSpeed", right)
+        # if self._test_mode:
+        #     SmartDashboard.putNumber("LeftPID", left_pid)
+        #     SmartDashboard.putNumber("RightPID", right_pid)
+        #     SmartDashboard.putNumber("LeftSpeed", left)
+        #     SmartDashboard.putNumber("RightSpeed", right)
 
         self._left_leader.set_control(self._left_volts_out)
         self._right_leader.set_control(self._right_volts_out)
@@ -455,7 +455,7 @@ class DriveTrain(Subsystem):
     def turn_ccw_positive(self, speed: float) -> None:
         if RobotBase.isSimulation():
             speed = self.__clamp(speed, 0.05)
-            wpilib.SmartDashboard.putNumber("TurnSpeed", speed)
+            # wpilib.SmartDashboard.putNumber("TurnSpeed", speed)
         else:
             speed = self.__clamp(speed, self.__TURN_PID_SPEED)
 
@@ -693,8 +693,8 @@ class TeleopDriveWithVision(Command):
         self._yaw_getter = _yaw_getter
         self._controller = controller
         self._flipped = flipped_controls
-        SmartDashboard.putNumber("VisionKP", 0.012)
-        SmartDashboard.putNumber("VisionFF", 0.1)
+        # SmartDashboard.putNumber("VisionKP", 0.012)
+        # SmartDashboard.putNumber("VisionFF", 0.1)
         self.addRequirements(self._dt)
 
     def execute(self):
