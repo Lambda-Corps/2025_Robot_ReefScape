@@ -160,11 +160,11 @@ class MyRobot(TimedCommandRobot):
 
         #=======(elevator controls)===================================
         # POV Up Elevator Up
-        # self._partner_controller.povUp().onTrue(
+        # self._partner_controller.povUp().whileTrue(
         #     MoveELEVATOR(self._elevator, 0.4).withName("ElevatorUp")
         # )
         # # POV Down Elevator Down
-        # self._partner_controller.povDown().onTrue(
+        # self._partner_controller.povDown().whileTrue(
         #     MoveELEVATOR(self._elevator, -0.4).withName("ElevatorDown")
         # )
        
@@ -202,7 +202,7 @@ class MyRobot(TimedCommandRobot):
 
         self._driver_controller.a().onTrue(Set_Wrist_Angle(self._wrist, 0))  # Example target angle
         self._driver_controller.b().onTrue(Set_Wrist_Angle(self._wrist, 20))  # Example target angle
-        self._driver_controller.x().onTrue(Set_Wrist_Angle(self._wrist, 45))  # Example target angle
+        self._partner_controller.y().onTrue(Set_Wrist_Angle(self._wrist, 45))  # Example target angle
         self._driver_controller.y().onTrue(Set_Wrist_Angle(self._wrist, 60))  # Example target angle
 
         # self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, 0))
