@@ -356,19 +356,26 @@ class DriveTrain(Subsystem):
         match self._elevator_pos:
             case constants.ElevatorPosition.LEVEL_BOTTOM:
                 forward = self._base_fwd_limiter.calculate(forward)
+                SmartDashboard.putNumber("SLEW CASE: ", 0)
             case constants.ElevatorPosition.LEVEL_ONE:
                 forward = self._level1_fwd_limiter.calculate(forward)
+                SmartDashboard.putNumber("SLEW CASE: ", 1)
             case constants.ElevatorPosition.LEVEL_TWO:
                 forward = self._level2_fwd_limiter.calculate(forward)
+                SmartDashboard.putNumber("SLEW CASE: ", 2)
             case constants.ElevatorPosition.LEVEL_THREE:
                 forward = self._level3_fwd_limiter.calculate(forward)
+                SmartDashboard.putNumber("SLEW CASE: ", 3)
             case constants.ElevatorPosition.LEVEL_FOUR:
                 forward = self._level4_fwd_limiter.calculate(forward)
+                SmartDashboard.putNumber("SLEW CASE: ", 4)
             case constants.ElevatorPosition.LEVEL_UKNOWN:
                 forward = self._base_fwd_limiter.calculate(forward)
+                SmartDashboard.putNumber("SLEW CASE: ", 5)
             case _: 
                 # This is the default case in the event nothing matches
                 forward = self._base_fwd_limiter.calculate(forward)
+                SmartDashboard.putNumber("SLEW CASE: ", 6)
 
         return forward
             

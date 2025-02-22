@@ -4,6 +4,7 @@ from wpilib import SmartDashboard, DutyCycleEncoder, Timer, RobotBase
 from phoenix5 import TalonSRX, ControlMode, Faults
 import constants
 import wpilib
+from wpimath.controller import PIDController
 
 #===(Hardware Notes)==============================================
 '''
@@ -148,8 +149,6 @@ class SetWrist_Manual(Command):
 
 
 #================================================================================================
-
-
 class Set_Wrist_Angle(Command):
     def __init__(self, Wrist: WristControl, target_angle: float, timeout = 10):
         super().__init__()
@@ -191,5 +190,33 @@ class Set_Wrist_Angle(Command):
         self._Wrist.move_wrist(0)
         print ("WRIST MOVEMENT DONE at ", wpilib.Timer.getFPGATimestamp())
 
+
+#================================================================================================
+class Set_Wrist_Angle_with_PID(Command):
+    def __init__(self, Wrist: WristControl, target_angle: float):
+        super().__init__()
+        self._Wrist = Wrist
+        self.target_angle = target_angle
+        kP = 1
+        kI = 0.1
+        kD = 0.5
+        self.wrist_pid_controller = PIDController(kP, kI, kD)
+        self.addRequirements(self._Wrist)
+
+    def initialize(self):
+        print ("Moving wrist to: ",self.target_angle, "  at " , wpilib.Timer.getFPGATimestamp() )
+        self.wrist_pid_controller.reset()
+
+    def execute(self):
+        current_angle = self._Wrist.getAbsolutePosition()
+        controlled_wrist_speed = self.wrist_pid_controller.calculate(current_angle, self.target_angle)
+        SetWrist(self._Wrist,controlled_wrist_speed)
+        
+    def isFinished(self) -> bool:
+        return False
+        
+    def end(self, interrupted: bool):
+        self._Wrist.move_wrist(0)
+        print ("WRIST MOVEMENT DONE at ", wpilib.Timer.getFPGATimestamp())
 
 

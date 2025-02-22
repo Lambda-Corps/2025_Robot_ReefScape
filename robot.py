@@ -24,7 +24,7 @@ from pathplannerlib.auto import (
 from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
 from intake import Intake,  SetIntakeSpeedandTime, SetIntakeManual
-from wrist import WristControl, SetWrist, SetWrist_Manual
+from wrist import WristControl, SetWrist, SetWrist_Manual,Set_Wrist_Angle_with_PID
 from leds import LEDSubsystem, FlashLEDCommand
 from wrist import WristControl, SetWrist, Set_Wrist_Angle
 ####>>> from vision import VisionSystem
@@ -200,11 +200,15 @@ class MyRobot(TimedCommandRobot):
 
         self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
 
-        self._driver_controller.a().onTrue(Set_Wrist_Angle(self._wrist, 0))  # Example target angle
-        self._driver_controller.b().onTrue(Set_Wrist_Angle(self._wrist, 20))  # Example target angle
-        self._driver_controller.x().onTrue(Set_Wrist_Angle(self._wrist, 45))  # Example target angle
-        self._driver_controller.y().onTrue(Set_Wrist_Angle(self._wrist, 60))  # Example target angle
+        # self._driver_controller.a().onTrue(Set_Wrist_Angle(self._wrist, 0))  # Example target angle
+        # self._driver_controller.b().onTrue(Set_Wrist_Angle(self._wrist, 20))  # Example target angle
+        # self._driver_controller.x().onTrue(Set_Wrist_Angle(self._wrist, 45))  # Example target angle
+        # self._driver_controller.y().onTrue(Set_Wrist_Angle(self._wrist, 60))  # Example target angle
 
+        self._driver_controller.a().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 0))  # Example target angle
+        self._driver_controller.b().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 20))  # Example target angle
+        self._driver_controller.x().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 45))  # Example target angle
+        self._driver_controller.y().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 60))  # Example target angle
         # self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, 0))
 
         #=======(Intake controls)===================================
