@@ -5,6 +5,31 @@ from phoenix5 import TalonSRX, ControlMode, Faults
 import constants
 import wpilib
 
+#===(Hardware Notes)==============================================
+'''
+The wrist is moved using an AndyMark NeveRest motor controlled by a Talon SRX.
+The motor runs at 25 RPM and has a 22 Tooth steel gear driving a steel 52 Tooth steer gear.
+The 52 Tooth gear is on the wrist axle.
+
+The wrist Talon SRX shows red when the wrist is moving upward.  (Negative direction)
+
+The intake axle has limit switches connected directly to the Talon SRX to prevent the 
+robot software from overdriving the wrist axle and breaking the robot.  The talon SRX has a 
+breakout box mounted on the remote interface to access the limit switch interface.  This
+board also provides red LEDs to indicate when the limit is reached.  The top LED/connector is
+connected to the top limit switch.  The bottom LED/connector is connected to the bottom limit 
+switch.
+
+The wrist joint is monitored with a REV robotics absolute encoder which read degrees.
+The absolute encoder is connected to the RoboRIO Digital Input/Output #0
+
+The wrist has two main commands:
+1) Manual control of the wrist
+2) Autonomous mode where the desired set point angle is provided
+
+'''
+#================================================================
+
 
 class WristControl(Subsystem):
     def __init__(self):

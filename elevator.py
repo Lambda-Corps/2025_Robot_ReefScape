@@ -27,11 +27,43 @@ from phoenix6.configs import TalonFXConfiguration
 from phoenix6.signals.spn_enums import (InvertedValue, NeutralModeValue, FeedbackSensorSourceValue)
 from phoenix6 import StatusCode
 from robot import CommandXboxController
-#===========================================================
-
 from wpilib import SmartDashboard, AnalogInput, RobotBase, Timer
 import constants
 from constants import ElevatorPosition
+
+#===(Hardware Notes)==============================================
+'''
+The elavator is driven by a Falcon 500 which uses a Talon FX controller.
+The motor has a VersaPlanetary gearbox with a reduction of 16 to 1 (two 4:1 stages)
+After the gearbox is a 14 Tooth sprocket driving a 36 tooth sprocket
+
+As of Feb 21, the Falcon indicates red when the elevator is going up.
+The Falcon is running in inverted mode.
+The limit switch at the top of the elavator is considered the Reverse Limit Switch
+The limit switch at the bottom of the elevator is considered the Forward Limit Switch
+
+We have enabled a feature that zeros the Falcon internal rotation counter when the Forward
+Limit switch is hit called "forward_limit_autoset_position_value"
+
+???? Will the internal position counter go to zero when the elevator reaches the top????
+
+Our Motor is running in reverse when rising so the internal rotation counter is running negative
+Our function which reads the counter negates the count.
+
+Zero is a the bottom and about 4.9 counts (big gear revolutions) is the top.
+
+The elevator has three main commands:
+1) Manual control of the elevator
+2) Autonomous mode where the desired set point is provided
+3) Zero the elevator.  (Bring the elevator down slowly until the bottom limit switch and zero the counter)
+
+
+NEXT YEAR we should design the robot motors to have positive direction move the arm or elevator and 
+have the counts go positive.  The Upper limit switch should be at the end of the forward action.
+
+'''
+#================================================================
+
 class ELEVATOR(Subsystem):
     ELEVATOR_TOP_LIMIT = 5000.
     ELEVATOR_UP_SPEED = -0.2  # was 0.2

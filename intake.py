@@ -6,6 +6,18 @@ import constants
 import wpilib
 from commands2.button import CommandXboxController
 
+#===(Hardware Notes)==============================================
+'''
+The intake is moved using an AndyMark NeveRest motor controlled by a Talon SRX.
+The motor runs at 130 RPM.
+
+No sensors (limit switches or rotation encoders) are used.
+
+Spinning the wheels inward is the positive direction and the SRX indicates green.
+
+'''
+#================================================================
+
 
 class Intake(Subsystem):
     """

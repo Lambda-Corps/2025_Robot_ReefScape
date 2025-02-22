@@ -43,6 +43,17 @@ VISION_KP = 0.012
 FEEDFORWARD = 0.1
 FOLLOWER_MOTORS_PRESENT = False
 
+
+#===(Hardware Notes)==============================================
+'''
+The drivetrain uses two Kraken motors. (One on each side)
+The krakens have internal rotation counter to monitor robot motion.
+The RoboRIO has a NAVX gyro to monitor robot heading.
+
+'''
+#================================================================
+
+
 class DriveTrain(Subsystem):
     __DRIVER_DEADBAND = 0.1
     __LEVEL0_SLEW = 3  # .33 seconds to full speed
