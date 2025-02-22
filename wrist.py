@@ -85,13 +85,13 @@ class WristControl(Subsystem):
 
     def move_wrist_up(self, speed: float):
         if not self.Wrist_at_Top():
-            self.move_wrist(speed)
+            self.move_wrist(-speed)
         else:
             self.move_wrist(0)
 
     def move_wrist_down(self, speed: float):
         if not self.Wrist_at_Bottom():
-            self.move_wrist(-speed)
+            self.move_wrist(speed)
         else:
             self.move_wrist(0)
 
@@ -151,7 +151,7 @@ class SetWrist_Manual(Command):
 
 
 class Set_Wrist_Angle(Command):
-    def __init__(self, Wrist: WristControl, target_angle: float, timeout = 1):
+    def __init__(self, Wrist: WristControl, target_angle: float, timeout = 10):
         super().__init__()
         self._Wrist = Wrist
         self.target_angle = target_angle
@@ -167,10 +167,12 @@ class Set_Wrist_Angle(Command):
 
     def execute(self):
         current_angle = self._Wrist.getAbsolutePosition()
-        if current_angle > self.target_angle:
-            self._Wrist.move_wrist_down(0.2)
+        if current_angle > 300:
+            self._Wrist.move_wrist_down(0.6)
+        elif current_angle > self.target_angle:
+            self._Wrist.move_wrist_up(0.4)
         else:
-            self._Wrist.move_wrist_up(0.2) 
+            self._Wrist.move_wrist_down(0.6) 
         
     def isFinished(self) -> bool:
         ret = False
@@ -179,7 +181,7 @@ class Set_Wrist_Angle(Command):
 
         current_angle = self._Wrist.getAbsolutePosition()
         # print ((current_angle - self.target_angle))
-        if (abs(current_angle - self.target_angle) < 5):
+        if (abs(current_angle - self.target_angle) < 1):
             ret = True
         if (self._timer.hasElapsed(self._timeout)):
             ret = True

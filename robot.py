@@ -15,7 +15,7 @@ from commands2 import (
     WaitCommand,
     cmd,
 )
-from commands2.button import CommandXboxController, Trigger, JoystickButton
+from commands2.button import CommandXboxController, Trigger, JoystickButton, POVButton
 from wpimath.geometry import Pose2d
 from pathplannerlib.auto import (
     NamedCommands,
@@ -159,14 +159,24 @@ class MyRobot(TimedCommandRobot):
         # )
 
         #=======(elevator controls)===================================
-                # Right Trigger Climber Up
-        self._partner_controller.povUp().onTrue(
+        # POV Up Elevator Up
+        # self._partner_controller.povUp().onTrue(
+        #     MoveELEVATOR(self._elevator, 0.4).withName("ElevatorUp")
+        # )
+        # # POV Down Elevator Down
+        # self._partner_controller.povDown().onTrue(
+        #     MoveELEVATOR(self._elevator, -0.4).withName("ElevatorDown")
+        # )
+       
+        # Bumbers can also move the elevator up and down maybe if the POV is not working or is not a good option
+        self._partner_controller.rightBumper().whileTrue(
             MoveELEVATOR(self._elevator, 0.4).withName("ElevatorUp")
         )
-        # Left Trigger Climber Down
-        self._partner_controller.povDown().onTrue(
+        self._partner_controller.leftBumper().whileTrue(
             MoveELEVATOR(self._elevator, -0.4).withName("ElevatorDown")
         )
+
+
         # self._partner_controller.a().onTrue(
         #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE)
         # )
@@ -190,16 +200,26 @@ class MyRobot(TimedCommandRobot):
 
         self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
 
-        # self._partner_controller.a().onTrue(Set_Wrist_Angle(self._wrist, 10))  # Example target angle
-        # self._partner_controller.b().onTrue(Set_Wrist_Angle(self._wrist, 20))  # Example target angle
-        # self._partner_controller.x().onTrue(Set_Wrist_Angle(self._wrist, 60))  # Example target angle
-        # self._partner_controller.y().onTrue(Set_Wrist_Angle(self._wrist, 120))  # Example target angle
+        self._driver_controller.a().onTrue(Set_Wrist_Angle(self._wrist, 0))  # Example target angle
+        self._driver_controller.b().onTrue(Set_Wrist_Angle(self._wrist, 20))  # Example target angle
+        self._driver_controller.x().onTrue(Set_Wrist_Angle(self._wrist, 45))  # Example target angle
+        self._driver_controller.y().onTrue(Set_Wrist_Angle(self._wrist, 60))  # Example target angle
 
         # self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, 0))
 
         #=======(Intake controls)===================================
 
         self._intake.setDefaultCommand(SetIntakeManual(self._intake, self._partner_controller))
+
+        # Intake in for one second when a button is pushed
+        self._partner_controller.b().onTrue(
+            SetIntakeSpeedandTime(self._intake, -1, 1)
+        )
+        # Intake out for one second when a button is pushed
+        self._partner_controller.a().onTrue(
+            SetIntakeSpeedandTime(self._intake, 1, 1)
+        )
+
 
         # wpilib.SmartDashboard.putData("Turn90", TurnToAnglePID(self._drivetrain, 90, 3))
         # wpilib.SmartDashboard.putData(
@@ -282,15 +302,15 @@ class MyRobot(TimedCommandRobot):
         #  The wrist 90 degree position is low
 
         NamedCommands.registerCommand(
-            "WristToHighPosition",Set_Wrist_Angle(self._wrist, 0).withTimeout(2)
+            "WristToHighPosition",Set_Wrist_Angle(self._wrist, 0).withTimeout(10)
             )  
          
         NamedCommands.registerCommand(
-            "WristToMediumPosition",Set_Wrist_Angle(self._wrist, 45).withTimeout(2)
+            "WristToMediumPosition",Set_Wrist_Angle(self._wrist, 45).withTimeout(10)
             )  
         
         NamedCommands.registerCommand(
-            "WristToLowPosition",Set_Wrist_Angle(self._wrist, 90).withTimeout(2)
+            "WristToLowPosition",Set_Wrist_Angle(self._wrist, 90).withTimeout(10)
             )  
         
         #===(Intake Named Commands)====================================

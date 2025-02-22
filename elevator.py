@@ -66,8 +66,8 @@ have the counts go positive.  The Upper limit switch should be at the end of the
 
 class ELEVATOR(Subsystem):
     ELEVATOR_TOP_LIMIT = 5000.
-    ELEVATOR_UP_SPEED = -0.2  # was 0.2
-    ELEVATOR_DOWN_SPEED = 0.2
+    ELEVATOR_UP_SPEED = -0.6  # was 0.2
+    ELEVATOR_DOWN_SPEED = 0.5
 
     def __init__(self) -> None:
         super().__init__()
