@@ -23,6 +23,12 @@ switch.
 The wrist joint is monitored with a REV robotics absolute encoder which read degrees.
 The absolute encoder is connected to the RoboRIO Digital Input/Output #0
 
+The encoder is mounted so that the 0 degree position is when the wrist is a little bit forward of vertical. 
+The encoder reads about 50 degrees with the wrist all the way forward and hitting the lower limit switch.
+The encoder reads about 340 degrees (-20) when the wrist is in the "Stowed" position. 
+The "Stowed" position is needed to allow the intake to be within the frame of the robot at the start
+of the competition.
+
 The wrist has two main commands:
 1) Manual control of the wrist
 2) Autonomous mode where the desired set point angle is provided
