@@ -50,6 +50,12 @@ The drivetrain uses two Kraken motors. (One on each side)
 The krakens have internal rotation counter to monitor robot motion.
 The RoboRIO has a NAVX gyro to monitor robot heading.
 
+The autonomous drivetrain performance is controlled by Q and R elements 
+See about line 140.
+
+The teleOp drivetrain performance is controlled by Slew Rate Limiters.
+See aboutl ine 70
+
 '''
 #================================================================
 
