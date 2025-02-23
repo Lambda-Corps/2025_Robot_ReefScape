@@ -220,6 +220,9 @@ class MoveELEVATOR(Command):
         self._timer.restart()
 
     def execute(self):
+        ## TODO:  ADD A CHECK TO PREVENT ELEVATOR MOVEMENT UNLESS WRIST IN ACCEPTABLE POSITION 
+        #         OR MOVE WRIST TO MIDDLE POSITION
+
         if self._speed > 0:
             self._ELEVATOR.move_ELEVATOR_up()
         elif self._speed < 0:
@@ -253,6 +256,8 @@ class MoveELEVATORToSetPoint(Command):
      self.addRequirements(self._ELEVATOR)     
 
     def initialize(self):
+        ## TODO:  ADD A COMMAND TO MOVE WRIST TO 30 DEGREES
+
         print ("Elevator to set position: ", self._TargetPosition, "  at ", wpilib.Timer.getFPGATimestamp())
         self._timer.restart()
         self.currentposition = self._ELEVATOR.get_rotation_count()
@@ -313,6 +318,7 @@ class MoveELEVATORToZero(Command):
 
     def initialize(self):
         self._ELEVATOR.move_ELEVATOR_down_with_speed(0.2)
+        ## TODO:  ADD A COMMAND TO MOVE WRIST TO 30 DEGREES
 
     def execute(self):
        SmartDashboard.putNumber("Elevator_Position", self._ELEVATOR.get_rotation_count())
