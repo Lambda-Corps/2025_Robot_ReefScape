@@ -24,9 +24,17 @@ from pathplannerlib.auto import (
 from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
 from intake import Intake,  SetIntakeSpeedandTime, SetIntakeManual
-from wrist import WristControl, SetWrist, SetWrist_Manual,Set_Wrist_Angle_with_PID
+from wrist import (
+        WristControl, 
+        SetWrist, 
+        SetWrist_Manual,
+        Set_Wrist_Angle, 
+        Set_Wrist_Angle_with_PID, 
+        Set_Wrist_Angle_manual_and_auto_with_PID,
+        Set_Global_Wrist_Angle,
+)
 from leds import LEDSubsystem, FlashLEDCommand
-from wrist import WristControl, SetWrist, Set_Wrist_Angle
+# from wrist import WristControl, SetWrist, Set_Wrist_Angle, Set_Wrist_Angle_manual_and_auto_with_PID
 ####>>> from vision import VisionSystem
 from elevator import ELEVATOR, CancelElevatorMovement, MoveELEVATOR, MoveELEVATORToSetPoint, MoveELEVATORToZero, Move_Elevator_L3
 
@@ -198,18 +206,23 @@ class MyRobot(TimedCommandRobot):
         # )
         #=======(Wrist controls)===================================
 
-        self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
 
-        # self._driver_controller.a().onTrue(Set_Wrist_Angle(self._wrist, 0))  # Example target angle
-        # self._driver_controller.b().onTrue(Set_Wrist_Angle(self._wrist, 20))  # Example target angle
-        # self._driver_controller.x().onTrue(Set_Wrist_Angle(self._wrist, 45))  # Example target angle
-        # self._driver_controller.y().onTrue(Set_Wrist_Angle(self._wrist, 60))  # Example target angle
 
-        self._driver_controller.a().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 0))  # Example target angle
-        self._driver_controller.b().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 20))  # Example target angle
-        self._driver_controller.x().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 45))  # Example target angle
-        self._driver_controller.y().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 60))  # Example target angle
-        # self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, 0))
+
+        self._wrist.setDefaultCommand(Set_Wrist_Angle_manual_and_auto_with_PID(self._wrist, self._partner_controller))
+
+
+        self._driver_controller.a().whileTrue(Set_Global_Wrist_Angle(self._wrist, 0))  # Example target angle
+        self._driver_controller.b().whileTrue(Set_Global_Wrist_Angle(self._wrist, 20))  # Example target angle
+        self._driver_controller.x().whileTrue(Set_Global_Wrist_Angle(self._wrist, 45))  # Example target angle
+        self._driver_controller.y().whileTrue(Set_Global_Wrist_Angle(self._wrist, 60))  # Example target angle
+
+        # self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
+
+        # self._driver_controller.a().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 0))  # Example target angle
+        # self._driver_controller.b().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 20))  # Example target angle
+        # self._driver_controller.x().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 45))  # Example target angle
+        # self._driver_controller.y().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 60))  # Example target angle
 
         #=======(Intake controls)===================================
 
@@ -319,6 +332,10 @@ class MyRobot(TimedCommandRobot):
         
         #===(Intake Named Commands)====================================
 
+        NamedCommands.registerCommand(
+            "AutoIntake", PrintCommand("AutoIntake")  # Added to quiet down startup error
+            )
+        
         NamedCommands.registerCommand(
             "RunIntake", PrintCommand("RunIntake")
             )
