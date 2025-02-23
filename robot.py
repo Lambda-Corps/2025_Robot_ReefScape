@@ -212,6 +212,12 @@ class MyRobot(TimedCommandRobot):
         self._wrist.setDefaultCommand(Set_Wrist_Angle_manual_and_auto_with_PID(self._wrist, self._partner_controller))
 
 
+        # self._driver_controller.a().onTrue(Set_Global_Wrist_Angle(self._wrist, 0))  # Example target angle
+        # self._driver_controller.b().onTrue(Set_Global_Wrist_Angle(self._wrist, 20))  # Example target angle
+        # self._driver_controller.x().onTrue(Set_Global_Wrist_Angle(self._wrist, 45))  # Example target angle
+        # self._driver_controller.y().onTrue(Set_Global_Wrist_Angle(self._wrist, 60))  # Example target angle
+
+
         self._driver_controller.a().whileTrue(Set_Global_Wrist_Angle(self._wrist, 0))  # Example target angle
         self._driver_controller.b().whileTrue(Set_Global_Wrist_Angle(self._wrist, 20))  # Example target angle
         self._driver_controller.x().whileTrue(Set_Global_Wrist_Angle(self._wrist, 45))  # Example target angle
@@ -319,15 +325,15 @@ class MyRobot(TimedCommandRobot):
         #  The wrist 90 degree position is low
 
         NamedCommands.registerCommand(
-            "WristToHighPosition",Set_Wrist_Angle(self._wrist, 0).withTimeout(10)
+            "WristToHighPosition",Set_Global_Wrist_Angle(self._wrist, 10).withTimeout(10)
             )  
          
         NamedCommands.registerCommand(
-            "WristToMediumPosition",Set_Wrist_Angle(self._wrist, 45).withTimeout(10)
+            "WristToMediumPosition",Set_Global_Wrist_Angle(self._wrist, 45).withTimeout(10)
             )  
         
         NamedCommands.registerCommand(
-            "WristToLowPosition",Set_Wrist_Angle(self._wrist, 90).withTimeout(10)
+            "WristToLowPosition",Set_Global_Wrist_Angle(self._wrist, 50).withTimeout(10)
             )  
         
         #===(Intake Named Commands)====================================

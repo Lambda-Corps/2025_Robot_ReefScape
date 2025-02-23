@@ -74,18 +74,19 @@ class WristControl(Subsystem):
         self.wrist_motor.set(ControlMode.PercentOutput, speed)
         SmartDashboard.putNumber("Wrist_speed", speed)
 
+
     def Wrist_at_Top(self) -> bool:
         self.wrist_motor.getFaults(self.wrist_motor_faults)
         at_top = self.wrist_motor_faults.ForwardLimitSwitch
-        SmartDashboard.putBoolean("Wrist at Top", at_top)
+        SmartDashboard.putBoolean("Wrist at Bottom", at_top)  ## Directional Errors here
         return at_top
 
     def Wrist_at_Bottom(self) -> bool:
         self.wrist_motor.getFaults(self.wrist_motor_faults)
         at_bottom = self.wrist_motor_faults.ReverseLimitSwitch
-        SmartDashboard.putBoolean("Wrist at Bottom", at_bottom)
+        SmartDashboard.putBoolean("Wrist at Top", at_bottom)
         return at_bottom
-
+    
     def getAbsolutePosition(self) -> float:
         '''
         Return angle and keep between values of -60 and 300 

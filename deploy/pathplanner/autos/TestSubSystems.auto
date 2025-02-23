@@ -19,6 +19,12 @@
         {
           "type": "named",
           "data": {
+            "name": "WristToLowPosition"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "IntakeInFor1Second"
           }
         },
@@ -32,12 +38,6 @@
           "type": "named",
           "data": {
             "name": "ElevatorToL1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WristToLowPosition"
           }
         },
         {
