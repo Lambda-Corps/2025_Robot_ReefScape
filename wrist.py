@@ -31,8 +31,8 @@ The "Stowed" position is needed to allow the intake to be within the frame of th
 of the competition.
 
 The wrist has two main commands:
-1) Manual control of the wrist
-2) Autonomous mode where the desired set point angle is provided
+1) Set_Wrist_Angle_manual_and_auto_with_PID
+2) Set_Global_Wrist_Angle
 
 The Command "Set_Wrist_Angle_manual_and_auto_with_PID" the wrist default command.
 This command reads a wrist global variable and uses this to set the wrist angle.
@@ -102,7 +102,6 @@ class WristControl(Subsystem):
         SmartDashboard.putNumber("Wrist Position", self.wrist_motor.getSelectedSensorPosition())
         self.Wrist_at_Bottom()
         self.Wrist_at_Top()
-        self.global_target_wrist_angle
         SmartDashboard.putNumber("Global Wrist Position", self.get_global_wrist_angle())
 
 
@@ -153,168 +152,173 @@ class WristControl(Subsystem):
         return input
 
 #================================================================================================
+# class SetWrist(Command):
+#     def __init__(self, Wrist: WristControl, speed: float):
+#         super().__init__()
+#         self._Wrist = Wrist
+#         self._speed = speed
+#         self.addRequirements(self._Wrist)
 
+#     def initialize(self):
+#         pass
 
-class SetWrist(Command):
-    def __init__(self, Wrist: WristControl, speed: float):
-        super().__init__()
-        self._Wrist = Wrist
-        self._speed = speed
-        self.addRequirements(self._Wrist)
+#     def execute(self):
+#         self._Wrist.move_wrist(self._speed)
 
-    def initialize(self):
-        pass
+#     def isFinished(self) -> bool:
+#         return False
 
-    def execute(self):
-        self._Wrist.move_wrist(self._speed)
-
-    def isFinished(self) -> bool:
-        return False
-
-    def end(self, interrupted: bool):
-        self._Wrist.move_wrist(0)
+#     def end(self, interrupted: bool):
+#         self._Wrist.move_wrist(0)
 
 
 
 
 #================================================================================================
-class SetWrist_Manual(Command):
-    def __init__(self, Wrist: WristControl, controller: CommandXboxController):
-        super().__init__()
-        self._Wrist = Wrist
-        self._controller = controller
-        self.addRequirements(self._Wrist)
+#  Don't use this command.  Use the PID command
+# class SetWrist_Manual(Command):
+#     def __init__(self, Wrist: WristControl, controller: CommandXboxController):
+#         super().__init__()
+#         self._Wrist = Wrist
+#         self._controller = controller
+#         self.addRequirements(self._Wrist)
 
-    def initialize(self):
-        pass
+#     def initialize(self):
+#         pass
 
-    def execute(self):
-        self._Wrist.move_wrist(self._controller.getLeftY())
+#     def execute(self):
+#         self._Wrist.move_wrist(self._controller.getLeftY())
 
-    def isFinished(self) -> bool:
-        return False
+#     def isFinished(self) -> bool:
+#         return False
 
-    def end(self, interrupted: bool):
-        self._Wrist.move_wrist(0)
+#     def end(self, interrupted: bool):
+#         self._Wrist.move_wrist(0)
 
 
-# #================================================================================================
-class Set_Wrist_Angle(Command):
-    def __init__(self, Wrist: WristControl, target_angle: float, timeout = 10):
-        super().__init__()
-        self._Wrist = Wrist
-        self.target_angle = target_angle
-        self._timeout = timeout
+# # #================================================================================================
+# class Set_Wrist_Angle(Command):
+#     def __init__(self, Wrist: WristControl, target_angle: float, timeout = 10):
+#         super().__init__()
+#         self._Wrist = Wrist
+#         self.target_angle = target_angle
+#         self._timeout = timeout
 
-        self._timer = Timer()
-        self._timer.start()
-        self.addRequirements(self._Wrist)
+#         self._timer = Timer()
+#         self._timer.start()
+#         self.addRequirements(self._Wrist)
 
-    def initialize(self):
-        self._timer.restart()
-        print ("Moving wrist to: ",self.target_angle, "  at " , wpilib.Timer.getFPGATimestamp() )
+#     def initialize(self):
+#         self._timer.restart()
+#         print ("Moving wrist to: ",self.target_angle, "  at " , wpilib.Timer.getFPGATimestamp() )
 
-    def execute(self):
-        current_angle = self._Wrist.getAbsolutePosition()
-        # if current_angle > 300:
-        if current_angle < 0:
-            self._Wrist.move_wrist_down(0.6)
-        elif current_angle > self.target_angle:
-            self._Wrist.move_wrist_up(0.4)
-        else:
-            self._Wrist.move_wrist_down(0.6) 
+#     def execute(self):
+#         current_angle = self._Wrist.getAbsolutePosition()
+#         # if current_angle > 300:
+#         if current_angle < 0:
+#             self._Wrist.move_wrist_down(0.6)
+#         elif current_angle > self.target_angle:
+#             self._Wrist.move_wrist_up(0.4)
+#         else:
+#             self._Wrist.move_wrist_down(0.6) 
         
-    def isFinished(self) -> bool:
-        ret = False
-        if RobotBase.isSimulation():
-            ret = True    # just for testing simulation
+#     def isFinished(self) -> bool:
+#         ret = False
+#         if RobotBase.isSimulation():
+#             ret = True    # just for testing simulation
 
-        current_angle = self._Wrist.getAbsolutePosition()
-        # print ((current_angle - self.target_angle))
-        if (abs(current_angle - self.target_angle) < 1):
-            ret = True
-        if (self._timer.hasElapsed(self._timeout)):
-            ret = True
-        return ret
+#         current_angle = self._Wrist.getAbsolutePosition()
+#         # print ((current_angle - self.target_angle))
+#         if (abs(current_angle - self.target_angle) < 1):
+#             ret = True
+#         if (self._timer.hasElapsed(self._timeout)):
+#             ret = True
+#         return ret
 
-    def end(self, interrupted: bool):
-        self._Wrist.move_wrist(0)
-        print ("WRIST MOVEMENT DONE at ", wpilib.Timer.getFPGATimestamp())
+#     def end(self, interrupted: bool):
+#         self._Wrist.move_wrist(0)
+#         print ("WRIST MOVEMENT DONE at ", wpilib.Timer.getFPGATimestamp())
 
 
 #================================================================================================
-class SetWrist_Manual_using_Target_Angle(Command):
-    def __init__(self, Wrist: WristControl, controller: CommandXboxController):
-        super().__init__()
-        self._Wrist = Wrist
-        self._controller = controller
-        self.addRequirements(self._Wrist)
+# class SetWrist_Manual_using_Target_Angle(Command):
+#     def __init__(self, Wrist: WristControl, controller: CommandXboxController):
+#         super().__init__()
+#         self._Wrist = Wrist
+#         self._controller = controller
+#         self.addRequirements(self._Wrist)
 
-    def initialize(self):
-        pass
+#     def initialize(self):
+#         pass
 
-    def execute(self):
-        global_target_wrist_angle = global_target_wrist_angle + self._controller.getLeftY()
+#     def execute(self):
+#         global_target_wrist_angle = global_target_wrist_angle + self._controller.getLeftY()
 
-    def isFinished(self) -> bool:
-        return False
+#     def isFinished(self) -> bool:
+#         return False
 
-    def end(self, interrupted: bool):
-        pass
+#     def end(self, interrupted: bool):
+#         pass
 
 #================================================================================================
-class Set_Wrist_Angle_with_PID(Command):
-    def __init__(self, Wrist: WristControl, target_angle: float):
-        super().__init__()
-        self._Wrist = Wrist
-        self.target_angle = target_angle
-        kP = 0.1
-        kI = 0.0001
-        kD = 0.0001
-        self.wrist_pid_controller = PIDController(kP, kI, kD)
-        self.addRequirements(self._Wrist)
 
-    def initialize(self):
-        print ("Moving wrist to: ",self.target_angle, "  at " , wpilib.Timer.getFPGATimestamp() )
-        self.wrist_pid_controller.reset()
+## Don't use this command.  
+# class Set_Wrist_Angle_with_PID(Command):
+#     def __init__(self, Wrist: WristControl, target_angle: float):
+#         super().__init__()
+#         self._Wrist = Wrist
+#         self.target_angle = target_angle
+#         kP = 0.1
+#         kI = 0.0001
+#         kD = 0.0001
+#         self.wrist_pid_controller = PIDController(kP, kI, kD)
+#         self.addRequirements(self._Wrist)
 
-    def execute(self):
-        '''
-        Get current angle
-        Feed into PID Loop (need to add feed forward to counter gravity)
-        PID controller calculates error
-        !! Need to convert error into motor control
-        Clamp motor control speed
-        '''
+#     def initialize(self):
+#         print ("Moving wrist to: ",self.target_angle, "  at " , wpilib.Timer.getFPGATimestamp() )
+#         self.wrist_pid_controller.reset()
 
-        current_angle = self._Wrist.getAbsolutePosition()
-        AngleError = self.wrist_pid_controller.calculate(current_angle, self.target_angle)
-        controlled_wrist_speed = self._Wrist._clamp(AngleError)   
-        # controlled_wrist_speed = AngleError
-        self._Wrist.move_wrist(controlled_wrist_speed)
-        # print("Target: ", self.target_angle, "  Current:  ", current_angle , "  controlled_wrist_speed: ", controlled_wrist_speed)
+#     def execute(self):
+#         '''
+#         Get current angle
+#         Feed into PID Loop (need to add feed forward to counter gravity)
+#         PID controller calculates error
+#         !! Need to convert error into motor control
+#         Clamp motor control speed
+#         '''
+
+#         current_angle = self._Wrist.getAbsolutePosition()
+#         AngleError = self.wrist_pid_controller.calculate(current_angle, self.target_angle)
+#         controlled_wrist_speed = self._Wrist._clamp(AngleError)   
+#         # controlled_wrist_speed = AngleError
+#         self._Wrist.move_wrist(controlled_wrist_speed)
+#         # print("Target: ", self.target_angle, "  Current:  ", current_angle , "  controlled_wrist_speed: ", controlled_wrist_speed)
         
-    def isFinished(self) -> bool:
-        return False
+#     def isFinished(self) -> bool:
+#         return False
         
-    def end(self, interrupted: bool):
-        self._Wrist.move_wrist(0)
-        print ("WRIST MOVEMENT DONE at ", wpilib.Timer.getFPGATimestamp())
+#     def end(self, interrupted: bool):
+#         self._Wrist.move_wrist(0)
+#         print ("WRIST MOVEMENT DONE at ", wpilib.Timer.getFPGATimestamp())
 
 
 #================================================================================================
 
 class Set_Wrist_Angle_manual_and_auto_with_PID(Command):
-    def __init__(self, Wrist: WristControl,  controller: CommandXboxController):
+    def __init__(self, Wrist: WristControl,  controller: CommandXboxController, useInAutonomousMode = True):
         super().__init__()
         self._Wrist = Wrist
         self.controller = controller
+        self.useInAutonomousMode = useInAutonomousMode
         self.target_angle = 0
 
         kP = 0.1
         kI = 0.0001
         kD = 0.0001
+        wrist_angle_tolerance = 2  # degrees
+
         self.wrist_pid_controller = PIDController(kP, kI, kD)
+        self.wrist_pid_controller.setTolerance(wrist_angle_tolerance)
 
         self.addRequirements(self._Wrist)
 
@@ -332,7 +336,7 @@ class Set_Wrist_Angle_manual_and_auto_with_PID(Command):
         Clamp motor control speed
         '''
 
-        # Determine if manual controller is active (Joystick out of deadzone)
+        # Determine if manual controller is active (Joystick out of deadzone)    ## Move to separate function ##
         joystick_active = False
 
         joystick_position = self._Wrist._deadband(self.controller.getLeftY(), 0.1)
@@ -350,8 +354,11 @@ class Set_Wrist_Angle_manual_and_auto_with_PID(Command):
         self._Wrist.move_wrist(controlled_wrist_speed)
         # print("Target: ", self.target_angle, "  Current:  ", current_angle , "  controlled_wrist_speed: ", controlled_wrist_speed)
         
-    def isFinished(self) -> bool:
-        return False
+    def isFinished(self) -> bool:    # When used in autonomous mode, we want the command to end when tolerance is reached
+        return_value = False
+        if (self.useInAutonomousMode and self.wrist_pid_controller.atSetpoint()):
+            return_value = True
+        return return_value
         
     def end(self, interrupted: bool):
         self._Wrist.move_wrist(0)
@@ -378,3 +385,22 @@ class Set_Global_Wrist_Angle(Command):
 
     def end(self, interrupted: bool):
         pass
+
+#================================================================================================
+# class Wrist_Dummy_Default_command_Test(Command):
+#     def __init__(self, Wrist: WristControl):
+#         super().__init__()
+#         self._Wrist = Wrist
+#         self.addRequirements(self._Wrist)
+
+#     def initialize(self):
+#         print ("Dummy Default: ", wpilib.Timer.getFPGATimestamp() )
+
+#     def execute(self):
+#         pass
+
+#     def isFinished(self) -> bool:
+#         True
+
+#     def end(self, interrupted: bool):
+#         pass

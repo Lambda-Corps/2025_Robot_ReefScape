@@ -17,7 +17,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Move_Elevator_L3"
+                  "name": "WristToMediumPosition"
                 }
               }
             ]

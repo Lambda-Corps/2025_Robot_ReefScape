@@ -31,6 +31,8 @@ from wpilib import SmartDashboard, AnalogInput, RobotBase, Timer
 import constants
 from constants import ElevatorPosition
 
+from wrist import WristControl
+
 #===(Hardware Notes)==============================================
 '''
 The elavator is driven by a Falcon 500 which uses a Talon FX controller.
@@ -53,9 +55,13 @@ Our function which reads the counter negates the count.
 Zero is a the bottom and about 4.9 counts (big gear revolutions) is the top.
 
 The elevator has three main commands:
-1) Manual control of the elevator
+1) Manual control of the elevator at defined speed
 2) Autonomous mode where the desired set point is provided
 3) Zero the elevator.  (Bring the elevator down slowly until the bottom limit switch and zero the counter)
+
+MoveELEVATOR(sub: ELEVATOR, speed: float)
+MoveELEVATORToSetPoint(sub: ELEVATOR, TargetPosition: ElevatorPosition)
+MoveELEVATORToZero(sub: ELEVATOR)
 
 
 NEXT YEAR we should design the robot motors to have positive direction move the arm or elevator and 
@@ -188,11 +194,11 @@ class ELEVATOR(Subsystem):
     #     self._curr_position = position
 
 
-    def reset_Elevator(self) -> None:
-        if not self.ELEVATOR_at_bottom():
-         self._ELEVATOR.get_position(0.2)
-        else:
-         self.ELEVATOR_at_bottom(0)
+    # def reset_Elevator(self) -> None:
+    #     if not self.ELEVATOR_at_bottom():
+    #      self._ELEVATOR.get_position(0.2)
+    #     else:
+    #      self.ELEVATOR_at_bottom(0)
 
 
 #==================================================================================
@@ -214,7 +220,7 @@ class MoveELEVATOR(Command):
         self._timer = Timer()
         self._timer.start()
 
-        self.addRequirements(self._ELEVATOR)     
+        self.addRequirements(self._ELEVATOR)  
 
     def initialize(self):
         self._timer.restart()
@@ -223,12 +229,22 @@ class MoveELEVATOR(Command):
         ## TODO:  ADD A CHECK TO PREVENT ELEVATOR MOVEMENT UNLESS WRIST IN ACCEPTABLE POSITION 
         #         OR MOVE WRIST TO MIDDLE POSITION
 
-        if self._speed > 0:
-            self._ELEVATOR.move_ELEVATOR_up()
-        elif self._speed < 0:
-            self._ELEVATOR.move_ELEVATOR_down()
+        current_wrist_angle = SmartDashboard.getNumber("Global Wrist Position", 999)
+        # current_wrist_angle = WristControl.get_global_wrist_angle()
+
+        # ONLY MOVE THE ELEVATOR IS WITHIN AN ACCEPTABLE RANGE
+        if (current_wrist_angle < constants.WRIST_ACCEPTABLE_LOWER_LIMIT and 
+            current_wrist_angle > constants.WRIST_ACCEPTABLE_UPPER_LIMIT):
+
+            if self._speed > 0:
+                self._ELEVATOR.move_ELEVATOR_up()
+            elif self._speed < 0:
+                self._ELEVATOR.move_ELEVATOR_down()
+            else:
+                self._ELEVATOR.stop_ELEVATOR_motors()
+
         else:
-            self._ELEVATOR.stop_ELEVATOR_motors()
+            print("WRIST IS NOT IN ACCEPTABLE POSITION FOR ELEVATOR MOVEMENT")
 
 
     def isFinished(self) -> bool:
@@ -267,15 +283,24 @@ class MoveELEVATORToSetPoint(Command):
             self._direction = MoveELEVATORToSetPoint.DIRECTION_DOWN
 
     def execute(self):
-        self.currentposition = self._ELEVATOR.get_rotation_count()
-      
-        if self._direction == MoveELEVATORToSetPoint.DIRECTION_UP:
-            self._ELEVATOR.move_ELEVATOR_up()
-        elif self._direction == MoveELEVATORToSetPoint.DIRECTION_DOWN:
-            self._ELEVATOR.move_ELEVATOR_down()
+
+        # current_wrist_angle = WristControl.get_global_wrist_angle()
+        current_wrist_angle = SmartDashboard.getNumber("Global Wrist Position", 999)
+
+        # ONLY MOVE THE ELEVATOR IS WITHIN AN ACCEPTABLE RANGE
+        if (current_wrist_angle < constants.WRIST_ACCEPTABLE_LOWER_LIMIT and 
+            current_wrist_angle > constants.WRIST_ACCEPTABLE_UPPER_LIMIT):
+            
+            self.currentposition = self._ELEVATOR.get_rotation_count()
+            if self._direction == MoveELEVATORToSetPoint.DIRECTION_UP:
+                self._ELEVATOR.move_ELEVATOR_up()
+            elif self._direction == MoveELEVATORToSetPoint.DIRECTION_DOWN:
+                self._ELEVATOR.move_ELEVATOR_down()
+            else:
+                self._ELEVATOR.stop_ELEVATOR_motors()
+
         else:
-            self._ELEVATOR.stop_ELEVATOR_motors()
-        
+            print("WRIST IS NOT IN ACCEPTABLE POSITION FOR ELEVATOR MOVEMENT")
 
     def isFinished(self) -> bool:
         ret = False
@@ -317,8 +342,17 @@ class MoveELEVATORToZero(Command):
         self.addRequirements(self._ELEVATOR)     
 
     def initialize(self):
-        self._ELEVATOR.move_ELEVATOR_down_with_speed(0.2)
-        ## TODO:  ADD A COMMAND TO MOVE WRIST TO 30 DEGREES
+        current_wrist_angle = SmartDashboard.getNumber("Global Wrist Position", 999)
+        # current_wrist_angle = WristControl.get_global_wrist_angle()
+
+        # ONLY MOVE THE ELEVATOR IS WITHIN AN ACCEPTABLE RANGE
+        if (current_wrist_angle < constants.WRIST_ACCEPTABLE_LOWER_LIMIT and 
+            current_wrist_angle > constants.WRIST_ACCEPTABLE_UPPER_LIMIT):
+
+            self._ELEVATOR.move_ELEVATOR_down_with_speed(0.2)
+
+        else:
+            print("WRIST IS NOT IN ACCEPTABLE POSITION FOR ELEVATOR MOVEMENT")
 
     def execute(self):
        SmartDashboard.putNumber("Elevator_Position", self._ELEVATOR.get_rotation_count())
@@ -335,11 +369,11 @@ class MoveELEVATORToZero(Command):
         # SmartDashboard.putNumber("Elevator Encoder", self._ELEVATOR.get_position().value_as_double)
 
 # ======================================================================================================
-class Move_Elevator_L3(Command):
-    def __init__(self, Elevator: ELEVATOR ):
-        self.elevator = Elevator
-        self.target_position = constants.L3
-        self.addRequirements(self.elevator)
+# class Move_Elevator_L3(Command):
+#     def __init__(self, Elevator: ELEVATOR ):
+#         self.elevator = Elevator
+#         self.target_position = constants.L3
+#         self.addRequirements(self.elevator)
 
 class CancelElevatorMovement(InstantCommand):
     def __init__(self, elevator: ELEVATOR):

@@ -26,17 +26,24 @@ from drivetrain import DriveTrain,  TurnToAnglePID
 from intake import Intake,  SetIntakeSpeedandTime, SetIntakeManual
 from wrist import (
         WristControl, 
-        SetWrist, 
-        SetWrist_Manual,
-        Set_Wrist_Angle, 
-        Set_Wrist_Angle_with_PID, 
+        # SetWrist, 
+        # SetWrist_Manual,
+        # Set_Wrist_Angle, 
+        # Set_Wrist_Angle_with_PID, 
         Set_Wrist_Angle_manual_and_auto_with_PID,
         Set_Global_Wrist_Angle,
+        # Wrist_Dummy_Default_command_Test,
 )
 from leds import LEDSubsystem, FlashLEDCommand
 # from wrist import WristControl, SetWrist, Set_Wrist_Angle, Set_Wrist_Angle_manual_and_auto_with_PID
 ####>>> from vision import VisionSystem
-from elevator import ELEVATOR, CancelElevatorMovement, MoveELEVATOR, MoveELEVATORToSetPoint, MoveELEVATORToZero, Move_Elevator_L3
+from elevator import (
+    ELEVATOR, 
+    CancelElevatorMovement, 
+    MoveELEVATOR, 
+    MoveELEVATORToSetPoint, 
+    MoveELEVATORToZero, 
+)
 
 import constants
 from typing import Tuple, List
@@ -208,8 +215,8 @@ class MyRobot(TimedCommandRobot):
 
 
 
-
-        self._wrist.setDefaultCommand(Set_Wrist_Angle_manual_and_auto_with_PID(self._wrist, self._partner_controller))
+        #  Third parameter is False so the command does not end.
+        self._wrist.setDefaultCommand(Set_Wrist_Angle_manual_and_auto_with_PID(self._wrist, self._partner_controller, False))
 
 
         # self._driver_controller.a().onTrue(Set_Global_Wrist_Angle(self._wrist, 0))  # Example target angle
@@ -293,9 +300,9 @@ class MyRobot(TimedCommandRobot):
             "RaiseElevator", PrintCommand("RaiseElevator")
             )
         
-        NamedCommands.registerCommand(
-            "Move_Elevator_L3",PrintCommand("Move_Elevator_L3")
-            )
+        # NamedCommands.registerCommand(
+        #     "Move_Elevator_L3",PrintCommand("Move_Elevator_L3")
+        #     )
         
         NamedCommands.registerCommand(
             "ElevatorToL1", MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE).withTimeout(5)
@@ -334,8 +341,14 @@ class MyRobot(TimedCommandRobot):
         
         NamedCommands.registerCommand(
             "WristToLowPosition",Set_Global_Wrist_Angle(self._wrist, 50).withTimeout(10)
+            )         
+        
+        NamedCommands.registerCommand(
+            "WristDummyDefaultCommmand",Set_Wrist_Angle_manual_and_auto_with_PID(self._wrist,self._partner_controller).withTimeout(3)
             )  
         
+
+
         #===(Intake Named Commands)====================================
 
         NamedCommands.registerCommand(

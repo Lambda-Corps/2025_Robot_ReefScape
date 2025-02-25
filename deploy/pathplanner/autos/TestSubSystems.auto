@@ -25,6 +25,12 @@
         {
           "type": "named",
           "data": {
+            "name": "WristDummyDefaultCommmand"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "IntakeInFor1Second"
           }
         },
