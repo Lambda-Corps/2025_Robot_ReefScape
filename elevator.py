@@ -185,8 +185,9 @@ class ELEVATOR(Subsystem):
 
     def periodic(self) -> None:
         # SmartDashboard.putNumber("Elevator Encoder", self._ELEVATOR.get_position().value_as_double)
-        SmartDashboard.putNumber("Elevator Encoder", self.get_rotation_count())
-        position: constants.ElevatorPosition = constants.get_closest_elevator_position(self._ELEVATOR.get_position().value)
+        count = self.get_rotation_count()
+        SmartDashboard.putNumber("Elevator Encoder", count)
+        position: constants.ElevatorPosition = constants.get_closest_elevator_position(count)
         SmartDashboard.putNumber("Elevator_Position", position.value)
         SmartDashboard.putBoolean("Elevator_At_Lower_Limit", self.ELEVATOR_at_bottom())
     

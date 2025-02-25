@@ -148,7 +148,7 @@ class PhysicsEngine:
         self.elevator.update(tm_diff)
         # self.elevator_sim.set_raw_rotor_position(self.meters_to_rotations(self.elevator.getPosition()))
         # self.elevator_sim.set_rotor_velocity(self.meters_to_rotations(self.elevator.getVelocity()))
-        self.elevator_sim.set_raw_rotor_position(radiansToRotations(self.elevator.getAngularPosition()))
+        self.elevator_sim.set_raw_rotor_position(radiansToRotations(self.elevator.getAngularPosition())*constants.ELEVATOR_GEAR_RATIO)
         self.elevator_sim.set_rotor_velocity(radiansToRotations(self.elevator.getAngularVelocity()))
         # self.elev_mech_upper_2d.setLength(self.elevator.getPositionInches())
 

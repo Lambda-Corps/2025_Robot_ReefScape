@@ -111,16 +111,18 @@ class WristControl(Subsystem):
 
 
     def move_wrist_up(self, speed: float):
-        if not self.Wrist_at_Top():
-            self.move_wrist(-speed)
-        else:
-            self.move_wrist(0)
+        # if not self.Wrist_at_Top():
+        #     self.move_wrist(-speed)
+        # else:
+        #     self.move_wrist(0)
+        self.move_wrist(-speed)
 
     def move_wrist_down(self, speed: float):
-        if not self.Wrist_at_Bottom():
-            self.move_wrist(speed)
-        else:
-            self.move_wrist(0)
+        # if not self.Wrist_at_Bottom():
+        #     self.move_wrist(speed)
+        # else:
+        #     self.move_wrist(0)
+        self.move_wrist(speed)
 
     def get_global_wrist_angle(self) -> float:
         return self.global_target_wrist_angle

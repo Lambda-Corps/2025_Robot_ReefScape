@@ -194,8 +194,18 @@ class MyRobot(TimedCommandRobot):
 
 
         self._partner_controller.a().onTrue(
-            SetWristAngleAuto(self._wrist, 45).andThen(
+            SetWristAngleAuto(self._wrist, 45).withTimeout(5).andThen(
                 MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE)
+            )
+        )
+        self._partner_controller.x().onTrue(
+            SetWristAngleAuto(self._wrist, 45).withTimeout(5).andThen(
+                MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_THREE)
+            )
+        )
+        self._partner_controller.y().onTrue(
+            SetWristAngleAuto(self._wrist, 45).withTimeout(5).andThen(
+                MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_BOTTOM)
             )
         )
         # self._partner_controller.b().onTrue(
