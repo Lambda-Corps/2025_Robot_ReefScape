@@ -5,21 +5,40 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Mid Auto"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Mid Auto 2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Mid Auto 3"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "WristToMediumPosition"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ElevatorToL1"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Mid Auto"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeOutFor1Second"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.0
+                }
+              }
+            ]
           }
         }
       ]

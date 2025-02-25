@@ -5,22 +5,21 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "ElevatorToL1"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Best Auto  1"
-                }
-              }
-            ]
+            "pathName": "Best Auto  1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ElevatorToL4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WristToMediumPosition"
           }
         },
         {
@@ -33,6 +32,12 @@
           "type": "named",
           "data": {
             "name": "ElevatorToBottom"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reverse Best Auto  1"
           }
         }
       ]
