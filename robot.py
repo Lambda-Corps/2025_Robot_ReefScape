@@ -25,6 +25,7 @@ from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
 from intake import Intake,  SetIntakeSpeedandTime, SetIntakeManual
 from wrist import (
+        SetWristAngleAuto,
         WristControl, 
         # SetWrist, 
         # SetWrist_Manual,
@@ -192,9 +193,11 @@ class MyRobot(TimedCommandRobot):
         )
 
 
-        # self._partner_controller.a().onTrue(
-        #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE)
-        # )
+        self._partner_controller.a().onTrue(
+            SetWristAngleAuto(self._wrist, 45).andThen(
+                MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE)
+            )
+        )
         # self._partner_controller.b().onTrue(
         #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_TWO)
         # )
@@ -242,13 +245,13 @@ class MyRobot(TimedCommandRobot):
         self._intake.setDefaultCommand(SetIntakeManual(self._intake, self._partner_controller))
 
         # Intake in for one second when a button is pushed
-        self._partner_controller.b().onTrue(
-            SetIntakeSpeedandTime(self._intake, -1, 1)
-        )
-        # Intake out for one second when a button is pushed
-        self._partner_controller.a().onTrue(
-            SetIntakeSpeedandTime(self._intake, 1, 1)
-        )
+        # self._partner_controller.b().onTrue(
+        #     SetIntakeSpeedandTime(self._intake, -1, 1)
+        # )
+        # # Intake out for one second when a button is pushed
+        # self._partner_controller.a().onTrue(
+        #     SetIntakeSpeedandTime(self._intake, 1, 1)
+        # )
 
 
         # wpilib.SmartDashboard.putData("Turn90", TurnToAnglePID(self._drivetrain, 90, 3))
@@ -332,23 +335,17 @@ class MyRobot(TimedCommandRobot):
         #  The wrist 90 degree position is low
 
         NamedCommands.registerCommand(
-            "WristToHighPosition",Set_Global_Wrist_Angle(self._wrist, 10).withTimeout(10)
-            )  
+            "WristToHighPosition", SetWristAngleAuto(self._wrist, 0).withTimeout(3)
+        )    
          
         NamedCommands.registerCommand(
-            "WristToMediumPosition",Set_Global_Wrist_Angle(self._wrist, 45).withTimeout(10)
-            )  
+            "WristToMediumPosition", SetWristAngleAuto(self._wrist, 30).withTimeout(3)
+        )   
         
         NamedCommands.registerCommand(
-            "WristToLowPosition",Set_Global_Wrist_Angle(self._wrist, 50).withTimeout(10)
-            )         
+            "WristToLowPosition", SetWristAngleAuto(self._wrist, 50).withTimeout(3)
+        )        
         
-        NamedCommands.registerCommand(
-            "WristDummyDefaultCommmand",Set_Wrist_Angle_manual_and_auto_with_PID(self._wrist,self._partner_controller).withTimeout(3)
-            )  
-        
-
-
         #===(Intake Named Commands)====================================
 
         NamedCommands.registerCommand(

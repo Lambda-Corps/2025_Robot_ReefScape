@@ -132,7 +132,7 @@ ELEVATOR_MAX_HEIGHT_M = 93 * INCHES_PER_METER # Top of the elevator stack
 WRIST_GEAR_RATIO = 263.7 * 3 #  NeveRest ~25 RPM at motor output + reduction gears on shaft
 
 WRIST_ACCEPTABLE_UPPER_LIMIT = -5
-WRIST_ACCEPTABLE_LOWER_LIMIT = 50
+WRIST_ACCEPTABLE_LOWER_LIMIT = 65
 
 
 CS = 175

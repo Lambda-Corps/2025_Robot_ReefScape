@@ -48,7 +48,8 @@ Autonomous command "Set_Global_Wrist_Angle" is available to set the global varia
 
 class WristControl(Subsystem):
     __DRIVER_DEADBAND = 0.1
-    
+    WRIST_UP_SPEED = -.3
+    WRIST_DOWN_SPEED = .3
     
     def __init__(self):
         super().__init__()
@@ -89,10 +90,14 @@ class WristControl(Subsystem):
     
     def getAbsolutePosition(self) -> float:
         '''
-        Return angle and keep between values of -60 and 300 
+        Return angle and keep between values of 180 and -180
+
+        -20 is the forward limit, and 55 is the reverse limit
+
+        We want the wrist to automatically start at 0 on autonomous init
         '''
         angle = 360 * self._wrist_angle.get()
-        if angle > 300: 
+        if angle > 180: 
             angle = angle - 360
         return angle
     
@@ -140,15 +145,17 @@ class WristControl(Subsystem):
 
         return input
    
-    def _clamp(self, input: float) -> float:  
+    def _clamp(self, input: float, max=1, min=-1) -> float:  
         """
         Clamp (limit) control from -1 to 1
         """
-        abs_max = 1
-        if input < 0 and input < (abs_max * -1):
-            input = abs_max * -1
-        elif input > 0 and input > abs_max:
-            input = abs_max
+        if input < min:
+            input = min
+        elif input > max:
+            input = max
+        else:
+            #input must be zero
+            pass
         return input
 
 #================================================================================================
@@ -344,7 +351,7 @@ class Set_Wrist_Angle_manual_and_auto_with_PID(Command):
             joystick_active = True
 
         if joystick_active:
-            self.target_angle = self.target_angle + joystick_position
+            self.target_angle = self._Wrist._clamp(self.target_angle + joystick_position, max=constants.WRIST_ACCEPTABLE_LOWER_LIMIT, min=constants.WRIST_ACCEPTABLE_UPPER_LIMIT)
             self._Wrist.set_global_wrist_angle(self.target_angle)
 
         current_angle = self._Wrist.getAbsolutePosition()
@@ -382,6 +389,34 @@ class Set_Global_Wrist_Angle(Command):
 
     def isFinished(self) -> bool:
         True
+
+    def end(self, interrupted: bool):
+        pass
+
+
+class SetWristAngleAuto(Command):
+    WRIST_ANGLE_TOLERANCE = 3
+    def __init__(self, Wrist: WristControl, target_angle: float):
+        super().__init__()
+        self._Wrist = Wrist
+        self.target_angle = target_angle
+        self.addRequirements(self._Wrist)
+
+    def initialize(self):
+        self._Wrist.set_global_wrist_angle(self.target_angle)
+        print ("Setting Global angle: ",self.target_angle, "  at " , wpilib.Timer.getFPGATimestamp() )
+
+    def execute(self):
+        pos = self._Wrist.getAbsolutePosition()
+        if pos > self.target_angle:
+            self._Wrist.move_wrist_up(self._Wrist.WRIST_UP_SPEED)
+        elif pos < self.target_angle:
+            self._Wrist.move_wrist_down(self._Wrist.WRIST_DOWN_SPEED)
+        else: 
+            pass
+
+    def isFinished(self) -> bool:
+        return abs(self._Wrist.getAbsolutePosition() - self.target_angle) < SetWristAngleAuto.WRIST_ANGLE_TOLERANCE
 
     def end(self, interrupted: bool):
         pass

@@ -19,13 +19,7 @@
         {
           "type": "named",
           "data": {
-            "name": "WristToLowPosition"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WristDummyDefaultCommmand"
+            "name": "WristToHighPosition"
           }
         },
         {
@@ -115,7 +109,7 @@
         {
           "type": "named",
           "data": {
-            "name": "WristToHighPosition"
+            "name": "WristToMediumPosition"
           }
         },
         {
