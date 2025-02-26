@@ -33,6 +33,12 @@
           "data": {
             "name": "ElevatorToBottom"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of Best Auto  1"
+          }
         }
       ]
     }
