@@ -89,7 +89,7 @@ class ElevatorPosition(Enum):
     LEVEL_ONE = 1
     LEVEL_TWO = 2
     LEVEL_THREE = 3
-    LEVEL_FOUR = 4
+    LEVEL_FOUR = 4.3
     LEVEL_SOURCE = 1.809
     LEVEL_UKNOWN = 999999
 
