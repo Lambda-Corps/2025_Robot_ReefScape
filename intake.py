@@ -45,9 +45,9 @@ class Intake(Subsystem):
 #=====================================================================
 
 class SetIntakeManual(Command):
-    def __init__(self, Intake: Intake, controller: CommandXboxController):
+    def __init__(self, Intake: Intake, speed: float):
         self._Intake = Intake
-        self._controller = controller
+        self._speed: float = speed
 
         self.addRequirements(self._Intake)
 
@@ -56,7 +56,7 @@ class SetIntakeManual(Command):
         pass 
 
     def execute(self):
-        self._Intake.drive_motor(self._controller.getRightY())
+        self._Intake.drive_motor(self._speed)
        
     def isFinished(self) -> bool:
         return False

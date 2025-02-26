@@ -33,12 +33,6 @@
           "data": {
             "name": "ElevatorToBottom"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Reverse Best Auto  1"
-          }
         }
       ]
     }
