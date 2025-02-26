@@ -1,5 +1,5 @@
 from enum import Enum
-from wpilib import AddressableLED, Timer, DriverStation
+from wpilib import AddressableLED, Timer, DriverStation, AnalogInput
 from commands2 import Subsystem, Command, InstantCommand
 
 from typing import List, Optional, Dict
@@ -46,7 +46,14 @@ class LEDState(Enum):
     SHOOTING = 6
 
 
+
+
 class LEDSubsystem(Subsystem):
+
+        # Reef Scape Distances
+    RED_TO_GREEN_THRESHOLD = 4
+    GREEN_TO_BLUE_THRESHOLD = 7
+
     def __init__(self) -> None:
         # PWM Port 9
         self.leds = AddressableLED(9)
@@ -87,6 +94,15 @@ class LEDSubsystem(Subsystem):
         self._curr_state = self._last_state = LEDState.ALLIANCE_SET
         self._alliance: Optional[DriverStation.Alliance] = None
 
+    #   Adding a Rangefinder to provide feedback to the Driver on the distance
+
+        self.ultraSoundRangeFinder = AnalogInput(0) #  Analog Port 0
+
+    def get_rangefinder_distance_in_inches(self) -> float:
+        rawReturnedValue = self.ultraSoundRangeFinder.getAverageVoltage()
+        return rawReturnedValue * 10
+
+        
     def __build_led_data_buffers(self) -> None:
         """
         Build a set of buffers that will be used for the LEDs.  Using separate buffers for each
@@ -176,8 +192,23 @@ class LEDSubsystem(Subsystem):
 
             # Store the time for the next run
             self._last_animate_time = timestamp
+    # def __set_flash_buffers_color(self, delay: float, color: List[int]) -> None:
+    #     timestamp = self._timer.get()
+    #     if (timestamp - delay) > self._last_flash_time and self._last_flash_off:
+    #         # Turn the colors on
+    #         for led in self.__flash_buffer:
+    #             led.setRGB(color[0], color[1], color[2])
 
-    def __set_flash_buffers_color(self, delay: float, color: List[int]) -> None:
+    #         self._last_flash_time = timestamp
+    #         self._last_flash_off = False
+    #     else:
+    #         # turn lights off
+    #         for led in self.__flash_buffer:
+    #             led.setRGB(0, 0, 0)
+
+    #         self._last_flash_off = True
+    
+    def __set_animate_buffers_color(self, delay: float, color: List[int]) -> None:
         timestamp = self._timer.get()
         if (timestamp - delay) > self._last_flash_time and self._last_flash_off:
             # Turn the colors on
@@ -192,38 +223,71 @@ class LEDSubsystem(Subsystem):
                 led.setRGB(0, 0, 0)
 
             self._last_flash_off = True
-
     def periodic(self) -> None:
-        # Check for our alliance to match color
-        self.check_alliance()
+        # # Check for our alliance to match color
+        # self.check_alliance()
 
-        # Move the leds in their buffers in case they get set
-        self.__animate_chase_buffers(0.03)
-        self.rainbow(self.__rainbow_buffer)
+        # # Move the leds in their buffers in case they get set
+        # self.__animate_chase_buffers(0.03)
+        # self.rainbow(self.__rainbow_buffer)
 
-        # Set the LEDs based on the steate
-        match self._curr_state:
-            case LEDState.TRACK_APRIL_TAG:
-                self.__set_flash_buffers_color(1, kWhiteRGB)
-                self.leds.setData(self.__flash_buffer)
-            case LEDState.TRACK_NOTE:
-                self.__set_flash_buffers_color(1, kOrangeRGB)
-                self.leds.setData(self.__flash_buffer)
-            case LEDState.HAS_NOTE:
-                self.__set_flash_buffers_color(0.2, kOrangeRGB)
-                self.leds.setData(self.__flash_buffer)
-            case LEDState.HAS_CORRECT_TAG:
-                self.__set_flash_buffers_color(0.2, kWhiteRGB)
-                self.leds.setData(self.__flash_buffer)
-            case LEDState.SHOOTING:
-                pass
-            case LEDState.ALLIANCE_SET:  # Default
-                if self._alliance == DriverStation.Alliance.kBlue:
-                    self.leds.setData(self.__chase_buffer_dict["blue"])
-                elif self._alliance == DriverStation.Alliance.kRed:
-                    self.leds.setData(self.__chase_buffer_dict["red"])
-                else:
-                    self.leds.setData(self.__rainbow_buffer)
+        # # Set the LEDs based on the steate
+        # match self._curr_state:
+        #     case LEDState.TRACK_APRIL_TAG:
+        #         self.__set_flash_buffers_color(1, kWhiteRGB)
+        #         self.leds.setData(self.__flash_buffer)
+        #     case LEDState.TRACK_NOTE:
+        #         self.__set_flash_buffers_color(1, kOrangeRGB)
+        #         self.leds.setData(self.__flash_buffer)
+        #     case LEDState.HAS_NOTE:
+        #         self.__set_flash_buffers_color(0.2, kOrangeRGB)
+        #         self.leds.setData(self.__flash_buffer)
+        #     case LEDState.HAS_CORRECT_TAG:
+        #         self.__set_flash_buffers_color(0.2, kWhiteRGB)
+        #         self.leds.setData(self.__flash_buffer)
+        #     case LEDState.SHOOTING:
+        #         pass
+        #     case LEDState.ALLIANCE_SET:  # Default
+        #         if self._alliance == DriverStation.Alliance.kBlue:
+        #             self.leds.setData(self.__chase_buffer_dict["blue"])
+        #         elif self._alliance == DriverStation.Alliance.kRed:
+        #             self.leds.setData(self.__chase_buffer_dict["red"])
+        #         else:
+        #             self.leds.setData(self.__rainbow_buffer)
+
+
+        current_range = self.get_rangefinder_distance_in_inches()
+        # print ("Current Range: ", current_range)
+        # Thresholds up near line 54
+
+        # if (current_range < self.RED_TO_GREEN_THRESHOLD):
+        #     # Display Red
+        #     self.__set_flash_buffers_color(0, kRedRGB)
+        #     self.leds.setData(self.__flash_buffer)
+
+        # elif (current_range > self.RED_TO_GREEN_THRESHOLD) and (current_range < self.GREEN_TO_BLUE_THRESHOLD):
+        #     # Display Green
+        #     self.__set_flash_buffers_color(0, kGreenRGB)
+        #     self.leds.setData(self.__flash_buffer)
+        # else:
+        #     # Display blue
+        #     self.__set_flash_buffers_color(0, kBlueRGB)
+        #     self.leds.setData(self.__flash_buffer)
+        
+        if (current_range < self.RED_TO_GREEN_THRESHOLD):
+            # Display Red
+            self.__set_animate_buffers_color(0, kRedRGB)
+            self.leds.setData(self.__animate_buffer)
+
+        elif (current_range > self.RED_TO_GREEN_THRESHOLD) and (current_range < self.GREEN_TO_BLUE_THRESHOLD):
+            # Display Green
+            self.__set_animate_buffers_color(0, kGreenRGB)
+            self.leds.setData(self.__animate_buffer)
+        else:
+            # Display blue
+            self.__set_animate_buffers_color(0, kBlueRGB)
+            self.leds.setData(self.__animate_buffer)
+
 
     def rainbow(self, buffer: List[AddressableLED.LEDData]) -> None:
         # For every pixel
