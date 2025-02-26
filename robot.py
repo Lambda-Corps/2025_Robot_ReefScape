@@ -395,13 +395,12 @@ class MyRobot(TimedCommandRobot):
         # chooser so the drive team can select the starting auto.
         self._auto_chooser: wpilib.SendableChooser = wpilib.SendableChooser()
         self._auto_chooser.setDefaultOption(
-            "Best Auto2",PathPlannerAuto("Best Auto2")
+            "Simple Auto",PathPlannerAuto("Simple Auto")
         )
         self._auto_chooser.addOption("TestSubSystems", PathPlannerAuto("TestSubSystems"))
         self._auto_chooser.addOption("Best Auto",PathPlannerAuto("Best Auto"))
-        # self._auto_chooser.addOption("W2 Auto",PathPlannerAuto("W2 Auto"))
         self._auto_chooser.addOption("Mid Auto",PathPlannerAuto("Mid Auto"))
-        # self._auto_chooser.addOption("StraightPath",PathPlannerAuto("StraightPath"))
+        self._auto_chooser.addOption("StraightPath",PathPlannerAuto("StraightPath"))
 
         wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
 
