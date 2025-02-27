@@ -1,5 +1,5 @@
 from enum import Enum
-from wpilib import AddressableLED, Timer, DriverStation, AnalogInput
+from wpilib import AddressableLED, Timer, DriverStation, AnalogInput, SmartDashboard
 from commands2 import Subsystem, Command, InstantCommand
 
 from typing import List, Optional, Dict
@@ -257,6 +257,7 @@ class LEDSubsystem(Subsystem):
 
 
         current_range = self.get_rangefinder_distance_in_inches()
+        SmartDashboard.putNumber("RangeFinder ", current_range)
         # print ("Current Range: ", current_range)
         # Thresholds up near line 54
 
@@ -277,16 +278,16 @@ class LEDSubsystem(Subsystem):
         if (current_range < self.RED_TO_GREEN_THRESHOLD):
             # Display Red
             self.__set_animate_buffers_color(0, kRedRGB)
-            self.leds.setData(self.__animate_buffer)
+            self.leds.setData(self.__flash_buffer)
 
         elif (current_range > self.RED_TO_GREEN_THRESHOLD) and (current_range < self.GREEN_TO_BLUE_THRESHOLD):
             # Display Green
             self.__set_animate_buffers_color(0, kGreenRGB)
-            self.leds.setData(self.__animate_buffer)
+            self.leds.setData(self.__flash_buffer)
         else:
             # Display blue
             self.__set_animate_buffers_color(0, kBlueRGB)
-            self.leds.setData(self.__animate_buffer)
+            self.leds.setData(self.__flash_buffer)
 
 
     def rainbow(self, buffer: List[AddressableLED.LEDData]) -> None:
