@@ -279,7 +279,7 @@ class SetWristAngleAuto(Command):
 
     def initialize(self):
         self._done = False
-        self._Wrist.reset_pid_controller()
+        self._Wrist.reset_pid_controller(self.target_angle)
         self._Wrist.set_global_wrist_angle(self.target_angle)
         print ("Setting Global angle: ",self.target_angle, "  at " , wpilib.Timer.getFPGATimestamp() )
 
