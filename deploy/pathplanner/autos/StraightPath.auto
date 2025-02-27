@@ -19,7 +19,14 @@
                 "data": {
                   "name": "ElevatorToL1"
                 }
-              },
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
               {
                 "type": "named",
                 "data": {
@@ -27,12 +34,18 @@
                 }
               },
               {
-                "type": "named",
+                "type": "wait",
                 "data": {
-                  "name": "IntakeOutFor1Second"
+                  "waitTime": 1.0
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeOutFor1Second"
           }
         }
       ]
