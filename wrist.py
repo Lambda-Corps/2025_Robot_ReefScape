@@ -206,7 +206,7 @@ class Set_Wrist_Angle_manual_and_auto_with_PID(Command):
         self._done = False
         self.target_angle = self._Wrist.get_global_wrist_angle()
         print ("Moving wrist to: ",self.target_angle, "  at " , wpilib.Timer.getFPGATimestamp() )
-        self._Wrist.reset_pid_controller()
+        self._Wrist.reset_pid_controller(self.target_angle)
 
     def execute(self):
         '''
