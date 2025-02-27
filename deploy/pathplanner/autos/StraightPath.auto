@@ -32,14 +32,14 @@
                 "data": {
                   "name": "ElevatorToL1"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeOutFor1Second"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeOutFor1Second"
           }
         }
       ]
