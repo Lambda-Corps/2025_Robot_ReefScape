@@ -38,14 +38,14 @@
                 "data": {
                   "waitTime": 1.0
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeOutFor1Second"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeOutFor1Second"
           }
         }
       ]
