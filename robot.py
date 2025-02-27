@@ -68,8 +68,7 @@ class MyRobot(TimedCommandRobot):
 
         # Setup the operator interface (typically CommandXboxController)
         self._driver_controller = CommandXboxController(
-            constants.CONTROLLER_DRIVER_PORT
-        )
+            constants.CONTROLLER_DRIVER_PORT        )
         self._partner_controller = CommandXboxController(
             constants.CONTROLLER_PARTNER_PORT
         )

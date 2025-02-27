@@ -17,7 +17,19 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "ElevatorToL1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "WristToMediumPosition"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeOutFor1Second"
                 }
               }
             ]
