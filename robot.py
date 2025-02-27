@@ -125,61 +125,9 @@ class MyRobot(TimedCommandRobot):
             )
         )
 
-
-
-        # Left Button Note Aim
-        # The WPILIB enum and our controller mapping are different.  On the Zorro
-        # controller, the "right bumper" according to WPILib is actually the left
-        # button that would be by a trigger
-        ####>>>> self._driver_controller.rightBumper().whileTrue(
-        #     TeleopDriveWithVision(
-        #         self._drivetrain, self._vision.get_note_yaw, self._driver_controller
-        #     ).withName("Note Driving")
-        # )
-        # Right Trigger April Tag
-        # Create a button that maps to the proper integer number (found in driverstation)
-        # self._right_controller_button: JoystickButton = JoystickButton(
-        # #     self._driver_controller.getHID(), 13  # TODO -- Assign this correct number
-        # )
-        # ####>>>self._right_controller_button.whileTrue(
-        #     TeleopDriveWithVision(
-        #         self._drivetrain, self._vision.get_tag_yaw, self._driver_controller
-        #     ).withName("Tag Driving")
-        # )
-
-        # self._driver_controller.rightBumper().whileTrue(
-        #     RunCommand(
-        #         lambda: self._drivetrain.drive_teleop(
-        #             self._driver_controller.getLeftY(),
-        #             -self._driver_controller.getRightX(),
-        #         ),
-        #         self._drivetrain,
-        #     ).withName("FlippedControls")
-        # )
-
-        # wpilib.SmartDashboard.putData(
-        #     "Turn-90",
-        #     self._drivetrain.configure_turn_pid(-90).andThen(
-        #         self._drivetrain.turn_with_pid().withName("TurnTo -90"),
-        #     ),
-        # )
-
         ######################## Partner controller controls #########################
-          # Right Joystick Wrist Up/Down
-        # self._partner_controller.getLeftY().whileTrue(
-        #     MoveELEVATOR(self._elevator, 0.4).withName("ElevatorUp")
-        # )
+    
 
-        #=======(elevator controls)===================================
-        # POV Up Elevator Up
-        # self._partner_controller.povUp().whileTrue(
-        #     MoveELEVATOR(self._elevator, 0.4).withName("ElevatorUp")
-        # )
-        # # POV Down Elevator Down
-        # self._partner_controller.povDown().whileTrue(
-        #     MoveELEVATOR(self._elevator, -0.4).withName("ElevatorDown")
-        # )
-       
         # Bumbers can also move the elevator up and down maybe if the POV is not working or is not a good option
         self._partner_controller.povUp().whileTrue(
             MoveELEVATOR(self._elevator, 0.4).withName("ElevatorUp")
@@ -201,67 +149,7 @@ class MyRobot(TimedCommandRobot):
             MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_FOUR)
         )
 
-
-        # self._partner_controller.a().onTrue(
-        #     SetWristAngleAuto(self._wrist, 45).withTimeout(5).andThen(
-        #         MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE)
-        #     )
-        # )
-        # self._partner_controller.x().onTrue(
-        #     SetWristAngleAuto(self._wrist, 45).withTimeout(5).andThen(
-        #         MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_THREE)
-        #     )
-        # )
-        # self._partner_controller.y().onTrue(
-        #     SetWristAngleAuto(self._wrist, 45).withTimeout(5).andThen(
-        #         MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_BOTTOM)
-        #     )
-        # )
-        # self._partner_controller.b().onTrue(
-        #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_TWO)
-        # )
-        # self._partner_controller.x().onTrue(
-        #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_THREE)
-        # )
-        # self._partner_controller.y().onTrue(
-        #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_FOUR)
-        # )
-
-        # self._partner_controller.start().onTrue(
-        #     MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_BOTTOM)
-        # )
-        # self._partner_controller.start().onTrue(
-        #     MoveELEVATORToZero(self._elevator)
-        # )
-        #=======(Wrist controls)===================================
-
-
-
-        #  Third parameter is False so the command does not end.
-        self._wrist.setDefaultCommand(Set_Wrist_Angle_manual_and_auto_with_PID(self._wrist, self._partner_controller, False))
-
-
-        # self._driver_controller.a().onTrue(Set_Global_Wrist_Angle(self._wrist, 0))  # Example target angle
-        # self._driver_controller.b().onTrue(Set_Global_Wrist_Angle(self._wrist, 20))  # Example target angle
-        # self._driver_controller.x().onTrue(Set_Global_Wrist_Angle(self._wrist, 45))  # Example target angle
-        # self._driver_controller.y().onTrue(Set_Global_Wrist_Angle(self._wrist, 60))  # Example target angle
-
-
-        # self._driver_controller.a().whileTrue(Set_Global_Wrist_Angle(self._wrist, 0))  # Example target angle
-        # self._driver_controller.b().whileTrue(Set_Global_Wrist_Angle(self._wrist, 20))  # Example target angle
-        # self._driver_controller.x().whileTrue(Set_Global_Wrist_Angle(self._wrist, 45))  # Example target angle
-        # self._driver_controller.y().whileTrue(Set_Global_Wrist_Angle(self._wrist, 60))  # Example target angle
-
-        # self._wrist.setDefaultCommand(SetWrist_Manual(self._wrist, self._partner_controller))
-
-        # self._driver_controller.a().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 0))  # Example target angle
-        # self._driver_controller.b().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 20))  # Example target angle
-        # self._driver_controller.x().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 45))  # Example target angle
-        # self._driver_controller.y().whileTrue(Set_Wrist_Angle_with_PID(self._wrist, 60))  # Example target angle
-
         #=======(Intake controls)===================================
-
-        #self._intake.setDefaultCommand(SetIntakeManual(self._intake, self._partner_controller))
 
         self._partner_controller.a().whileTrue(
             SetIntakeManual(self._intake, 1.0).withName("IntakeIn")
@@ -317,6 +205,9 @@ class MyRobot(TimedCommandRobot):
                     self._drivetrain,
                 ).withName("DefaultDrive")
             )
+
+        #  Third parameter is False so the command does not end.
+        self._wrist.setDefaultCommand(Set_Wrist_Angle_manual_and_auto_with_PID(self._wrist, self._partner_controller, False))
 
 
     def __configure_autonomous_commands(self) -> None:
