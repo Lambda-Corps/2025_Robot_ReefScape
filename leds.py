@@ -207,7 +207,11 @@ class LEDSubsystem(Subsystem):
     #             led.setRGB(0, 0, 0)
 
     #         self._last_flash_off = True
-    
+
+    def __load_solid_color_into_buffer(self, color: List[int]) -> None:
+        for led in self.__flash_buffer:
+            led.setRGB(color[0], color[1], color[2])
+
     def __set_animate_buffers_color(self, delay: float, color: List[int]) -> None:
         timestamp = self._timer.get()
         if (timestamp - delay) > self._last_flash_time and self._last_flash_off:
@@ -223,6 +227,7 @@ class LEDSubsystem(Subsystem):
                 led.setRGB(0, 0, 0)
 
             self._last_flash_off = True
+
     def periodic(self) -> None:
         # # Check for our alliance to match color
         # self.check_alliance()
@@ -259,36 +264,22 @@ class LEDSubsystem(Subsystem):
         current_range = self.get_rangefinder_distance_in_inches()
         SmartDashboard.putNumber("RangeFinder ", current_range)
         # print ("Current Range: ", current_range)
-        # Thresholds up near line 54
 
-        # if (current_range < self.RED_TO_GREEN_THRESHOLD):
-        #     # Display Red
-        #     self.__set_flash_buffers_color(0, kRedRGB)
-        #     self.leds.setData(self.__flash_buffer)
 
-        # elif (current_range > self.RED_TO_GREEN_THRESHOLD) and (current_range < self.GREEN_TO_BLUE_THRESHOLD):
-        #     # Display Green
-        #     self.__set_flash_buffers_color(0, kGreenRGB)
-        #     self.leds.setData(self.__flash_buffer)
-        # else:
-        #     # Display blue
-        #     self.__set_flash_buffers_color(0, kBlueRGB)
-        #     self.leds.setData(self.__flash_buffer)
-        
         if (current_range < self.RED_TO_GREEN_THRESHOLD):
             # Display Red
-            self.__set_animate_buffers_color(0, kRedRGB)
+            self.__load_solid_color_into_buffer(kRedRGB)
             self.leds.setData(self.__flash_buffer)
 
         elif (current_range > self.RED_TO_GREEN_THRESHOLD) and (current_range < self.GREEN_TO_BLUE_THRESHOLD):
             # Display Green
-            self.__set_animate_buffers_color(0, kGreenRGB)
+            self.__load_solid_color_into_buffer(kGreenRGB)
             self.leds.setData(self.__flash_buffer)
         else:
             # Display blue
-            self.__set_animate_buffers_color(0, kBlueRGB)
+            self.__load_solid_color_into_buffer(kBlueRGB)
             self.leds.setData(self.__flash_buffer)
-
+    
 
     def rainbow(self, buffer: List[AddressableLED.LEDData]) -> None:
         # For every pixel
