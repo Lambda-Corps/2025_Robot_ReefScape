@@ -382,7 +382,7 @@ class MyRobot(TimedCommandRobot):
             )
         
         NamedCommands.registerCommand(
-            "IntakeInFor1Second", SetIntakeSpeedandTime(self._intake,-1,1)
+            "IntakeInFor4Second", SetIntakeSpeedandTime(self._intake,-4,4)
             )
 
         NamedCommands.registerCommand(
