@@ -386,7 +386,7 @@ class MyRobot(TimedCommandRobot):
             )
 
         NamedCommands.registerCommand(
-            "IntakeOutFor1Second", SetIntakeSpeedandTime(self._intake,1,1)
+            "IntakeOutFor4Second", SetIntakeSpeedandTime(self._intake,4,4)
             )
         
         # To configure the Autonomous routines use PathPlanner to define the auto routines
