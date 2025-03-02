@@ -382,13 +382,16 @@ class MyRobot(TimedCommandRobot):
             )
         
         NamedCommands.registerCommand(
-            "IntakeInFor4Second", SetIntakeSpeedandTime(self._intake,-4,4)
+            "IntakeInFor1Second", SetIntakeSpeedandTime(self._intake,-1,1)
             )
 
         NamedCommands.registerCommand(
-            "IntakeOutFor4Second", SetIntakeSpeedandTime(self._intake,4,4)
+            "IntakeOutFor1Second", SetIntakeSpeedandTime(self._intake,1,1)
             )
-        
+        NamedCommands.registerCommand(
+            "IntakeOutFor5Seconds", SetIntakeSpeedandTime(self._intake,5,5)
+        )
+
         # To configure the Autonomous routines use PathPlanner to define the auto routines
         # Then, take all of the path planner created routines and add them to the auto
         # chooser so the drive team can select the starting auto.
