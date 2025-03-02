@@ -24,9 +24,16 @@
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "IntakeInFor1Second"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ElevatorToL1"
+                }
+              }
+            ]
           }
         }
       ]
