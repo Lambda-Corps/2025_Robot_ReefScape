@@ -5,15 +5,35 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "sequential",
           "data": {
-            "pathName": "Best Auto  1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeOutFor1Second"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Best Auto  1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "WristToMediumPosition"
+                }
+              },
+              {
+                "type": "parallel",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeOutFor1Second"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]
