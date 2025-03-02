@@ -19,21 +19,14 @@
                 "data": {
                   "name": "WristToMediumPosition"
                 }
-              },
-              {
-                "type": "parallel",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeOutFor1Second"
-                      }
-                    }
-                  ]
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeOutFor1Second"
           }
         }
       ]
