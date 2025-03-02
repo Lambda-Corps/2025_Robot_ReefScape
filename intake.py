@@ -27,7 +27,7 @@ class Intake(Subsystem):
     def __init__(self):
         super().__init__()
         self.Intake_Motor: TalonSRX = TalonSRX(constants.INTAKE_MOTOR)
-        self.Intake_Motonr.configFactoryDefault()
+        self.Intake_Motor.configFactoryDefault()
 
 
     def drive_motor(self, speed: float):
