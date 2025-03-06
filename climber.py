@@ -66,7 +66,7 @@ class SetClimberManual(Command):
 
 #=====================================================================
 
-class SetIntakeSpeedandTime(Command):
+class SetClimberSpeedandTime(Command):
     def __init__(self, Climber: Climber, speed: float, runseconds: float):
         self._Climber = Climber
         self.speed = speed

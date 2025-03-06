@@ -24,6 +24,7 @@ from pathplannerlib.auto import (
 from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
 from intake import Intake,  SetIntakeSpeedandTime, SetIntakeManual
+from climber import Climber,  SetClimberSpeedandTime, SetClimberManual
 from wrist import (
         SetWristAngleAuto,
         WristControl, 
@@ -83,6 +84,9 @@ class MyRobot(TimedCommandRobot):
 
         self._intake: Intake = Intake()
         wpilib.SmartDashboard.putData("Intake", self._intake)
+
+        self._climber: Climber = Climber()
+        wpilib.SmartDashboard.putData("Climber", self._climber)
 
         self._wrist: WristControl = WristControl()
         wpilib.SmartDashboard.putData("Wrist", self._wrist)
@@ -283,6 +287,18 @@ class MyRobot(TimedCommandRobot):
         # wpilib.SmartDashboard.putData(
         #     "Turn-90", TurnToAnglePID(self._drivetrain, -90, 3)
         # )
+
+
+
+        #=======(Climber controls)===================================
+
+        self._partner_controller.rightBumper().whileTrue(
+            SetClimberManual(self._climber, 0.5).withName("ClimberUP")
+        )
+        self._partner_controller.leftBumper.whileTrue(
+            SetClimberManual(self._climber, -0.5).withName("ClimberDOWN")
+        )
+
         #=======(Drivetrain controls)===================================
 
     def __configure_default_commands(self) -> None:
