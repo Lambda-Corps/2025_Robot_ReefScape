@@ -4,7 +4,6 @@ from wpilib import SmartDashboard, RobotBase, RobotController, DutyCycleEncoder,
 from phoenix5 import TalonSRX, TalonSRXConfiguration, ControlMode, TalonSRXControlMode
 import constants
 import wpilib
-from commands2.button import CommandXboxController
 
 #===(Hardware Notes)==============================================
 '''
@@ -29,7 +28,7 @@ class Climber(Subsystem):
 
     def __init__(self):
         super().__init__()
-        self.Climber_Motor: TalonSRX = TalonSRX(constants.INTAKE_MOTOR)
+        self.Climber_Motor: TalonSRX = TalonSRX(constants.ClIMBER_NOTOR)
         self.Climber_Motor.configFactoryDefault()
 
 
