@@ -43,7 +43,7 @@ class Climber(Subsystem):
         self.Climber_Motor.set(ControlMode.PercentOutput, 0)
 
     def periodic(self) -> None:
-        SmartDashboard.putNumber("Climber_Speed", self.Climber_Motor.getMotorOutputPercent)
+        # SmartDashboard.putNumber("Climber_Speed", self.Climber_Motor.getMotorOutputPercent)
         pass
 
 #=====================================================================

@@ -292,10 +292,10 @@ class MyRobot(TimedCommandRobot):
 
         #=======(Climber controls)===================================
 
-        self._partner_controller.rightBumper().whileTrue(
+        self._driver_controller.rightBumper().whileTrue(
             SetClimberManual(self._climber, 0.5).withName("ClimberUP")
         )
-        self._partner_controller.leftBumper.whileTrue(
+        self._driver_controller.leftBumper().whileTrue(
             SetClimberManual(self._climber, -0.5).withName("ClimberDOWN")
         )
 
