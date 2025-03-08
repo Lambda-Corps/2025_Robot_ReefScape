@@ -27,9 +27,12 @@ class Climber(Subsystem):
     """
 
     def __init__(self):
+        WAIT_MILLISECONDS_BEFORE_LIMITING = 1000 # (1 second = 1000 milliSeconds)
+        CURRENT_LIMIT = 2 # Amps
         super().__init__()
         self.Climber_Motor: TalonSRX = TalonSRX(constants.ClIMBER_NOTOR)
         self.Climber_Motor.configFactoryDefault()
+        self.Climber_Motor.configPeakCurrentLimit(CURRENT_LIMIT, WAIT_MILLISECONDS_BEFORE_LIMITING)  # Lmit the current
 
 
     def drive_motor(self, speed: float):
