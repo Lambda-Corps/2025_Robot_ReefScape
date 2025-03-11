@@ -116,18 +116,15 @@ class WristControl(Subsystem):
     #     return at_bottom
     
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+    def Wrist_at_Top_SparkMax(self) -> bool:
+        is_forward_limit_pressed = self.wrist_motor_forwardLimit.get()
+        SmartDashboard.putBoolean("Spark - Wrist at Forward ", is_forward_limit_pressed)  ## Need to check directions
+        return is_forward_limit_pressed
 
-    def Wrist_at_Top(self) -> bool:
-        self.wrist_motor.getFaults(self.wrist_motor_faults)
-        at_top = self.wrist_motor_faults.ForwardLimitSwitch
-        SmartDashboard.putBoolean("Wrist at Bottom", at_top)  ## Directional Errors here
-        return at_top
-
-    def Wrist_at_Bottom(self) -> bool:
-        self.wrist_motor.getFaults(self.wrist_motor_faults)
-        at_bottom = self.wrist_motor_faults.ReverseLimitSwitch
-        SmartDashboard.putBoolean("Wrist at Top", at_bottom)
-        return at_bottom
+    def Wrist_at_Bottom_SparkMax(self) -> bool:
+        is_reverse_limit_pressed = self.wrist_motor_reverseLimit.get()
+        SmartDashboard.putBoolean("Spark - Wrist at Reverse", is_reverse_limit_pressed)
+        return is_reverse_limit_pressed
     
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -147,14 +144,14 @@ class WristControl(Subsystem):
     def periodic(self):
         # if self._wrist_angle.isConnected():
         SmartDashboard.putNumber("Wrist Encoder Pos", self.getAbsolutePosition())
-        SmartDashboard.putNumber("Wrist Position", self.wrist_motor.getSelectedSensorPosition())
-        self.Wrist_at_Bottom()
-        self.Wrist_at_Top()
+        # SmartDashboard.putNumber("Wrist Position", self.wrist_motor.getSelectedSensorPosition())
+        # self.Wrist_at_Bottom_SparkMax()
+        # self.Wrist_at_Top_SparkMax()
         SmartDashboard.putNumber("Global Wrist Position", self.get_global_wrist_angle())
         SmartDashboard.putBoolean("Spark_Wrist_Bottom", self.Wrist_at_Bottom_SparkMax())
         SmartDashboard.putBoolean("Spark_Wrist_Top", self.Wrist_at_Top_SparkMax())
-        SmartDashboard.putBoolean("Wrist_Bottom", self.Wrist_at_Bottom())
-        SmartDashboard.putBoolean("Wrist_Top", self.Wrist_at_Top())
+        # SmartDashboard.putBoolean("Wrist_Bottom", self.Wrist_at_Bottom())
+        # SmartDashboard.putBoolean("Wrist_Top", self.Wrist_at_Top())
 
 
     def move_wrist_up(self, speed: float):
