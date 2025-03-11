@@ -6,6 +6,13 @@ import constants
 import wpilib
 from wpimath.controller import PIDController
 
+###
+from rev import SparkMax    
+from rev import SparkLowLevel
+from rev import SparkBaseConfig 
+from rev import SparkBase
+from rev import SparkLimitSwitch
+
 #===(Hardware Notes)==============================================
 '''
 The wrist is moved using an AndyMark NeveRest motor controlled by a Talon SRX.
@@ -48,22 +55,41 @@ Autonomous command "Set_Global_Wrist_Angle" is available to set the global varia
 
 class WristControl(Subsystem):
     __DRIVER_DEADBAND = 0.1
-    WRIST_UP_SPEED = -.3
-    WRIST_DOWN_SPEED = .3
+    WRIST_UP_SPEED = -0.2
+    WRIST_DOWN_SPEED = 0.2
     
     def __init__(self):
         super().__init__()
-        # Initialize the TalonSRX motor for the wrist
-        self.wrist_motor = TalonSRX(constants.WRIST_MOTOR)
-        self.wrist_motor.configFactoryDefault()  # Reset to defaults
+        # # Initialize the TalonSRX motor for the wrist
+        # self.wrist_motor = TalonSRX(constants.WRIST_MOTOR)
+        # self.wrist_motor.configFactoryDefault()  # Reset to defaults
 
-        # Initialize the Faults object
-        self.wrist_motor_faults = Faults()
+        # # Initialize the Faults object
+        # self.wrist_motor_faults = Faults()
 
         # Initialize the absolute encoder
         self._wrist_angle = self.__configure_wrist_encoder()
-
         self.global_target_wrist_angle = 0
+
+  # - - (Spark Max motor controller) - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+        self.spark_max_wrist_motor = SparkMax(constants.WRIST_MOTOR_REV,  SparkLowLevel.MotorType.kBrushless)
+        # self.spark_max_wrist_motor.setInverted(False)     # An alternate way of setting configuration
+
+        rev_motor_config = SparkBaseConfig()
+        rev_motor_config.inverted(False)
+        # rev_motor_config.IdleMode.kBrake   ##  Does not seem to be working.
+        rev_motor_config.IdleMode.kCoast
+        rev_motor_config.smartCurrentLimit(10)  # Amps
+
+        # Apply the configuration
+        self.spark_max_wrist_motor.configure(rev_motor_config, SparkBase.ResetMode.kResetSafeParameters, 
+                                             SparkBase.PersistMode.kPersistParameters)
+        
+        self.wrist_motor_forwardLimit = self.spark_max_wrist_motor.getForwardLimitSwitch()
+        self.wrist_motor_reverseLimit = self.spark_max_wrist_motor.getReverseLimitSwitch()
+
+    
 
     def __configure_wrist_encoder(self) -> DutyCycleEncoder:
         wrist_encoder = DutyCycleEncoder(constants.WRIST_ANGLE_ENCODER)  # DIO port
@@ -74,7 +100,22 @@ class WristControl(Subsystem):
         # Adjust the speed values as needed
         self.wrist_motor.set(ControlMode.PercentOutput, speed)
         SmartDashboard.putNumber("Wrist_speed", speed)
+        self.spark_max_wrist_motor.set(speed)
 
+
+    # def Wrist_at_Top(self) -> bool:
+    #     self.wrist_motor.getFaults(self.wrist_motor_faults)
+    #     at_top = self.wrist_motor_faults.ForwardLimitSwitch
+    #     SmartDashboard.putBoolean("Wrist at Bottom", at_top)  ## Directional Errors here
+    #     return at_top
+
+    # def Wrist_at_Bottom(self) -> bool:
+    #     self.wrist_motor.getFaults(self.wrist_motor_faults)
+    #     at_bottom = self.wrist_motor_faults.ReverseLimitSwitch
+    #     SmartDashboard.putBoolean("Wrist at Top", at_bottom)
+    #     return at_bottom
+    
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
     def Wrist_at_Top(self) -> bool:
         self.wrist_motor.getFaults(self.wrist_motor_faults)
@@ -88,6 +129,8 @@ class WristControl(Subsystem):
         SmartDashboard.putBoolean("Wrist at Top", at_bottom)
         return at_bottom
     
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
     def getAbsolutePosition(self) -> float:
         '''
         Return angle and keep between values of 180 and -180
@@ -108,6 +151,10 @@ class WristControl(Subsystem):
         self.Wrist_at_Bottom()
         self.Wrist_at_Top()
         SmartDashboard.putNumber("Global Wrist Position", self.get_global_wrist_angle())
+        SmartDashboard.putBoolean("Spark_Wrist_Bottom", self.Wrist_at_Bottom_SparkMax())
+        SmartDashboard.putBoolean("Spark_Wrist_Top", self.Wrist_at_Top_SparkMax())
+        SmartDashboard.putBoolean("Wrist_Bottom", self.Wrist_at_Bottom())
+        SmartDashboard.putBoolean("Wrist_Top", self.Wrist_at_Top())
 
 
     def move_wrist_up(self, speed: float):
@@ -115,14 +162,17 @@ class WristControl(Subsystem):
         #     self.move_wrist(-speed)
         # else:
         #     self.move_wrist(0)
-        self.move_wrist(-speed)
+        # self.move_wrist(-speed)
+        self.spark_max_wrist_motor.set(-speed)
+
 
     def move_wrist_down(self, speed: float):
         # if not self.Wrist_at_Bottom():
         #     self.move_wrist(speed)
         # else:
         #     self.move_wrist(0)
-        self.move_wrist(speed)
+        # self.move_wrist(speed)
+        self.spark_max_wrist_motor.set(speed)
 
     def get_global_wrist_angle(self) -> float:
         return self.global_target_wrist_angle
@@ -321,7 +371,7 @@ class Set_Wrist_Angle_manual_and_auto_with_PID(Command):
         self.useInAutonomousMode = useInAutonomousMode
         self.target_angle = 0
 
-        kP = 0.1
+        kP = 0.05
         kI = 0.0001
         kD = 0.0001
         wrist_angle_tolerance = 2  # degrees
@@ -359,7 +409,7 @@ class Set_Wrist_Angle_manual_and_auto_with_PID(Command):
         current_angle = self._Wrist.getAbsolutePosition()
         AngleError = self.wrist_pid_controller.calculate(current_angle, self.target_angle)
 
-        controlled_wrist_speed = self._Wrist._clamp(AngleError)   
+        controlled_wrist_speed = self._Wrist._clamp(AngleError, 0.1, -0.1)   
         self._Wrist.move_wrist(controlled_wrist_speed)
         # print("Target: ", self.target_angle, "  Current:  ", current_angle , "  controlled_wrist_speed: ", controlled_wrist_speed)
         
