@@ -55,7 +55,7 @@ Autonomous command "Set_Global_Wrist_Angle" is available to set the global varia
 
 class WristControl(Subsystem):
     __DRIVER_DEADBAND = 0.1
-    WRIST_UP_SPEED = -0.2
+    WRIST_UP_SPEED = 0.2
     WRIST_DOWN_SPEED = 0.2
     
     def __init__(self):
@@ -77,7 +77,7 @@ class WristControl(Subsystem):
         # self.spark_max_wrist_motor.setInverted(False)     # An alternate way of setting configuration
 
         rev_motor_config = SparkBaseConfig()
-        rev_motor_config.inverted(False)
+        rev_motor_config.inverted(True)
         # rev_motor_config.IdleMode.kBrake   ##  Does not seem to be working.
         rev_motor_config.IdleMode.kCoast
         rev_motor_config.smartCurrentLimit(10)  # Amps
@@ -98,7 +98,7 @@ class WristControl(Subsystem):
     def move_wrist(self, speed: float):
         # Use the joystick input to control the motor speed.
         # Adjust the speed values as needed
-        self.wrist_motor.set(ControlMode.PercentOutput, speed)
+        # self.wrist_motor.set(ControlMode.PercentOutput, speed)
         SmartDashboard.putNumber("Wrist_speed", speed)
         self.spark_max_wrist_motor.set(speed)
 
@@ -152,6 +152,7 @@ class WristControl(Subsystem):
         SmartDashboard.putBoolean("Spark_Wrist_Top", self.Wrist_at_Top_SparkMax())
         # SmartDashboard.putBoolean("Wrist_Bottom", self.Wrist_at_Bottom())
         # SmartDashboard.putBoolean("Wrist_Top", self.Wrist_at_Top())
+
 
 
     def move_wrist_up(self, speed: float):
@@ -368,7 +369,7 @@ class Set_Wrist_Angle_manual_and_auto_with_PID(Command):
         self.useInAutonomousMode = useInAutonomousMode
         self.target_angle = 0
 
-        kP = 0.05
+        kP = 0.1
         kI = 0.0001
         kD = 0.0001
         wrist_angle_tolerance = 2  # degrees
@@ -406,9 +407,9 @@ class Set_Wrist_Angle_manual_and_auto_with_PID(Command):
         current_angle = self._Wrist.getAbsolutePosition()
         AngleError = self.wrist_pid_controller.calculate(current_angle, self.target_angle)
 
-        controlled_wrist_speed = self._Wrist._clamp(AngleError, 0.1, -0.1)   
+        controlled_wrist_speed = self._Wrist._clamp(AngleError)   
         self._Wrist.move_wrist(controlled_wrist_speed)
-        # print("Target: ", self.target_angle, "  Current:  ", current_angle , "  controlled_wrist_speed: ", controlled_wrist_speed)
+        # print("AngleError: ", AngleError, "  Current:  ", current_angle , "  controlled_wrist_speed: ", controlled_wrist_speed)
         
     def isFinished(self) -> bool:    # When used in autonomous mode, we want the command to end when tolerance is reached
         return_value = False
@@ -453,22 +454,25 @@ class SetWristAngleAuto(Command):
 
     def initialize(self):
         self._Wrist.set_global_wrist_angle(self.target_angle)
-        print ("Setting Global angle: ",self.target_angle, "  at " , wpilib.Timer.getFPGATimestamp() )
+        # print ("Setting Global angle: ",self.target_angle, "  at " , wpilib.Timer.getFPGATimestamp() )
 
     def execute(self):
         pos = self._Wrist.getAbsolutePosition()
         if pos > self.target_angle:
-            self._Wrist.move_wrist_up(self._Wrist.WRIST_UP_SPEED)
+            self._Wrist.move_wrist_up(self._Wrist.WRIST_UP_SPEED)  # Which way is up (Up is smaller angele)
+            print ("UP")
         elif pos < self.target_angle:
             self._Wrist.move_wrist_down(self._Wrist.WRIST_DOWN_SPEED)
+            print ("Down")
         else: 
             pass
+        print ("pos: ",pos,  "    self.target_angle:  ", self.target_angle)
 
     def isFinished(self) -> bool:
         return abs(self._Wrist.getAbsolutePosition() - self.target_angle) < SetWristAngleAuto.WRIST_ANGLE_TOLERANCE
 
     def end(self, interrupted: bool):
-        pass
+        self._Wrist.move_wrist(0)
 
 #================================================================================================
 # class Wrist_Dummy_Default_command_Test(Command):
