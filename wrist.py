@@ -381,9 +381,24 @@ class Set_Wrist_Angle_manual_and_auto_with_PID(Command):
         self.useInAutonomousMode = useInAutonomousMode
         self.target_angle = 0
 
-        kP = 0.1
-        kI = 0.0001
-        kD = 0.0001
+        kP = 0.025
+        kI = 0.0008
+        kD = 0.0002      # started at 0.0001
+        # Robot really jittery (Overshooting)
+        # 1)  Changing kD to 0.1 from 0.0001   Much worse jittery
+        # 2)  Returned kD to 0.0001
+        # 3)  Change kI to 0.1   Much worse, returning to original value
+        # 4)  Change to kp 0.3, all over the place, switching back
+        # 5)  angle tolerance from 2 to 5, seems the same
+        # 6) kd to 2, also seems to be the same
+        # 7) kI to 2, nothing seems to be changing 
+        # 8) kp to 2, no changes
+        # 9) Removing clamping function on line 437
+        #10) 
+
+
+
+
         wrist_angle_tolerance = 2  # degrees
 
         self.wrist_pid_controller = PIDController(kP, kI, kD)
@@ -420,6 +435,7 @@ class Set_Wrist_Angle_manual_and_auto_with_PID(Command):
         AngleError = self.wrist_pid_controller.calculate(current_angle, self.target_angle)
 
         controlled_wrist_speed = self._Wrist._clamp(AngleError)   
+        # controlled_wrist_speed = AngleError  
         self._Wrist.move_wrist(controlled_wrist_speed)
         # print("AngleError: ", AngleError, "  Current:  ", current_angle , "  controlled_wrist_speed: ", controlled_wrist_speed)
         
