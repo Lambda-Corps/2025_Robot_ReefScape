@@ -15,14 +15,23 @@ from rev import SparkLimitSwitch
 
 #===(Hardware Notes)==============================================
 '''
-The wrist is moved using an AndyMark NeveRest motor controlled by a Talon SRX.
-The motor runs at 25 RPM and has a 22 Tooth steel gear driving a steel 52 Tooth steer gear.
-The 52 Tooth gear is on the wrist axle.
+Revised Design:
+The wrist is moved using a Rev Robotics NEO brushless motor controlled by a Spark Max controller.
+The motor spins at 5000 rotations per minute (RPM) with no load and 3000  under load.
+A Vex Versaplanetary gearbox will reduce the rotation speed by a factor of about 100.  The expected speed 
+is to be 40 RPM.  
 
-The wrist Talon SRX shows red when the wrist is moving upward.  (Negative direction)
+This motor is much more powerful and spins than the previous NeveRest.  We need to reduce the speed of the motor.
 
-The intake axle has limit switches connected directly to the Talon SRX to prevent the 
-robot software from overdriving the wrist axle and breaking the robot.  The talon SRX has a 
+The motor is connected to the wrist using a #35 chain with similar sprocket size so there is
+little reduction.
+
+NEED TO VERIFY THE FOLLOWING:
+The SparkMax indicates RED when the wrist is moving out and down (increasing angle on the encoder)
+The "Wrist_at_Top_SparkMax" is true when the wrist is at the top of the elevator and moving into the top frame.
+
+The intake axle has limit switches connected directly to the Rev Spark Max to prevent the 
+robot software from overdriving the wrist axle and breaking the robot.  The Spark Max has a 
 breakout box mounted on the remote interface to access the limit switch interface.  This
 board also provides red LEDs to indicate when the limit is reached.  The top LED/connector is
 connected to the top limit switch.  The bottom LED/connector is connected to the bottom limit 
@@ -37,9 +46,10 @@ The encoder reads about 340 degrees (-20) when the wrist is in the "Stowed" posi
 The "Stowed" position is needed to allow the intake to be within the frame of the robot at the start
 of the competition.
 
-The wrist has two main commands:
+The wrist has three main commands:
 1) Set_Wrist_Angle_manual_and_auto_with_PID
 2) Set_Global_Wrist_Angle
+3) SetWristAngleAuto
 
 The Command "Set_Wrist_Angle_manual_and_auto_with_PID" the wrist default command.
 This command reads a wrist global variable and uses this to set the wrist angle.
@@ -47,6 +57,8 @@ When the partner moves the joystick, the value outside of the deadband is detect
 joystick is used to update the global variable.
 
 Autonomous command "Set_Global_Wrist_Angle" is available to set the global variable.
+
+The SetWristAngleAuto command is used with PathPlanner to command the wrist to a specific angle.
 
 
 '''
@@ -443,7 +455,7 @@ class Set_Global_Wrist_Angle(Command):
     def end(self, interrupted: bool):
         pass
 
-
+#================================================================================================
 class SetWristAngleAuto(Command):
     WRIST_ANGLE_TOLERANCE = 3
     def __init__(self, Wrist: WristControl, target_angle: float):
