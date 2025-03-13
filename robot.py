@@ -190,18 +190,33 @@ class MyRobot(TimedCommandRobot):
         self._partner_controller.povDown().whileTrue(
             MoveELEVATOR(self._elevator, -0.4).withName("ElevatorDown")
         )
-
+        # self._partner_controller.a().onTrue(
+        #     SetWristAngleAuto(self._wrist, 12.849).withTimeout(0).andThen(
+        #         MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_SOURCE)
+        #     )
+        # )
         self._partner_controller.rightBumper().onTrue(
-            MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE)
+             SetWristAngleAuto(self._wrist, 72.681).withTimeout(0).andThen(
+                MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE)
+            )
         )
+
         self._partner_controller.rightTrigger().onTrue(
+            SetWristAngleAuto(self._wrist, 64.306).withTimeout(0).andThen(
             MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_TWO)
+            )
         )
-        self._partner_controller.leftTrigger().onTrue(
+
+        self._partner_controller.rightTrigger().onTrue(
+            SetWristAngleAuto(self._wrist, 64.306).withTimeout(0).andThen(
             MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_THREE)
+            )
         )
-        self._partner_controller.leftBumper().onTrue(
+        
+        self._partner_controller.rightTrigger().onTrue(
+            SetWristAngleAuto(self._wrist, 49.201).withTimeout(0).andThen(
             MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_FOUR)
+            )
         )
 
 
@@ -420,6 +435,7 @@ class MyRobot(TimedCommandRobot):
         self._auto_chooser.addOption("Best Auto",PathPlannerAuto("Best Auto"))
         self._auto_chooser.addOption("Mid Auto",PathPlannerAuto("Mid Auto"))
         self._auto_chooser.addOption("StraightPath",PathPlannerAuto("StraightPath"))
+        self._auto_chooser.addOption("L4",PathPlannerAuto("L4"))
 
         wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
 
