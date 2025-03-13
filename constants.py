@@ -47,7 +47,9 @@ DT_LEFT_FOLLOWER = 3
 DT_RIGHT_FOLLOWER = 4
 ELEVATOR = 6
 INTAKE_MOTOR = 7
-WRIST_MOTOR = 8
+# WRIST_MOTOR = 8
+WRIST_MOTOR_REV = 8
+ClIMBER_NOTOR = 9
 
 
 ##>>
@@ -89,9 +91,11 @@ class ElevatorPosition(Enum):
     LEVEL_ONE = 1
     LEVEL_TWO = 2
     LEVEL_THREE = 3
-    LEVEL_FOUR = 4.3
-    LEVEL_SOURCE = 1.809
-    LEVEL_UKNOWN = 999999
+LEVEL_FOUR = 4.3
+LEVEL_FOUR = 4.87
+
+LEVEL_SOURCE = 1.809
+LEVEL_UKNOWN = 999999
 
 def get_closest_elevator_position(value: int) -> ElevatorPosition:
     '''
@@ -133,7 +137,7 @@ ELEVATOR_MAX_HEIGHT_M = 93 * INCHES_PER_METER # Top of the elevator stack
 WRIST_GEAR_RATIO = 263.7 * 3 #  NeveRest ~25 RPM at motor output + reduction gears on shaft
 
 WRIST_ACCEPTABLE_UPPER_LIMIT = -5
-WRIST_ACCEPTABLE_LOWER_LIMIT = 65
+WRIST_ACCEPTABLE_LOWER_LIMIT = 90
 
 
 CS = 175

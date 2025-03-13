@@ -81,10 +81,10 @@ class PhysicsEngine:
 
 
         # Add Wrist to Physics simulation
-        self.wrist_sim = robot._wrist.wrist_motor.getSimCollection()
-        self.wrist_sim2 = robot._wrist.wrist_motor
-        self.wrist_gearbox: DCMotor = DCMotor.andymark9015()
-        self.wrist: DCMotorSim = DCMotorSim(LinearSystemId.DCMotorSystem(self.wrist_gearbox, 0.02, constants.WRIST_GEAR_RATIO ), self.wrist_gearbox)
+        # self.wrist_sim = robot._wrist.wrist_motor.getSimCollection()
+        # self.wrist_sim2 = robot._wrist.wrist_motor
+        # self.wrist_gearbox: DCMotor = DCMotor.andymark9015()
+        # self.wrist: DCMotorSim = DCMotorSim(LinearSystemId.DCMotorSystem(self.wrist_gearbox, 0.02, constants.WRIST_GEAR_RATIO ), self.wrist_gearbox)
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         """
@@ -103,7 +103,7 @@ class PhysicsEngine:
         self.left_talon_sim.set_supply_voltage(battery_v)
         self.right_talon_sim.set_supply_voltage(battery_v)
         self.elevator_sim.set_supply_voltage(battery_v)
-        self.wrist_sim.setBusVoltage(battery_v)
+        # self.wrist_sim.setBusVoltage(battery_v)
 
         # ------------------------   Drivetrain Simulation ----------------------------#
         # CTRE simulation is low-level, so SimState inputs
@@ -156,8 +156,8 @@ class PhysicsEngine:
         #      Update the simulator calculation
         # self.wrist.setInputVoltage(self.elevator_sim.motor_voltage)
         # self.wrist.setInputVoltage(self.wrist_sim.setBusVoltage)
-        self.wrist.setInputVoltage(12)
-        self.wrist.update(tm_diff)
+        # self.wrist.setInputVoltage(12)
+        # self.wrist.update(tm_diff)
         # self.wrist_sim.setAnalogPosition(int(radiansToRotations(self.wrist.getAngularPosition())))
         # self.wrist_sim.setQuadratureRawPosition(100)
 

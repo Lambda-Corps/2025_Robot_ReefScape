@@ -23,7 +23,7 @@ robotpy_extras = [
    "phoenix5",
    "phoenix6",
    # "playingwithfusion"
-   # "rev"
+    "rev",
    # "romi"
    # "sim",
    # "xrp"

@@ -24,6 +24,7 @@ from pathplannerlib.auto import (
 from phoenix6 import SignalLogger
 from drivetrain import DriveTrain,  TurnToAnglePID
 from intake import Intake,  SetIntakeSpeedandTime, SetIntakeManual
+from climber import Climber,  SetClimberSpeedandTime, SetClimberManual
 from wrist import (
         SetWristAngleAuto,
         WristControl, 
@@ -68,8 +69,7 @@ class MyRobot(TimedCommandRobot):
 
         # Setup the operator interface (typically CommandXboxController)
         self._driver_controller = CommandXboxController(
-            constants.CONTROLLER_DRIVER_PORT
-        )
+            constants.CONTROLLER_DRIVER_PORT        )
         self._partner_controller = CommandXboxController(
             constants.CONTROLLER_PARTNER_PORT
         )
@@ -84,6 +84,9 @@ class MyRobot(TimedCommandRobot):
 
         self._intake: Intake = Intake()
         wpilib.SmartDashboard.putData("Intake", self._intake)
+
+        self._climber: Climber = Climber()
+        wpilib.SmartDashboard.putData("Climber", self._climber)
 
         self._wrist: WristControl = WristControl()
         wpilib.SmartDashboard.putData("Wrist", self._wrist)
@@ -284,6 +287,18 @@ class MyRobot(TimedCommandRobot):
         # wpilib.SmartDashboard.putData(
         #     "Turn-90", TurnToAnglePID(self._drivetrain, -90, 3)
         # )
+
+
+
+        #=======(Climber controls)===================================
+
+        self._partner_controller.b().whileTrue(
+            SetClimberManual(self._climber, 0.5).withName("ClimberUP")
+        )
+        self._partner_controller.x().whileTrue(
+            SetClimberManual(self._climber, -0.5).withName("ClimberDOWN")
+        )
+
         #=======(Drivetrain controls)===================================
 
     def __configure_default_commands(self) -> None:
@@ -390,12 +405,20 @@ class MyRobot(TimedCommandRobot):
             "IntakeOutFor1Second", SetIntakeSpeedandTime(self._intake,1,1)
             )
         
+        NamedCommands.registerCommand(
+            "IntakeOutFor5Seconds", SetIntakeSpeedandTime(self._intake,5,5)
+        )
+
         # To configure the Autonomous routines use PathPlanner to define the auto routines
         # Then, take all of the path planner created routines and add them to the auto
         # chooser so the drive team can select the starting auto.
         self._auto_chooser: wpilib.SendableChooser = wpilib.SendableChooser()
         self._auto_chooser.setDefaultOption(
+
             "BestAuto2",PathPlannerAuto("BestAuto2")
+
+            "Best Auto",PathPlannerAuto("Best Auto")
+
         )
         self._auto_chooser.addOption("TestSubSystems", PathPlannerAuto("TestSubSystems"))
         self._auto_chooser.addOption("Best Auto",PathPlannerAuto("Best Auto"))
