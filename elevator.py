@@ -350,7 +350,7 @@ class MoveELEVATORToZero(Command):
         if (current_wrist_angle < constants.WRIST_ACCEPTABLE_LOWER_LIMIT and 
             current_wrist_angle > constants.WRIST_ACCEPTABLE_UPPER_LIMIT):
 
-            self._ELEVATOR.move_ELEVATOR_down_with_speed(0.2)
+            self._ELEVATOR.move_ELEVATOR_down_with_speed(1.0)
 
         else:
             print("WRIST IS NOT IN ACCEPTABLE POSITION FOR ELEVATOR MOVEMENT")

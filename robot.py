@@ -207,13 +207,13 @@ class MyRobot(TimedCommandRobot):
             )
         )
 
-        self._partner_controller.rightTrigger().onTrue(
+        self._partner_controller.leftTrigger().onTrue(
             SetWristAngleAuto(self._wrist, 64.306).withTimeout(0).andThen(
             MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_THREE)
             )
         )
-        
-        self._partner_controller.rightTrigger().onTrue(
+
+        self._partner_controller.leftBumper().onTrue(
             SetWristAngleAuto(self._wrist, 49.201).withTimeout(0).andThen(
             MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_FOUR)
             )
@@ -308,10 +308,10 @@ class MyRobot(TimedCommandRobot):
         #=======(Climber controls)===================================
 
         self._partner_controller.b().whileTrue(
-            SetClimberManual(self._climber, 0.5).withName("ClimberUP")
+            SetClimberManual(self._climber, 1.0).withName("ClimberUP")
         )
         self._partner_controller.x().whileTrue(
-            SetClimberManual(self._climber, -0.5).withName("ClimberDOWN")
+            SetClimberManual(self._climber, -1.0).withName("ClimberDOWN")
         )
 
         #=======(Drivetrain controls)===================================
@@ -399,7 +399,7 @@ class MyRobot(TimedCommandRobot):
         )   
         
         NamedCommands.registerCommand(
-            "WristToLowPosition", SetWristAngleAuto(self._wrist, 50).withTimeout(3)
+            "WristToLowPosition", SetWristAngleAuto(self._wrist, 44.9).withTimeout(3)
         )        
         
         #===(Intake Named Commands)====================================
@@ -429,17 +429,13 @@ class MyRobot(TimedCommandRobot):
         # chooser so the drive team can select the starting auto.
         self._auto_chooser: wpilib.SendableChooser = wpilib.SendableChooser()
         self._auto_chooser.setDefaultOption(
-
-            "BestAuto2",PathPlannerAuto("BestAuto2")
-
-            "Best Auto",PathPlannerAuto("Best Auto")
-
+            "StraightPath",PathPlannerAuto("StraightPath")
         )
         self._auto_chooser.addOption("TestSubSystems", PathPlannerAuto("TestSubSystems"))
-        self._auto_chooser.addOption("Best Auto",PathPlannerAuto("Best Auto"))
-        self._auto_chooser.addOption("Mid Auto",PathPlannerAuto("Mid Auto"))
-        self._auto_chooser.addOption("StraightPath",PathPlannerAuto("StraightPath"))
-        self._auto_chooser.addOption("L4",PathPlannerAuto("L4"))
+        # self._auto_chooser.addOption("Best Auto",PathPlannerAuto("Best Auto"))
+        self._auto_chooser.addOption("Mid Auto", PathPlannerAuto("Mid Auto"))
+        self._auto_chooser.addOption("StraightPath", PathPlannerAuto("StraightPath"))
+        self._auto_chooser.addOption("DragonL4", PathPlannerAuto("DragonL4"))
 
         wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
 
