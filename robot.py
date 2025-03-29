@@ -439,7 +439,7 @@ class MyRobot(TimedCommandRobot):
         
         # To configure the Autonomous routines use PathPlanner to define the auto routines
         # Then, take all of the path planner created routines and add them to the auto
-        # chooser so the drive team can select the starting auto.
+        # chooser so the drive team can select the starting auto.   
         self._auto_chooser: wpilib.SendableChooser = wpilib.SendableChooser()
         self._auto_chooser.setDefaultOption(
             "TestDrive",PathPlannerAuto("TestDrive")
@@ -454,8 +454,7 @@ class MyRobot(TimedCommandRobot):
 
         self._auto_chooser.addOption("NuNuL1", PathPlannerAuto("NuNuL1"))
 
-
-    wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
+        wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
 
 
     def __configure_led_triggers(self) -> None:
