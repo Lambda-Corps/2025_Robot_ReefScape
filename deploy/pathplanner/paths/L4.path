@@ -8,11 +8,11 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.575275791143278,
-        "y": 3.83588570678312
+        "x": 6.575233942890951,
+        "y": 3.843
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "DragonStart"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 3.843
       },
       "prevControl": {
-        "x": 6.1146914942124315,
-        "y": 3.84468032677345
+        "x": 6.114696127549186,
+        "y": 3.843
       },
       "nextControl": null,
       "isLocked": false,

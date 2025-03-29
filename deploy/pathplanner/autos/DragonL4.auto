@@ -17,6 +17,25 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "WristToMediumPosition"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ElevatorToL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "WristToLowPosition"
                 }
               }
@@ -26,26 +45,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ElevatorToL4"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "L4.2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ElevatorToL1"
-                }
-              }
-            ]
+            "name": "IntakeInFor1Second"
           }
         }
       ]

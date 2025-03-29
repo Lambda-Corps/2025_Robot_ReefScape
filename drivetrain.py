@@ -12,7 +12,7 @@ from wpimath.kinematics import (
     DifferentialDriveWheelSpeeds,
 )
 from wpimath.filter import SlewRateLimiter
-from wpilib import SmartDashboard, Field2d
+from wpilib import SmartDashboard, Field2d, Timer
 from commands2 import Subsystem, Command, cmd, PIDCommand
 from phoenix6 import StatusCode
 from phoenix6.configs import (
@@ -750,3 +750,32 @@ class TurnToAnglePID(PIDCommand):
     def isFinished(self) -> bool:
         # End when the controller is at the reference.
         return self.getController().atSetpoint()
+
+class DriveTime(Command):
+    def __init__(self, dt: DriveTrain, speed: float, time_seconds: float) -> None:
+        super().__init__()
+
+        self._dt = dt
+        self._speed = speed
+        self._time_seconds = time_seconds
+        self._timer = Timer()
+        self._timer.start()
+
+        # Tell the scheduler this requires the drivetrain
+        self.addRequirements(self._dt)
+
+    def initialize(self):
+        self._timer.restart()
+        print ("Start: ", self._speed)
+        
+
+    def execute(self):
+        self._dt.drive_teleop(self._speed,0)
+
+    def isFinished(self) -> bool:
+            # print ("Checking time")
+            return self._timer.hasElapsed(self._time_seconds)
+
+    def end(self, interrupted: bool):
+        print ("DONE: ", self._speed)
+        self._dt.drive_teleop(0,0)

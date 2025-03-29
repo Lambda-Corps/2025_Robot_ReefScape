@@ -44,6 +44,8 @@ class LEDState(Enum):
     HAS_NOTE = 4
     HAS_CORRECT_TAG = 5
     SHOOTING = 6
+    CLIMBER_UP = 7
+    CLIMBER_DOWN = 8
 
 
 
@@ -228,21 +230,25 @@ class LEDSubsystem(Subsystem):
 
             self._last_flash_off = True
 
-    def periodic(self) -> None:
+    def periodic(self) -> None: 
         # # Check for our alliance to match color
-        # self.check_alliance()
+        self.check_alliance()
 
         # # Move the leds in their buffers in case they get set
         # self.__animate_chase_buffers(0.03)
         # self.rainbow(self.__rainbow_buffer)
 
         # # Set the LEDs based on the steate
-        # match self._curr_state:
-        #     case LEDState.TRACK_APRIL_TAG:
-        #         self.__set_flash_buffers_color(1, kWhiteRGB)
-        #         self.leds.setData(self.__flash_buffer)
-        #     case LEDState.TRACK_NOTE:
-        #         self.__set_flash_buffers_color(1, kOrangeRGB)
+        match self._curr_state:
+
+            case LEDState.CLIMBER_UP:
+                self.leds.setData(self.__rainbow_buffer)
+
+            case LEDState.CLIMBER_DOWN:
+                self.leds.setData(self.__rainbow_buffer)
+
+            # case LEDState.TRACK_NOTE:
+            #     self.__set_flash_buffers_color(1, kOrangeRGB)
         #         self.leds.setData(self.__flash_buffer)
         #     case LEDState.HAS_NOTE:
         #         self.__set_flash_buffers_color(0.2, kOrangeRGB)
@@ -279,6 +285,7 @@ class LEDSubsystem(Subsystem):
             # Display blue
             self.__load_solid_color_into_buffer(kBlueRGB)
             self.leds.setData(self.__flash_buffer)
+
     
 
     def rainbow(self, buffer: List[AddressableLED.LEDData]) -> None:

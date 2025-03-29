@@ -491,10 +491,10 @@ class SetWristAngleAuto(Command):
             print ("UP")
         elif pos < self.target_angle:
             self._Wrist.move_wrist_down(self._Wrist.WRIST_DOWN_SPEED)
-            print ("Down")
+            # print ("Down")
         else: 
             pass
-        print ("pos: ",pos,  "    self.target_angle:  ", self.target_angle)
+        # print ("pos: ",pos,  "    self.target_angle:  ", self.target_angle)
 
     def isFinished(self) -> bool:
         return abs(self._Wrist.getAbsolutePosition() - self.target_angle) < SetWristAngleAuto.WRIST_ANGLE_TOLERANCE

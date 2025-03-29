@@ -5,19 +5,19 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Best Auto  1"
+                  "pathName": "L4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "WristToMediumPosition"
+                  "name": "WristToLowPosition"
                 }
               }
             ]
@@ -26,7 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ElevatorToL1"
+            "name": "ElevatorToL3"
           }
         },
         {
