@@ -113,6 +113,7 @@ class WristControl(Subsystem):
         # self.wrist_motor.set(ControlMode.PercentOutput, speed)
         SmartDashboard.putNumber("Wrist_speed", speed)
         self.spark_max_wrist_motor.set(speed)
+        print ("move wrist", speed)
 
 
     # def Wrist_at_Top(self) -> bool:
@@ -428,6 +429,7 @@ class Set_Wrist_Angle_manual_and_auto_with_PID(Command):
             joystick_active = True
 
         if joystick_active:
+            print ("joystick position", joystick_position)
             self.target_angle = self._Wrist._clamp(self.target_angle + joystick_position, max=constants.WRIST_ACCEPTABLE_LOWER_LIMIT, min=constants.WRIST_ACCEPTABLE_UPPER_LIMIT)
             self._Wrist.set_global_wrist_angle(self.target_angle)
 

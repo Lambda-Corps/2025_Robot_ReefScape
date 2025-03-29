@@ -202,7 +202,7 @@ class MyRobot(TimedCommandRobot):
         )
 
         self._partner_controller.rightTrigger().onTrue(
-            SetWristAngleAuto(self._wrist, 64.306).withTimeout(0).andThen(
+            SetWristAngleAuto(self._wrist, 72.16).withTimeout(0).andThen(
             MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_TWO)
             )
         )
@@ -449,9 +449,14 @@ class MyRobot(TimedCommandRobot):
         self._auto_chooser.addOption("Mid Auto", PathPlannerAuto("Mid Auto"))
         self._auto_chooser.addOption("StraightPath", PathPlannerAuto("StraightPath"))
         self._auto_chooser.addOption("DragonL4", PathPlannerAuto("DragonL4"))
+
         self._auto_chooser.addOption("BabyDragon", PathPlannerAuto("BabyDragon"))
 
-        wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
+        self._auto_chooser.addOption("NuNuL1", PathPlannerAuto("NuNuL1"))
+
+
+    wpilib.SmartDashboard.putData("AutoChooser", self._auto_chooser)
+
 
     def __configure_led_triggers(self) -> None:
         pass

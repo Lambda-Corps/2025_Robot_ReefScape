@@ -11,12 +11,10 @@ from robotpy_apriltag import AprilTagFieldLayout
 from wpilib import RobotBase, DriverStation, SmartDashboard
 from typing import List, Dict, Optional
 
-from shooter import ShooterPosition
-
 import os
 
-RED_SPEAKER_TAG = 4
-RED_AMP_TAG = 5
+RED_LEFT_CORAL_STATION = 1
+RED_RIGHT_CORAL_STATION = 2
 BLUE_AMP_TAG = 6
 BLUE_SPEAKER_TAG = 7
 TAG_NONE = 100

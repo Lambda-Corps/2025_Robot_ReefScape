@@ -12,6 +12,7 @@ class TwoSubsystemCommandGroupOne(commands2.SequentialCommandGroup):
 
        self._elevator = _elevator
        self._wrist = _wrist
+       self.addCommands(PrintCommand("TwoSubsystemCommandGroupOne Done"))
        
        self.addCommands(Set_Global_Wrist_Angle(self._wrist, 0))  
        self.addCommands(MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE).withTimeout(5))
@@ -25,7 +26,8 @@ class TwoSubsystemCommandGroupTwo(commands2.SequentialCommandGroup):
 
        self._elevator = _elevator
        self._wrist = _wrist
-       
+       self.addCommands(PrintCommand("TwoSubsystemCommandGroup Done"))
+
        self.addCommands(Set_Global_Wrist_Angle(self._wrist, 0))  
        self.addCommands(MoveELEVATORToSetPoint(self._elevator,constants.ElevatorPosition.LEVEL_ONE).withTimeout(5))
 
