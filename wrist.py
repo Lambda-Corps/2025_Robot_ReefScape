@@ -113,7 +113,7 @@ class WristControl(Subsystem):
         # self.wrist_motor.set(ControlMode.PercentOutput, speed)
         SmartDashboard.putNumber("Wrist_speed", speed)
         self.spark_max_wrist_motor.set(speed)
-        print ("move wrist", speed)
+        # print ("move wrist", speed)
 
 
     # def Wrist_at_Top(self) -> bool:

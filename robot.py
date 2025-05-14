@@ -57,6 +57,8 @@ from typing import Tuple, List
 class MyRobot(TimedCommandRobot):
     """Class that defines the totality of our Robot"""
 
+    
+
     def robotInit(self) -> None:
         """
         This method must eventually exit in order to ever have the robot
@@ -65,6 +67,8 @@ class MyRobot(TimedCommandRobot):
         button bindings, and operator interface pieces like driver
         dashboards
         """
+
+        
         # Disable the CTRE signal logger
         SignalLogger.stop()  # Disable for debugging later on
 
@@ -104,7 +108,7 @@ class MyRobot(TimedCommandRobot):
 
         self.pdp = wpilib.PowerDistribution()
         wpilib.SmartDashboard.putData("PDP", self.pdp)
-
+        self.frame_counter = 0
 
         # self._vision: VisionSystem = VisionSystem(False, True)
         # self._vision: VisionSystem = VisionSystem(True, True)
@@ -474,7 +478,7 @@ class MyRobot(TimedCommandRobot):
         return self._auto_chooser.getSelected()
 
     def teleopInit(self) -> None:
-        frame_counter = 0    # Used in periodic printing of motor currents below in teleop periodic
+        self.frame_counter = 0    # Used in periodic printing of motor currents below in teleop periodic
 
         if self._auto_command is not None:
             self._auto_command.cancel()
@@ -517,38 +521,39 @@ class MyRobot(TimedCommandRobot):
                 elevator_motor_current = self.pdp.getCurrent(constants.ELEVATOR_PDP_CHANNEL)
                 wpilib.SmartDashboard.putNumber("elevator_motor_current", elevator_motor_current)
 
-                frame_counter = frame_counter + 1
-                if (frame_counter >= 25):                  # Print once every half second to the console
-                    print (f"Elevator_motor_current {elevator_motor_current:.1f}")
-                    frame_counter = 0
+                self.frame_counter = self.frame_counter + 1
+                if (self.frame_counter >= 1):                  # Print once every half second to the console
+                    if (elevator_motor_current > 0 ):
+                        print (f"Elevator_motor_current {elevator_motor_current:3.2f}   {wpilib.Timer.getFPGATimestamp():3.4f}")
+                    self.frame_counter = 0
 
             if (False):     # Allow Selective Printing of specific items
                 climber_motor_current = self.pdp.getCurrent(constants.ClIMBER_MOTOR_PDP_CHANNEL)
                 wpilib.SmartDashboard.putNumber("climber_motor_current", climber_motor_current)
 
-                frame_counter = frame_counter + 1
-                if (frame_counter >= 25):                  # Print once every half second to the console
+                self.frame_counter = self.frame_counter + 1
+                if (self.frame_counter >= 25):                  # Print once every half second to the console
                     print (f"Climber_motor_current {climber_motor_current:.1f}")
-                    frame_counter = 0
+                    self.frame_counter = 0
 
 
             if (False):     # Allow Selective Printing of specific items
                 intake_motor_current = self.pdp.getCurrent(constants.INTAKE_MOTOR_PDP_CHANNEL)
                 wpilib.SmartDashboard.putNumber("elevator_motor_current", intake_motor_current)
 
-                frame_counter = frame_counter + 1
-                if (frame_counter >= 25):                  # Print once every half second to the console
+                self.frame_counter = self.frame_counter + 1
+                if (self.frame_counter >= 25):                  # Print once every half second to the console
                     print (f"Intake_motor_current {intake_motor_current:.1f}")
-                    frame_counter = 0
+                    self.frame_counter = 0
 
 
             if (False):     # Allow Selective Printing of specific items
                 wrist_motor_current = self.pdp.getCurrent(constants.WRIST_MOTOR_PDP_CHANNEL)
                 wpilib.SmartDashboard.putNumber("wrist_motor_current", wrist_motor_current)
 
-                frame_counter = frame_counter + 1
-                if (frame_counter >= 5):                  # Print five times second to the console
+                self.frame_counter = self.frame_counter + 1
+                if (self.frame_counter >= 5):                  # Print five times second to the console
                     print (f"Wrist_motor_current {wrist_motor_current:.1f}")
-                    frame_counter = 0
+                    self.frame_counter = 0
 
         return super().teleopPeriodic()

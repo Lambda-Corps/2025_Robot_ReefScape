@@ -8,7 +8,7 @@
 
 
 # Version of robotpy this project depends on
-robotpy_version = "2025.3.2.0"
+robotpy_version = "2025.3.2.1"
 
 
 # Which extra RobotPy components should be installed
