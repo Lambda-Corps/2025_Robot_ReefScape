@@ -96,6 +96,15 @@ class MyRobot(TimedCommandRobot):
         self._elevator: ELEVATOR = ELEVATOR()
         wpilib.SmartDashboard.putData("Elevator", self._elevator)
 
+        ####  Get current readings from the PDP to learn about motors   ######
+        # Source:  https://github.com/robotpy/examples/blob/main/CANPDP/robot.py
+        #
+        # Actual readings taken down in TeleOp Periodic far below (near line 500)
+
+        self.pdp = wpilib.PowerDistribution()
+        wpilib.SmartDashboard.putData("PDP", self.pdp)
+
+
         # self._vision: VisionSystem = VisionSystem(False, True)
         # self._vision: VisionSystem = VisionSystem(True, True)
 
@@ -464,6 +473,8 @@ class MyRobot(TimedCommandRobot):
         return self._auto_chooser.getSelected()
 
     def teleopInit(self) -> None:
+        frame_counter = 0    # Used in periodic printing of motor currents below in teleop periodic
+
         if self._auto_command is not None:
             self._auto_command.cancel()
 
@@ -493,4 +504,46 @@ class MyRobot(TimedCommandRobot):
         pass
 
     def teleopPeriodic(self) -> None:
+
+        # The PDP returns the current in increments of 0.125A.
+        if (constants.PRINT_CURRENT_MEASURMENTS):
+
+            if (True):     # Allow Selective Printing of specific items
+                elevator_motor_current = self.pdp.getCurrent(constants.ELEVATOR_PDP_CHANNEL)
+                wpilib.SmartDashboard.putNumber("elevator_motor_current", elevator_motor_current)
+
+                frame_counter = frame_counter + 1
+                if (frame_counter >= 25):                  # Print once every half second to the console
+                    print (f"Elevator_motor_current {elevator_motor_current:.1f}")
+                    frame_counter = 0
+
+            if (False):     # Allow Selective Printing of specific items
+                climber_motor_current = self.pdp.getCurrent(constants.ClIMBER_MOTOR_PDP_CHANNEL)
+                wpilib.SmartDashboard.putNumber("climber_motor_current", climber_motor_current)
+
+                frame_counter = frame_counter + 1
+                if (frame_counter >= 25):                  # Print once every half second to the console
+                    print (f"Climber_motor_current {climber_motor_current:.1f}")
+                    frame_counter = 0
+
+
+            if (False):     # Allow Selective Printing of specific items
+                intake_motor_current = self.pdp.getCurrent(constants.INTAKE_MOTOR_PDP_CHANNEL)
+                wpilib.SmartDashboard.putNumber("elevator_motor_current", intake_motor_current)
+
+                frame_counter = frame_counter + 1
+                if (frame_counter >= 25):                  # Print once every half second to the console
+                    print (f"Intake_motor_current {intake_motor_current:.1f}")
+                    frame_counter = 0
+
+
+            if (False):     # Allow Selective Printing of specific items
+                wrist_motor_current = self.pdp.getCurrent(constants.WRIST_MOTOR_PDP_CHANNEL)
+                wpilib.SmartDashboard.putNumber("wrist_motor_current", wrist_motor_current)
+
+                frame_counter = frame_counter + 1
+                if (frame_counter >= 5):                  # Print five times second to the console
+                    print (f"Wrist_motor_current {wrist_motor_current:.1f}")
+                    frame_counter = 0
+
         return super().teleopPeriodic()
