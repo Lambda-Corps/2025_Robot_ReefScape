@@ -16,6 +16,7 @@ from commands2 import (
     cmd,
 )
 from commands2.button import CommandXboxController, Trigger, JoystickButton, POVButton
+import wpilib.interfaces
 from wpimath.geometry import Pose2d
 from pathplannerlib.auto import (
     NamedCommands,
@@ -506,7 +507,11 @@ class MyRobot(TimedCommandRobot):
     def teleopPeriodic(self) -> None:
 
         # The PDP returns the current in increments of 0.125A.
-        if (constants.PRINT_CURRENT_MEASURMENTS):
+        
+        ## Consider using Partner "Start"  button to control printing of current values
+
+        # if (self._partner_controller.start().getAsBoolean()):
+        if (constants.PRINT_CURRENT_MEASURMENTS):     
 
             if (True):     # Allow Selective Printing of specific items
                 elevator_motor_current = self.pdp.getCurrent(constants.ELEVATOR_PDP_CHANNEL)
